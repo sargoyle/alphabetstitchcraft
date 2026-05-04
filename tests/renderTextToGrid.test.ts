@@ -81,8 +81,8 @@ const empty = renderTextToGrid("", blockFont, {
   alignment: "left"
 });
 assert.equal(empty.width, 0);
-assert.equal(empty.height, 7);
-assert.deepEqual(empty.grid, Array.from({ length: 7 }, () => ""));
+assert.equal(empty.height, 0);
+assert.deepEqual(empty.grid, []);
 assert.deepEqual(empty.unsupportedCharacters, []);
 
 console.log("renderTextToGrid tests passed.");

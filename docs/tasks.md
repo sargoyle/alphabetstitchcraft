@@ -78,6 +78,18 @@ Acceptance checks:
 - [x] Home page renders without runtime errors.
 - [x] TypeScript compiles.
 
+### 0.3 Environment Ignore Rules
+
+- [x] In `.gitignore`, replace `.env*` with explicit environment file entries:
+  - [x] `.env`
+  - [x] `.env.local`
+  - [x] `.env.*.local`
+
+Acceptance checks:
+
+- [x] `.gitignore` no longer ignores every `.env*` file pattern.
+- [x] Local and environment-specific local files remain ignored.
+
 ### 0.2 Establish App Shell
 
 - [x] Create global layout with persistent navigation.

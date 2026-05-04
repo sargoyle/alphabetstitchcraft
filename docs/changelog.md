@@ -14,9 +14,10 @@ All notable changes to this project will be documented in this file.
 - 2026-05-04: Cleaned up documentation rules and changelog entries so they follow the agreed source-of-truth format. Files affected: `docs/rules.md`, `docs/changelog.md`, `docs/tasks.md`.
 - 2026-05-04: Added lucide icons to useful action controls while keeping text labels for clarity. Files affected: `src/components/FontCard.tsx`, `src/components/ExportControls.tsx`, `src/components/CharacterEditor.tsx`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 - 2026-05-04: Improved responsive layout behavior for mobile, tablet and desktop verification by tightening button wrapping, toolbar sizing, editor grid scrolling and docs table overflow. Files affected: `src/app/globals.css`, `docs/tasks.md`.
+- 2026-05-04: Replaced the broad `.env*` ignore rule with explicit local environment file rules. Files affected: `.gitignore`, `docs/tasks.md`.
 
 ### Fixed
-- (none yet)
+- 2026-05-04: Empty generator text now returns a true `0 x 0` rendered pattern instead of blank-height rows. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
 
 ---
 

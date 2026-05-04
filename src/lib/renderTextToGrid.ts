@@ -74,6 +74,21 @@ export function renderTextToGrid(
   renderOptions: Partial<TextRenderOptions> = {}
 ): GeneratedPattern {
   const options = { ...DEFAULT_OPTIONS, ...renderOptions };
+  if (text.length === 0) {
+    return {
+      fontId: font.id,
+      text,
+      letterSpacing: options.letterSpacing,
+      wordSpacing: options.wordSpacing,
+      lineSpacing: options.lineSpacing,
+      alignment: options.alignment,
+      width: 0,
+      height: 0,
+      grid: [],
+      unsupportedCharacters: []
+    };
+  }
+
   const unsupported = new Set<string>();
   const sourceLines = text.split(/\r?\n/);
   const renderedLines = sourceLines.map((line) => renderLine(line, font, options, unsupported));
@@ -100,4 +115,3 @@ export function renderTextToGrid(
     unsupportedCharacters: Array.from(unsupported)
   };
 }
-
