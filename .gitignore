@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+dist
+.test-build
+.env*
+*.log
+pnpm-exe.tgz
+pnpm-win-x64.tgz
+package/
+pnpm
+pnpm.exe
+tsconfig.tsbuildinfo
