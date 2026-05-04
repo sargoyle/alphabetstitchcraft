@@ -3,7 +3,9 @@ node_modules
 out
 dist
 .test-build
-.env*
+.env
+.env.local
+.env.*.local
 *.log
 pnpm-exe.tgz
 pnpm-win-x64.tgz
