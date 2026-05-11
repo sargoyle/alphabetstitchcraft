@@ -900,6 +900,27 @@ Acceptance checks:
 - [x] Standard 8 x 10 character previews remain readable.
 - [x] The full character grid remains visible when mixed-width fonts are added.
 
+## Phase 17: Character Duplication and New Letter Mapping
+
+### 17.1 Duplicate Letter Into New Character
+
+- [x] Add a character duplication action in the editor.
+- [x] Allow the user to choose an existing letter as the source character.
+- [x] Copy the source character grid into a new editable character.
+- [x] Require the duplicated character to be assigned to a new unmapped character option before saving.
+- [x] Provide a blank/new-character option when the user does not want to start from an existing mapped character.
+- [x] Prevent saving when no destination character has been selected.
+- [x] Prevent overwriting an already mapped character unless the user explicitly chooses to replace it.
+- [x] Save the new character into the selected font so it appears in alphabet previews, the generator and future editor sessions.
+
+Acceptance checks:
+
+- [x] User can duplicate an existing letter, edit the copy and save it as a different character.
+- [x] User can start from a blank character and map it to a new character.
+- [x] Save is disabled or blocked until a destination character is selected.
+- [x] Existing mapped characters are protected from accidental overwrite.
+- [x] Newly mapped characters render correctly in Font Detail, Generator and Editor.
+
 ## Phase 16: Project Documentation Governance
 
 ### 16.1 Rules And Decisions Log

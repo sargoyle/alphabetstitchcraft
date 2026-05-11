@@ -11,17 +11,31 @@ type CharacterEditorProps = {
   character: StitchCharacter;
   originalCharacter: StitchCharacter;
   onSave: (character: StitchCharacter) => void;
+  saveDisabled?: boolean;
+  saveDisabledReason?: string;
+  saveLabel?: string;
+  headingLabel?: string;
 };
 
-export function CharacterEditor({ characterKey, character, originalCharacter, onSave }: CharacterEditorProps) {
+export function CharacterEditor({
+  characterKey,
+  character,
+  originalCharacter,
+  onSave,
+  saveDisabled = false,
+  saveDisabledReason,
+  saveLabel = "Save character",
+  headingLabel = "Selected character"
+}: CharacterEditorProps) {
   const [draft, setDraft] = useState(character);
   const validation = useMemo(() => validateCharacter(draft, characterKey), [draft, characterKey]);
+  const cannotSave = saveDisabled || !validation.valid;
 
   return (
     <div className="editor-panel">
       <div className="editor-heading">
         <div>
-          <span className="eyebrow">Selected character</span>
+          <span className="eyebrow">{headingLabel}</span>
           <h2>{characterKey}</h2>
         </div>
         <span className="dimension-pill">
@@ -63,6 +77,7 @@ export function CharacterEditor({ characterKey, character, originalCharacter, on
       </div>
 
       {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
+      {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
 
       <div className="button-row editor-actions">
         <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
@@ -73,9 +88,9 @@ export function CharacterEditor({ characterKey, character, originalCharacter, on
           <RotateCcw aria-hidden="true" size={17} />
           Reset
         </button>
-        <button className="button primary" type="button" disabled={!validation.valid} onClick={() => onSave(draft)}>
+        <button className="button primary" type="button" disabled={cannotSave} onClick={() => onSave(draft)}>
           <Save aria-hidden="true" size={17} />
-          Save character
+          {saveLabel}
         </button>
       </div>
     </div>

@@ -18,7 +18,7 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Documentation pages use the existing dark aura design tokens, sticky sidebar navigation and reusable table/card/code-block styles in `globals.css`.
 
 ## Business Logic
-- Validation rules, access control decisions, feature flags and pricing logic should be documented here when project-wide business decisions are made.
+- New editor characters require a destination mapping before save and protect existing mappings unless replacement is explicitly confirmed.
 
 ## Integrations
 - Third-party services, API keys and webhook configurations should be documented here when integration decisions are made.

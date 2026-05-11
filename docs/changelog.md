@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - 2026-05-04: Added an in-app Documentation Center with routable pages for overview, architecture, components, data flow, API and dependencies. Files affected: `src/app/docs/*`, `src/lib/documentation.ts`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/tasks.md`, `docs/rules.md`.
 - 2026-05-04: Added JSON export for fonts on the Manage Fonts page and shared JSON export helpers. Files affected: `src/app/custom-fonts/page.tsx`, `src/components/ExportControls.tsx`, `src/lib/exportUtils.ts`, `src/lib/documentation.ts`, `docs/tasks.md`.
 - 2026-05-04: Added utility tests for localStorage fallback handling and export behavior, and updated the test runner to execute all utility tests. Files affected: `tests/localStorageUtils.test.ts`, `tests/exportUtils.test.ts`, `tests/runTests.ts`, `package.json`, `docs/tasks.md`.
+- 2026-05-04: Added planned tasks for duplicating an existing letter into a new mapped character. Files affected: `docs/tasks.md`.
+- 2026-05-04: Added editor support for duplicating an existing letter or starting blank, mapping it to a new character, and protecting existing mappings from accidental overwrite. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`, `docs/tasks.md`, `docs/rules.md`.
 
 ### Changed
 - 2026-05-04: Cleaned up documentation rules and changelog entries so they follow the agreed source-of-truth format. Files affected: `docs/rules.md`, `docs/changelog.md`, `docs/tasks.md`.

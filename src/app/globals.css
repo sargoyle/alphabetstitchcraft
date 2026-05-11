@@ -379,6 +379,23 @@ textarea {
   resize: vertical;
 }
 
+.form-hint {
+  margin: -2px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -388,6 +405,10 @@ textarea {
 .tool-card {
   padding: 16px;
   min-width: 0;
+}
+
+.compact-tool-card {
+  padding: 14px;
 }
 
 .font-card .mini-preview,
