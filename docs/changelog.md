@@ -11,15 +11,22 @@ All notable changes to this project will be documented in this file.
 - 2026-05-04: Added utility tests for localStorage fallback handling and export behavior, and updated the test runner to execute all utility tests. Files affected: `tests/localStorageUtils.test.ts`, `tests/exportUtils.test.ts`, `tests/runTests.ts`, `package.json`, `docs/tasks.md`.
 - 2026-05-04: Added planned tasks for duplicating an existing letter into a new mapped character. Files affected: `docs/tasks.md`.
 - 2026-05-04: Added editor support for duplicating an existing letter or starting blank, mapping it to a new character, and protecting existing mappings from accidental overwrite. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`, `docs/tasks.md`, `docs/rules.md`.
+- 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
 - 2026-05-04: Cleaned up documentation rules and changelog entries so they follow the agreed source-of-truth format. Files affected: `docs/rules.md`, `docs/changelog.md`, `docs/tasks.md`.
 - 2026-05-04: Added lucide icons to useful action controls while keeping text labels for clarity. Files affected: `src/components/FontCard.tsx`, `src/components/ExportControls.tsx`, `src/components/CharacterEditor.tsx`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 - 2026-05-04: Improved responsive layout behavior for mobile, tablet and desktop verification by tightening button wrapping, toolbar sizing, editor grid scrolling and docs table overflow. Files affected: `src/app/globals.css`, `docs/tasks.md`.
 - 2026-05-04: Replaced the broad `.env*` ignore rule with explicit local environment file rules. Files affected: `.gitignore`, `docs/tasks.md`.
+- 2026-05-13: Expanded the app shell and header to use the full available screen width instead of a centered fixed-width column. Files affected: `src/app/globals.css`, `docs/tasks.md`.
+- 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
 - 2026-05-04: Empty generator text now returns a true `0 x 0` rendered pattern instead of blank-height rows. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
+
+### Removed
+- 2026-05-13: Removed the in-app Documentation Center route and Docs navigation item while keeping markdown project docs in `/docs`. Files affected: `src/app/docs/*`, `src/lib/documentation.ts`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/tasks.md`, `docs/rules.md`.
+- 2026-05-13: Removed Editor and Manage Fonts from the primary app navigation. Files affected: `src/app/layout.tsx`, `docs/tasks.md`.
 
 ---
 

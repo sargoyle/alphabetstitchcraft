@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Type } from "lucide-react";
+import { Eye, Pencil, Type } from "lucide-react";
 import type { StitchFont } from "@/lib/fontTypes";
 import { FontGridPreview } from "./FontGridPreview";
 
 type FontCardProps = {
   font: StitchFont;
   onUse: (fontId: string) => void;
+  showEdit?: boolean;
 };
 
-export function FontCard({ font, onUse }: FontCardProps) {
+export function FontCard({ font, onUse, showEdit = false }: FontCardProps) {
   return (
     <article className="tool-card font-card">
       <div className="card-topline">
@@ -31,6 +32,12 @@ export function FontCard({ font, onUse }: FontCardProps) {
           <Type aria-hidden="true" size={17} />
           Use
         </Link>
+        {showEdit ? (
+          <Link className="button ghost" href={`/editor?font=${font.id}`}>
+            <Pencil aria-hidden="true" size={17} />
+            Edit
+          </Link>
+        ) : null}
       </div>
     </article>
   );

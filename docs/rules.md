@@ -9,13 +9,15 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Group entries by category for easy scanning
 
 ## Architecture
-- The app exposes a public `/docs` documentation center using Next.js App Router pages with shared content in `src/lib/documentation.ts`.
+- Project documentation lives in markdown files under `/docs`; the app does not expose a routable Documentation Center.
 
 ## Naming Conventions
 - Component names, file names, database columns and API routes should be documented here when project-wide naming decisions are made.
 
 ## Design Patterns
-- Documentation pages use the existing dark aura design tokens, sticky sidebar navigation and reusable table/card/code-block styles in `globals.css`.
+- The app shell and primary content use the full available viewport width rather than a centered fixed-width container.
+- Primary navigation is intentionally minimal: Home, Fonts and Generator; editing and font management are reached through contextual actions.
+- Blank font creation is shared through `src/lib/fontFactory.ts` so Font Library and Manage Fonts create identical starter alphabets.
 
 ## Business Logic
 - New editor characters require a destination mapping before save and protect existing mappings unless replacement is explicitly confirmed.

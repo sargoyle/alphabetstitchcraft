@@ -61,6 +61,7 @@ select:focus-visible {
 .aura-shell {
   min-height: 100vh;
   padding: 20px;
+  width: 100%;
 }
 
 .site-header {
@@ -71,8 +72,8 @@ select:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  max-width: 1180px;
-  margin: 0 auto 28px;
+  width: 100%;
+  margin: 0 0 28px;
   padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -120,8 +121,8 @@ select:focus-visible {
 }
 
 main {
-  max-width: 1180px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .hero-grid,
@@ -210,6 +211,27 @@ main {
 
 .page-heading {
   max-width: 780px;
+}
+
+.font-library-heading {
+  max-width: none;
+  margin-bottom: -6px;
+}
+
+.font-library-heading h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  line-height: 1.12;
+}
+
+.font-library-heading p {
+  max-width: 760px;
+  margin: 0;
+  line-height: 1.42;
+}
+
+.font-library-heading .button {
+  align-self: center;
 }
 
 .page-heading.with-actions,
@@ -323,6 +345,12 @@ main {
 .button.danger {
   color: #240202;
   background: var(--danger);
+}
+
+.nowrap-button {
+  width: auto;
+  min-width: max-content;
+  white-space: nowrap;
 }
 
 .toolbar,
@@ -674,147 +702,6 @@ textarea {
   color: var(--muted);
 }
 
-.docs-shell {
-  display: grid;
-  grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
-  align-items: start;
-  gap: 22px;
-  padding-bottom: 48px;
-}
-
-.docs-sidebar {
-  position: sticky;
-  top: 96px;
-  display: grid;
-  gap: 18px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045)),
-    rgba(8, 16, 13, 0.78);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
-}
-
-.docs-sidebar h1 {
-  margin: 8px 0 0;
-  font-size: 1.45rem;
-}
-
-.docs-sidebar nav {
-  display: grid;
-  gap: 8px;
-}
-
-.docs-sidebar nav a,
-.docs-link-card {
-  display: grid;
-  gap: 5px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.055);
-}
-
-.docs-sidebar nav a:hover,
-.docs-link-card:hover {
-  background: rgba(255, 255, 255, 0.095);
-}
-
-.docs-sidebar small,
-.docs-link-card span {
-  color: var(--muted);
-  line-height: 1.45;
-}
-
-.docs-content,
-.docs-article {
-  min-width: 0;
-}
-
-.docs-article {
-  display: grid;
-  gap: 22px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045)),
-    rgba(8, 16, 13, 0.78);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
-}
-
-.docs-article h1,
-.docs-article h2 {
-  margin: 0;
-}
-
-.docs-article h1 {
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 1.05;
-}
-
-.docs-article section {
-  display: grid;
-  gap: 12px;
-}
-
-.docs-article p,
-.docs-article li {
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-.docs-article ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.docs-index-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
-}
-
-.docs-table {
-  display: block;
-  width: 100%;
-  border-collapse: collapse;
-  overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.92rem;
-}
-
-.docs-table th,
-.docs-table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: left;
-  vertical-align: top;
-}
-
-.docs-table th {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.docs-table td {
-  color: var(--muted);
-}
-
-.docs-table tr:last-child td {
-  border-bottom: 0;
-}
-
-.docs-table code,
-.docs-article code {
-  color: #d6ffee;
-  word-break: break-word;
-}
-
 .code-block {
   max-width: 100%;
   margin: 0;
@@ -829,13 +716,11 @@ textarea {
 
 @media (max-width: 900px) {
   .hero-grid,
-  .workspace-layout,
-  .docs-shell {
+  .workspace-layout {
     grid-template-columns: 1fr;
   }
 
-  .workspace-sidebar,
-  .docs-sidebar {
+  .workspace-sidebar {
     position: static;
   }
 
@@ -908,7 +793,4 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .docs-article {
-    padding: 16px;
-  }
 }

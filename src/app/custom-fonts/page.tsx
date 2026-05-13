@@ -4,46 +4,8 @@ import Link from "next/link";
 import { Download, FileJson, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { FontGridPreview } from "@/components/FontGridPreview";
 import { exportFontJson } from "@/lib/exportUtils";
-import type { FontCategory, StitchCharacter, StitchFont } from "@/lib/fontTypes";
+import { createBlankFont } from "@/lib/fontFactory";
 import { useFonts } from "@/lib/useFonts";
-
-const alphabetKeys = [
-  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  ..."abcdefghijklmnopqrstuvwxyz",
-  ..."0123456789",
-  ".",
-  ",",
-  "!",
-  "?",
-  "'",
-  "-",
-  "&"
-];
-
-function blankCharacter(width = 8, height = 10): StitchCharacter {
-  return {
-    width,
-    height,
-    grid: Array.from({ length: height }, () => "0".repeat(width))
-  };
-}
-
-function createBlankFont(name: string): StitchFont {
-  const now = new Date().toISOString();
-  return {
-    id: crypto.randomUUID(),
-    name,
-    description: "A blank editable alphabet ready for drawing on the character grid.",
-    category: "Block" as FontCategory,
-    defaultHeight: 10,
-    recommendedUse: "Custom lettering alphabets, experiments and personal stitch styles",
-    licence: "User-created public font",
-    isCustom: true,
-    createdAt: now,
-    updatedAt: now,
-    characters: Object.fromEntries(alphabetKeys.map((key) => [key, blankCharacter()]))
-  };
-}
 
 export default function CustomFontsPage() {
   const { fonts, deletedFonts, deleteFont, restoreFont, saveFont, persistence } = useFonts();

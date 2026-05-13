@@ -921,6 +921,51 @@ Acceptance checks:
 - [x] Existing mapped characters are protected from accidental overwrite.
 - [x] Newly mapped characters render correctly in Font Detail, Generator and Editor.
 
+## Phase 18: App Surface Simplification
+
+### 18.1 Remove In-App Docs And Expand Main Layout
+
+- [x] Remove the in-app `/docs` route pages.
+- [x] Remove Docs from the primary app navigation.
+- [x] Remove app-only documentation data helpers.
+- [x] Remove documentation-only CSS selectors from the app stylesheet.
+- [x] Expand the main app shell and header to use the full available screen width.
+- [x] Keep the persistent markdown documentation in `/docs` intact.
+
+Acceptance checks:
+
+- [x] Primary navigation no longer shows Docs.
+- [x] `/docs` is no longer an active app documentation section.
+- [x] Main app content is no longer constrained to a centered fixed-width column.
+
+### 18.2 Add Font Creation And Editing To Font Library
+
+- [x] Add Create New Font to the Fonts page.
+- [x] Reuse the existing blank-font creation model from Manage Fonts.
+- [x] Add Edit actions to Font Library cards.
+- [x] Route Edit actions to the character editor with the selected font.
+- [x] Keep View Alphabet and Use actions available on Font Library cards.
+
+Acceptance checks:
+
+- [x] Users can create a blank font from `/fonts`.
+- [x] Users can edit a font directly from `/fonts`.
+- [x] Font creation remains disabled with the same database sync rules when persistence is unavailable.
+
+### 18.3 Compact Font Library Header And Primary Navigation
+
+- [x] Make the Fonts page heading area more compact.
+- [x] Keep the Create New Font button text on one row.
+- [x] Remove Editor from the primary app navigation.
+- [x] Remove Manage Fonts from the primary app navigation.
+- [x] Keep those routes available through direct links and contextual actions where already used.
+
+Acceptance checks:
+
+- [x] Fonts page header uses less vertical space.
+- [x] Create New Font button does not wrap on desktop.
+- [x] Top navigation shows only Home, Fonts and Generator.
+
 ## Phase 16: Project Documentation Governance
 
 ### 16.1 Rules And Decisions Log
