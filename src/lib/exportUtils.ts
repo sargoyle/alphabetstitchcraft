@@ -1,5 +1,11 @@
 import type { GeneratedPattern, StitchFont } from "./fontTypes";
 
+type PatternCanvasOptions = {
+  cellSize?: number;
+  showGrid?: boolean;
+  showFilled?: boolean;
+};
+
 function downloadJson(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
@@ -18,8 +24,13 @@ function safeFilename(value: string) {
     || "stitch-font";
 }
 
-export function patternToCanvas(pattern: GeneratedPattern, options = { cellSize: 18, showGrid: true }) {
-  const cellSize = options.cellSize;
+export function patternToCanvas(
+  pattern: GeneratedPattern,
+  options: PatternCanvasOptions = { cellSize: 18, showGrid: true, showFilled: true }
+) {
+  const cellSize = options.cellSize ?? 18;
+  const showGrid = options.showGrid ?? true;
+  const showFilled = options.showFilled ?? true;
   const margin = cellSize;
   const canvas = document.createElement("canvas");
   canvas.width = pattern.width * cellSize + margin * 2;
@@ -34,11 +45,11 @@ export function patternToCanvas(pattern: GeneratedPattern, options = { cellSize:
     Array.from(row).forEach((cell, columnIndex) => {
       const x = margin + columnIndex * cellSize;
       const y = margin + rowIndex * cellSize;
-      if (cell === "1") {
+      if (showFilled && cell === "1") {
         ctx.fillStyle = "#08231d";
         ctx.fillRect(x + 2, y + 2, cellSize - 4, cellSize - 4);
       }
-      if (options.showGrid) {
+      if (showGrid) {
         ctx.strokeStyle = "#d6cdbc";
         ctx.lineWidth = 1;
         ctx.strokeRect(x, y, cellSize, cellSize);
@@ -49,8 +60,12 @@ export function patternToCanvas(pattern: GeneratedPattern, options = { cellSize:
   return canvas;
 }
 
-export function exportPatternPng(pattern: GeneratedPattern, filename = "stitch-lettering-pattern.png") {
-  const canvas = patternToCanvas(pattern);
+export function exportPatternPng(
+  pattern: GeneratedPattern,
+  filename = "stitch-lettering-pattern.png",
+  options: PatternCanvasOptions = {}
+) {
+  const canvas = patternToCanvas(pattern, options);
   const link = document.createElement("a");
   link.href = canvas.toDataURL("image/png");
   link.download = filename;

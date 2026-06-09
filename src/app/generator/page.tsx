@@ -8,6 +8,7 @@ import type { GeneratorSettings } from "@/lib/fontTypes";
 import { renderTextToGrid } from "@/lib/renderTextToGrid";
 import { loadGeneratorSettings, loadSelectedFontId, saveGeneratorSettings, saveSelectedFontId } from "@/lib/localStorageUtils";
 import { useFonts } from "@/lib/useFonts";
+import type { GeneratedPattern } from "@/lib/fontTypes";
 
 const initialSettings: GeneratorSettings = {
   text: "HELLO\nSTITCH",
@@ -20,6 +21,29 @@ const initialSettings: GeneratorSettings = {
   showFilled: true,
   zoom: 18
 };
+
+function emptyPattern(overrides: Partial<GeneratedPattern> = {}): GeneratedPattern {
+  return {
+    fontId: "",
+    text: "",
+    letterSpacing: 1,
+    wordSpacing: 3,
+    lineSpacing: 2,
+    alignment: "left",
+    width: 0,
+    height: 0,
+    grid: [],
+    unsupportedCharacters: [],
+    warnings: [],
+    ...overrides
+  };
+}
+
+function formatUnsupportedCharacters(pattern: GeneratedPattern) {
+  return pattern.unsupportedCharacters
+    .map((item) => `${item.character === "\t" ? "tab" : item.character}${item.count > 1 ? ` x${item.count}` : ""}`)
+    .join(", ");
+}
 
 export default function GeneratorPage() {
   const { fonts } = useFonts();
@@ -38,20 +62,21 @@ export default function GeneratorPage() {
   const font = fonts.find((item) => item.id === settings.fontId) ?? fonts[0];
   const pattern = useMemo(() => {
     if (!font) {
-      return {
-        fontId: "",
-        text: "",
-        letterSpacing: 1,
-        wordSpacing: 3,
-        lineSpacing: 2,
-        alignment: "left" as const,
-        width: 0,
-        height: 0,
-        grid: [],
-        unsupportedCharacters: []
-      };
+      return emptyPattern();
     }
-    return renderTextToGrid(settings.text, font, settings);
+    try {
+      return renderTextToGrid(settings.text, font, settings);
+    } catch (error) {
+      return emptyPattern({
+        fontId: font.id,
+        text: settings.text,
+        letterSpacing: settings.letterSpacing,
+        wordSpacing: settings.wordSpacing,
+        lineSpacing: settings.lineSpacing,
+        alignment: settings.alignment,
+        warnings: [error instanceof Error ? error.message : "Pattern settings are invalid."]
+      });
+    }
   }, [font, settings]);
 
   function updateSettings(updates: Partial<GeneratorSettings>) {
@@ -108,8 +133,13 @@ export default function GeneratorPage() {
         </div>
 
         {pattern.unsupportedCharacters.length ? (
-          <p className="warning">Unsupported characters: {pattern.unsupportedCharacters.join(", ")}</p>
+          <p className="warning">Unsupported characters: {formatUnsupportedCharacters(pattern)}</p>
         ) : null}
+        {pattern.warnings?.map((warning) => (
+          <p className="warning" key={warning}>
+            {warning}
+          </p>
+        ))}
 
         <TextPatternPreview
           pattern={pattern}
@@ -117,9 +147,8 @@ export default function GeneratorPage() {
           showFilled={settings.showFilled}
           zoom={settings.zoom}
         />
-        <ExportControls pattern={pattern} />
+        <ExportControls pattern={pattern} showGrid={settings.showGrid} showFilled={settings.showFilled} />
       </section>
     </section>
   );
 }
-

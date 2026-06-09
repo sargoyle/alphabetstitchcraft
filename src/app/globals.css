@@ -457,6 +457,19 @@ textarea {
   background: rgba(255, 255, 255, 0.07);
 }
 
+.backup-list {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.backup-list .button {
+  justify-content: flex-start;
+}
+
 .sync-card,
 .auth-panel {
   display: flex;
@@ -696,6 +709,284 @@ textarea {
   border-radius: 8px;
   color: #ffe0a6;
   background: rgba(243, 179, 90, 0.12);
+}
+
+.design-system-page {
+  padding-bottom: 64px;
+}
+
+.ds-section {
+  display: grid;
+  gap: 14px;
+}
+
+.ds-section h2 {
+  margin: 0;
+}
+
+.ds-token-grid,
+.ds-example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.ds-token-card,
+.ds-participant-area,
+.ds-activity-log {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 14px;
+}
+
+.ds-token-card {
+  display: grid;
+  gap: 8px;
+}
+
+.ds-swatch {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.ds-token-card code {
+  color: var(--muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.ds-button-sm {
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+.ds-button-lg {
+  min-height: 48px;
+  padding: 12px 18px;
+}
+
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.ds-badge-success {
+  color: #041610;
+  background: var(--accent);
+}
+
+.ds-badge-warning {
+  color: #211203;
+  background: var(--accent-2);
+}
+
+.ds-badge-error {
+  color: #240202;
+  background: var(--danger);
+}
+
+.ds-empty-state {
+  display: grid;
+  align-content: center;
+  min-height: 190px;
+  padding: 18px;
+}
+
+.ds-modal-shell {
+  position: relative;
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.ds-modal {
+  width: min(100%, 460px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(7, 18, 15, 0.96);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+  padding: 16px;
+}
+
+.ds-toast {
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.ds-toast-success {
+  color: #051510;
+  background: rgba(69, 246, 189, 0.86);
+}
+
+.ds-toast-warning {
+  color: #241403;
+  background: rgba(243, 179, 90, 0.88);
+}
+
+.ds-toast-error {
+  color: #240202;
+  background: rgba(255, 119, 119, 0.88);
+}
+
+.ds-table-surface {
+  display: grid;
+  gap: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+    rgba(4, 12, 10, 0.86);
+  padding: 16px;
+}
+
+.ds-table-top,
+.ds-layout-board,
+.ds-item-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.ds-table-top {
+  justify-content: space-between;
+}
+
+.ds-layout-board {
+  min-width: min(100%, 720px);
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.ds-display-card {
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+  width: min(150px, 100%);
+  aspect-ratio: 5 / 7;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: var(--text);
+  background:
+    linear-gradient(155deg, rgba(16, 185, 129, 0.18), rgba(243, 179, 90, 0.07)),
+    rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.ds-display-card h3 {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.ds-display-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.ds-display-card.is-selected {
+  box-shadow: 0 0 0 3px rgba(243, 179, 90, 0.48), 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.ds-display-card.is-legal {
+  box-shadow: 0 0 0 3px rgba(69, 246, 189, 0.34), 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.ds-display-card.is-illegal {
+  box-shadow: 0 0 0 3px rgba(255, 119, 119, 0.34), 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.ds-display-card.is-disabled {
+  opacity: 0.5;
+}
+
+.ds-card-footer,
+.ds-prompt-mark {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.ds-stack-slot,
+.ds-metric-badge {
+  display: inline-grid;
+  min-width: 112px;
+  min-height: 72px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  text-align: center;
+}
+
+.ds-stack-slot span,
+.ds-metric-badge span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.ds-stack-slot strong,
+.ds-metric-badge strong {
+  font-size: 1.45rem;
+}
+
+.ds-stack-slot.is-empty {
+  border-style: dashed;
+  opacity: 0.68;
+}
+
+.ds-participant-area.is-active {
+  box-shadow: 0 0 0 3px rgba(69, 246, 189, 0.2);
+}
+
+.ds-activity-log ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.ds-activity-log li {
+  color: var(--muted);
+}
+
+.ds-log-success {
+  color: #8ff8d2 !important;
+}
+
+.ds-log-warning {
+  color: #ffd08b !important;
+}
+
+.ds-log-error {
+  color: #ff9a9a !important;
 }
 
 .status-text {

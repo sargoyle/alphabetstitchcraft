@@ -646,6 +646,10 @@ Acceptance checks:
 
 ## Post-V1 Backlog
 
+- [ ] Admin login and permissions: control who can create, edit, rename and delete fonts while keeping browse, generator and other non-management features available to general users.
+- [x] Public font system hardening: keep public create, edit, rename and delete access, but add security controls for validation, abuse prevention, recovery, monitoring and safe public deployment.
+- [ ] Analytics decision: decide whether the app should use no analytics, privacy-preserving analytics or third-party analytics, and document any privacy, consent, CSP and external-script requirements before implementation.
+
 - [ ] PDF export.
 - [ ] SVG export.
 - [ ] Print-friendly sheets.
@@ -966,6 +970,23 @@ Acceptance checks:
 - [x] Create New Font button does not wrap on desktop.
 - [x] Top navigation shows only Home, Fonts and Generator.
 
+## Phase 19: Public Security Hardening
+
+### 19.1 Public-Safe Security Baseline
+
+- [x] Configure CSP and security headers immediately.
+- [x] Harden the public font editing model while keeping public create, edit, rename and delete access using validation, edit history or backups, restore tools and simple abuse monitoring.
+- [x] Enforce globally unique custom font names in the shared database.
+- [x] Add safeguards for invalid remote font records so they surface as errors needing attention.
+- [x] Review public deployment risks for vandalism, accidental deletion, abuse, recovery and monitoring against the confirmed hardening controls.
+
+Acceptance checks:
+
+- [x] The deployed app has documented CSP and security headers.
+- [x] Public font editing remains available.
+- [x] Public font data has validation, edit history or backups, restore tools and simple abuse monitoring.
+- [x] Duplicate custom font names are rejected or prevented.
+- [x] Invalid remote font records are visible as errors needing attention.
 ## Phase 16: Project Documentation Governance
 
 ### 16.1 Rules And Decisions Log
@@ -1019,3 +1040,126 @@ Acceptance checks:
 
 - [x] Rules are grouped by category.
 - [x] Changelog entries include a date, description and files affected.
+
+## Phase 20: In-App Design System Foundation
+
+### 20.1 Create Live Design System Route
+
+- [x] Create `/design-system` as a standalone development reference route.
+- [x] Add reusable design tokens in `src/design-system/tokens.ts`.
+- [x] Add supporting design-system guidance markdown files.
+- [x] Add reusable base UI components under `src/components/ui`.
+- [x] Add presentational layout components under `src/components/layout`.
+- [x] Add live examples for buttons, panels, badges, modal, empty state, toast, cards, seats, hand, tableau, deck slots, scores and log.
+- [x] Add matching function documentation for the new design-system feature.
+
+Acceptance checks:
+
+- [x] `/design-system` renders live reusable component examples.
+- [x] Existing gameplay/app logic and data flows are not changed.
+- [x] Design-system components are presentational and reusable.
+- [x] The new feature has a matching `/docs/functions` page.
+
+### 20.2 Design System Go-Live And Naming Follow-Up
+
+- [x] Rename the original design-system display components to app-neutral layout component names.
+- [x] Update `/design-system` examples and related function documentation after the component rename.
+- [ ] Before public go-live, hide or protect `/design-system` so it is not exposed as a public-facing page.
+
+Acceptance checks:
+
+- [x] Reusable design-system component names are app-neutral.
+- [ ] `/design-system` remains reachable by direct URL during development.
+- [ ] `/design-system` is hidden or protected before public go-live.
+
+## Phase 21: Test Planning And Automated Test Visibility
+
+### 21.1 Establish Test Planning Documentation
+
+- [x] Create `/docs/tests`.
+- [x] Create `/docs/tests/test-index.md`.
+- [x] Create `/docs/tests/test-maintenance-rules.md`.
+- [x] Create `/docs/tests/test-run-results.md`.
+- [x] Map function requirement documents to current automated coverage and pending coverage.
+
+Acceptance checks:
+
+- [x] Test planning docs exist under `/docs/tests`.
+- [x] Test index identifies automated, pending and manual test areas.
+- [x] Test maintenance rules explain how tests stay aligned with function docs.
+- [x] Test run results record the latest validation commands and outcome.
+
+### 21.2 Add First Utility Test Expansion
+
+- [x] Add automated tests for grid utility validation, clear, resize, set and toggle behaviour.
+- [x] Add automated tests for default font data validity, unique font IDs, single-character keys and blank font creation.
+- [x] Update the utility test runner to include the new test files.
+- [x] Run the automated utility test suite and record results.
+
+Acceptance checks:
+
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] No production behaviour is changed.
+
+### 21.3 Add Renderer And Grid Gap Visibility Tests
+
+- [x] Add renderer visibility tests for whitespace-only text.
+- [x] Add renderer visibility tests for unsupported characters and repeated unsupported characters.
+- [x] Add renderer visibility tests for invalid and very large spacing values.
+- [x] Add renderer visibility tests for very long text input.
+- [x] Add grid consistency tests for generated row widths, line spacing rows and alignment content preservation.
+- [x] Add utility-level export grid visibility consistency test.
+- [x] Update related test-plan documents, test index and run results.
+
+Acceptance checks:
+
+- [x] Confirmed known gaps are documented as evidence without production fixes.
+- [x] Passing utility behaviours are asserted with automated tests.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+
+### 21.4 Fix Confirmed Renderer Gaps
+
+- [x] Treat whitespace-only text as empty input in the renderer.
+- [x] Report unsupported characters with counts.
+- [x] Reject negative spacing values at renderer level.
+- [x] Reject very large out-of-range spacing values at renderer level.
+- [x] Add large-pattern warnings for very long generated output without enforcing a fixed text or grid limit.
+- [x] Update Generator warning display for counted unsupported characters and renderer warnings.
+- [x] Update renderer tests from evidence-only checks to strict regression assertions.
+- [x] Update related function docs, test plans, known-gaps backlog, test run results and changelog.
+
+Acceptance checks:
+
+- [x] Whitespace-only text returns width `0`, height `0` and an empty grid.
+- [x] Repeated unsupported characters return counted entries.
+- [x] Invalid renderer spacing values are rejected.
+- [x] Very long generated output returns a warning.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+
+### 21.5 Verify And Fix Generator Preview Export Parity
+
+- [x] Add PNG export parity tests for grid visibility, filled-cell visibility, safe empty canvas and provided grid drawing.
+- [x] Add JSON export parity tests for generated pattern object preservation and empty pattern data.
+- [x] Pass Generator preview grid and filled-stitch visibility settings into PNG export.
+- [x] Confirm Generator preview and export controls receive the same `GeneratedPattern` object.
+- [x] Create export PNG and JSON test-plan documents.
+- [x] Update related function docs, test index, run results, known-gaps backlog and changelog.
+
+Acceptance checks:
+
+- [x] PNG export uses the provided generated pattern grid.
+- [x] PNG export honours grid visibility at utility level.
+- [x] PNG export honours filled-stitch visibility at utility level.
+- [x] JSON export preserves generated pattern grid, dimensions and warnings.
+- [x] Empty pattern export utilities handle data safely.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+
+
+
+
+

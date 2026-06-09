@@ -51,7 +51,11 @@ export type GeneratedPattern = {
   width: number;
   height: number;
   grid: string[];
-  unsupportedCharacters: string[];
+  unsupportedCharacters: Array<{
+    character: string;
+    count: number;
+  }>;
+  warnings?: string[];
 };
 
 export type ValidationResult = {

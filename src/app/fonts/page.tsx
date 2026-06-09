@@ -34,6 +34,10 @@ export default function FontsPage() {
 
     const name = window.prompt("Name your new font", "New stitch alphabet");
     if (!name?.trim()) return;
+    if (fonts.some((font) => font.name.trim().toLowerCase() === name.trim().toLowerCase())) {
+      window.alert("A font with this name already exists.");
+      return;
+    }
     saveFont(createBlankFont(name.trim()));
   }
 

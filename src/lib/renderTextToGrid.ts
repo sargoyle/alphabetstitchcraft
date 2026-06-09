@@ -8,8 +8,34 @@ const DEFAULT_OPTIONS: TextRenderOptions = {
   placeholderUnsupported: true
 };
 
+const OPTION_BOUNDS = {
+  letterSpacing: { min: 0, max: 8 },
+  wordSpacing: { min: 1, max: 16 },
+  lineSpacing: { min: 0, max: 12 }
+} as const;
+
+const LARGE_PATTERN_WARNING_WIDTH = 1000;
+const LARGE_PATTERN_WARNING_HEIGHT = 250;
+
 function blank(width: number): string {
   return "0".repeat(Math.max(0, width));
+}
+
+function validateSpacingOption(name: keyof typeof OPTION_BOUNDS, value: number) {
+  const bounds = OPTION_BOUNDS[name];
+  if (!Number.isFinite(value) || !Number.isInteger(value) || value < bounds.min || value > bounds.max) {
+    throw new RangeError(`${name} must be an integer from ${bounds.min} to ${bounds.max}.`);
+  }
+}
+
+function validateOptions(options: TextRenderOptions) {
+  validateSpacingOption("letterSpacing", options.letterSpacing);
+  validateSpacingOption("wordSpacing", options.wordSpacing);
+  validateSpacingOption("lineSpacing", options.lineSpacing);
+}
+
+function unsupportedCounts(unsupported: Map<string, number>) {
+  return Array.from(unsupported.entries()).map(([character, count]) => ({ character, count }));
 }
 
 function placeholder(height: number): StitchCharacter {
@@ -31,7 +57,7 @@ function appendBlank(rows: string[], width: number): string[] {
   return rows.map((row) => row + blank(width));
 }
 
-function renderLine(line: string, font: StitchFont, options: TextRenderOptions, unsupported: Set<string>) {
+function renderLine(line: string, font: StitchFont, options: TextRenderOptions, unsupported: Map<string, number>) {
   const chars = Array.from(line);
   const lineHeight = Math.max(font.defaultHeight, ...Object.values(font.characters).map((char) => char.height));
   let rows = Array.from({ length: lineHeight }, () => "");
@@ -47,7 +73,7 @@ function renderLine(line: string, font: StitchFont, options: TextRenderOptions, 
     const character = font.characters[char] ?? font.characters[char.toUpperCase()];
     const rendered = character ?? placeholder(lineHeight);
 
-    if (!character) unsupported.add(char);
+    if (!character) unsupported.set(char, (unsupported.get(char) ?? 0) + 1);
     rows = appendCharacter(rows, rendered, lineHeight);
     renderedAny = true;
 
@@ -74,7 +100,9 @@ export function renderTextToGrid(
   renderOptions: Partial<TextRenderOptions> = {}
 ): GeneratedPattern {
   const options = { ...DEFAULT_OPTIONS, ...renderOptions };
-  if (text.length === 0) {
+  validateOptions(options);
+
+  if (text.trim().length === 0) {
     return {
       fontId: font.id,
       text,
@@ -85,11 +113,12 @@ export function renderTextToGrid(
       width: 0,
       height: 0,
       grid: [],
-      unsupportedCharacters: []
+      unsupportedCharacters: [],
+      warnings: []
     };
   }
 
-  const unsupported = new Set<string>();
+  const unsupported = new Map<string, number>();
   const sourceLines = text.split(/\r?\n/);
   const renderedLines = sourceLines.map((line) => renderLine(line, font, options, unsupported));
   const width = renderedLines.reduce((max, rows) => Math.max(max, rows[0]?.length ?? 0), 0);
@@ -102,6 +131,13 @@ export function renderTextToGrid(
     }
   });
 
+  const warnings: string[] = [];
+  if (width > LARGE_PATTERN_WARNING_WIDTH || grid.length > LARGE_PATTERN_WARNING_HEIGHT) {
+    warnings.push(
+      `Large pattern generated: ${width} x ${grid.length} stitches. Preview and export may be slower than usual.`
+    );
+  }
+
   return {
     fontId: font.id,
     text,
@@ -112,6 +148,7 @@ export function renderTextToGrid(
     width,
     height: grid.length,
     grid,
-    unsupportedCharacters: Array.from(unsupported)
+    unsupportedCharacters: unsupportedCounts(unsupported),
+    warnings
   };
 }

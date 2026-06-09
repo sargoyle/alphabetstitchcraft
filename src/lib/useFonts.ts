@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { deleteRemoteFont, loadRemoteFonts, saveRemoteFont } from "./fontPersistence";
+import {
+  deleteRemoteFont,
+  loadRemoteFontBackups,
+  loadRemoteFontResult,
+  restoreRemoteFontBackup,
+  saveRemoteFont,
+  type RemoteFontBackup
+} from "./fontPersistence";
 import { defaultFonts } from "./fonts";
 import type { StitchFont } from "./fontTypes";
 import {
@@ -17,15 +24,18 @@ type PersistenceState = {
   mode: "loading" | "remote" | "unconfigured" | "error";
   message: string;
   canWrite: boolean;
+  warnings: string[];
 };
 
 export function useFonts() {
   const [savedFonts, setSavedFonts] = useState<StitchFont[]>([]);
   const [deletedFontIds, setDeletedFontIds] = useState<string[]>([]);
+  const [fontBackups, setFontBackups] = useState<Record<string, RemoteFontBackup[]>>({});
   const [persistence, setPersistence] = useState<PersistenceState>({
     mode: "loading",
     message: "Checking font storage...",
-    canWrite: false
+    canWrite: false,
+    warnings: []
   });
 
   useEffect(() => {
@@ -65,6 +75,20 @@ export function useFonts() {
     };
   }
 
+  async function refreshBackups(fontsToLoad: StitchFont[]) {
+    const remoteFonts = fontsToLoad.filter((font) => isUuid(font.id));
+    const entries = await Promise.all(
+      remoteFonts.map(async (font) => {
+        try {
+          return [font.id, await loadRemoteFontBackups(font.id)] as const;
+        } catch {
+          return [font.id, []] as const;
+        }
+      })
+    );
+    setFontBackups(Object.fromEntries(entries));
+  }
+
   async function refresh() {
     const localFonts = loadCustomFonts();
     const localDeletedFontIds = loadDeletedFontIds();
@@ -75,7 +99,8 @@ export function useFonts() {
       setPersistence({
         mode: "unconfigured",
         message: "Database sync is not configured. Add Supabase environment values before creating or editing fonts.",
-        canWrite: false
+        canWrite: false,
+        warnings: []
       });
       return;
     }
@@ -85,20 +110,31 @@ export function useFonts() {
         await Promise.allSettled(localFonts.map((font) => saveRemoteFont(font)));
       }
 
-      const remoteFonts = await loadRemoteFonts();
-      setSavedFonts(remoteFonts ?? []);
+      const remoteResult = await loadRemoteFontResult();
+      const remoteFonts = remoteResult?.fonts ?? [];
+      setSavedFonts(remoteFonts);
       setDeletedFontIds(localDeletedFontIds);
+      await refreshBackups(remoteFonts);
+      const warnings =
+        remoteResult?.invalidFonts.map(
+          (font) => `${font.name || font.id} could not be loaded: ${font.errors.join(" ")}`
+        ) ?? [];
       setPersistence({
         mode: "remote",
-        message: "Public fonts are saved to the database. Anyone using the site can create, edit, rename or delete them.",
-        canWrite: true
+        message: warnings.length
+          ? `Public fonts are saved to the database. ${warnings.length} invalid font record${warnings.length === 1 ? "" : "s"} need attention.`
+          : "Public fonts are saved to the database. Anyone using the site can create, edit, rename or delete them.",
+        canWrite: true,
+        warnings
       });
     } catch (error) {
       setSavedFonts([]);
+      setFontBackups({});
       setPersistence({
         mode: "error",
         message: error instanceof Error ? error.message : "Database sync failed. Font changes are paused until it reconnects.",
-        canWrite: false
+        canWrite: false,
+        warnings: []
       });
     }
   }
@@ -114,8 +150,8 @@ export function useFonts() {
         window.alert(message);
         return;
       }
-    } catch {
-      const message = "Database save failed. Font changes were not saved.";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
       window.alert(message);
       return;
@@ -149,6 +185,25 @@ export function useFonts() {
     refresh();
   }
 
+  async function restoreFontBackup(backupId: string) {
+    try {
+      const restored = await restoreRemoteFontBackup(backupId);
+      if (!restored) {
+        const message = "Database restore failed. The backup was not restored.";
+        setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
+        window.alert(message);
+        return;
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Database restore failed. The backup was not restored.";
+      setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
+      window.alert(message);
+      return;
+    }
+
+    refresh();
+  }
+
   function restoreEditableFont(fontId: string) {
     restoreFont(fontId);
     refresh();
@@ -165,9 +220,11 @@ export function useFonts() {
     savedFonts,
     deletedFonts,
     persistence,
+    fontBackups,
     refresh,
     saveFont: saveEditableFont,
     deleteFont: deleteEditableFont,
+    restoreFontBackup,
     restoreFont: restoreEditableFont,
     resetFontEdits: resetEditableFont
   };

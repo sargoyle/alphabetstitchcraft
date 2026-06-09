@@ -70,7 +70,7 @@ const unsupported = renderTextToGrid("A~", blockFont, {
   lineSpacing: 2,
   alignment: "left"
 });
-assert.deepEqual(unsupported.unsupportedCharacters, ["~"]);
+assert.deepEqual(unsupported.unsupportedCharacters, [{ character: "~", count: 1 }]);
 assert.equal(unsupported.width, 13);
 assertGridShape(unsupported.grid, 13, 7);
 

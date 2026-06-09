@@ -5,7 +5,13 @@ import { ClipboardCopy, Download, FileJson } from "lucide-react";
 import type { GeneratedPattern } from "@/lib/fontTypes";
 import { copyDesignSize, exportPatternJson, exportPatternPng } from "@/lib/exportUtils";
 
-export function ExportControls({ pattern }: { pattern: GeneratedPattern }) {
+type ExportControlsProps = {
+  pattern: GeneratedPattern;
+  showGrid: boolean;
+  showFilled: boolean;
+};
+
+export function ExportControls({ pattern, showGrid, showFilled }: ExportControlsProps) {
   const [message, setMessage] = useState("");
   const canExport = pattern.width > 0 && pattern.height > 0 && pattern.text.trim().length > 0;
 
@@ -17,7 +23,7 @@ export function ExportControls({ pattern }: { pattern: GeneratedPattern }) {
         disabled={!canExport}
         onClick={() => {
           try {
-            exportPatternPng(pattern);
+            exportPatternPng(pattern, "stitch-lettering-pattern.png", { showGrid, showFilled });
             setMessage("PNG exported.");
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Export failed.");

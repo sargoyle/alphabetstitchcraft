@@ -104,7 +104,7 @@ export type Database = {
       custom_fonts: {
         Row: {
           id: string;
-          owner_id: string;
+          owner_id: string | null;
           workspace_id: string | null;
           base_default_font_id: string | null;
           base_custom_font_id: string | null;
@@ -119,7 +119,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          owner_id: string;
+          owner_id?: string | null;
           workspace_id?: string | null;
           base_default_font_id?: string | null;
           base_custom_font_id?: string | null;
@@ -147,7 +147,7 @@ export type Database = {
         Row: {
           id: string;
           font_id: string;
-          owner_id: string;
+          owner_id: string | null;
           character_key: string;
           width: number;
           height: number;
@@ -158,7 +158,7 @@ export type Database = {
         Insert: {
           id?: string;
           font_id: string;
-          owner_id: string;
+          owner_id?: string | null;
           character_key: string;
           width: number;
           height: number;
@@ -171,6 +171,29 @@ export type Database = {
           height?: number;
           grid?: Json;
           updated_at?: string;
+        };
+      };
+      custom_font_backups: {
+        Row: {
+          id: string;
+          font_id: string;
+          action: "update" | "delete" | "restore";
+          font_name: string;
+          font_snapshot: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          font_id: string;
+          action: "update" | "delete" | "restore";
+          font_name: string;
+          font_snapshot: Json;
+          created_at?: string;
+        };
+        Update: {
+          action?: "update" | "delete" | "restore";
+          font_name?: string;
+          font_snapshot?: Json;
         };
       };
       generated_patterns: {
