@@ -1333,3 +1333,28 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+## Phase 25: Font Editor UI Refinement
+
+### 25.1 Compact Edit Screen Layout
+
+- [x] Replace the Font Editor character dropdown with compact sidebar character tiles.
+- [x] Keep the selected character visibly highlighted.
+- [x] Move the New Character workflow into a condensed modal dialog.
+- [x] Support blank-character creation and duplicate-character creation from the modal.
+- [x] Keep font deletion in a visually separated Danger Zone.
+- [x] Move width and height controls beside the editable grid on desktop.
+- [x] Separate Reset, Clear and Save Character into a clean editor footer row.
+- [x] Preserve existing save, reset, clear, resize, delete and duplicate-character behaviour.
+- [x] Update Character Editor function documentation.
+- [x] Add source-level automated coverage for the editor UI structure.
+
+Acceptance checks:
+
+- [x] Font Editor visually follows the uploaded compact sidebar and editor-panel mockup.
+- [x] New Character opens as a pop-up/modal rather than a large always-visible sidebar form.
+- [x] Save is unavailable for a new character until a destination character is selected.
+- [x] Editor action buttons do not overlap width and height inputs.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

@@ -4,6 +4,43 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Font Editor UI Refinement Run
+
+#### Scope
+
+- Updated the Font Editor screen to use compact sidebar character tiles.
+- Moved New Character setup into a condensed modal dialog.
+- Reworked the character editor panel so the grid, dimension controls and action footer match the uploaded layout direction.
+- Added source-level editor UI regression coverage.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Added `tests/editorUiSource.test.ts`.
+- Updated `tests/runTests.ts`.
+- Automated output included `editor UI source tests passed.` and `All utility tests passed.`
+
+#### Manual Checks Still Required
+
+- Open `/editor?font=block-needle-5x7`.
+- Confirm sidebar character tiles, New Character modal, dimension controls and editor action footer match the uploaded mockup direction.
+- Confirm New Character remains disabled until a destination character is entered.
+- Confirm save, reset, clear and delete behaviours still work with the updated layout.
+
 ### Block Needle Name Variant Cleanup Run
 
 #### Scope

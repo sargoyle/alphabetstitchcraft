@@ -12,6 +12,7 @@ This index maps confirmed functional requirements to current automated tests, pe
 | Alignment | `/docs/functions/alignment-rules.md` | `tests/renderTextToGrid.test.ts`, `tests/renderVisibility.test.ts` | Partial | Covered through renderer integration. Stitched-content preservation is covered by `GRID-003`. Odd centre-padding rule still needs a direct regression once implementation is updated to the confirmed rule. |
 | Font data model | `/docs/functions/font-data-model.md` | `tests/fontData.test.ts` | Partial | Covers default font validity, unique IDs, single-character keys and blank font shape. Remote invalid font reporting still needs integration coverage. |
 | Character/grid utilities | `/docs/functions/character-grid.md`, `/docs/functions/font-data-model.md` | `tests/gridUtils.test.ts` | Partial | Covers validation, clear, resize, set and toggle helpers. UI keyboard navigation and read-only non-button cells need browser/component tests. |
+| Character editor UI | `/docs/functions/character-editor.md` | `tests/editorUiSource.test.ts` | Partial | Source-level guard covers the editor sidebar tiles, new-character dialog, danger zone, dimension panel and footer action row. Visual/browser interaction still needs manual or browser coverage. |
 | Local storage | `/docs/functions/local-storage.md` | `tests/localStorageUtils.test.ts` | Partial | Covers missing/corrupt storage fallback, custom fonts, deleted IDs and generator settings. Database persistence is out of this utility test scope. |
 | Export | `/docs/functions/export-png.md`, `/docs/functions/export-json.md` | `tests/exportUtils.test.ts` | Partial | Covers canvas sizing, grid drawing on/off, filled drawing on/off, PNG trigger, JSON payload parity, safe empty export utilities and copy size. Full visual browser parity remains manual. |
 
@@ -28,7 +29,7 @@ This index maps confirmed functional requirements to current automated tests, pe
 ## Manual Review Areas For Now
 
 - Font Library create/edit/rename/delete workflows.
-- Character editor save confirmation and local editor status.
+- Character editor layout against the uploaded mockup, including new-character modal usability.
 - Responsive layout and text clipping.
 - `/design-system` visual review.
 - Public security hardening controls.

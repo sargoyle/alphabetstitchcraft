@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-01: Refined the Font Editor UI with sidebar character tiles, a condensed New Character modal, compact dimension controls beside the grid and a separated editor action footer. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `tests/runTests.ts`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-01: Updated the homepage headline to say `Create beautiful cross-stitch lettering patterns in minutes.` Files affected: `src/app/page.tsx`, `docs/tasks.md`.
 - 2026-07-01: Reduced the vertical spacing between the homepage How it works section and copyright footer. Files affected: `src/app/globals.css`, `docs/tasks.md`.
 - 2026-07-01: Further compacted the homepage by removing the remaining hero CTA button and reducing header, hero and workflow spacing. Files affected: `src/app/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.

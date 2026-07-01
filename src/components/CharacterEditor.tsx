@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Eraser, RotateCcw, Save } from "lucide-react";
+import { Eraser, Info, RotateCcw, Save } from "lucide-react";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { clearCharacter, resizeCharacter, setGridCell, toggleGridCell, validateCharacter } from "@/lib/gridUtils";
 import { CharacterGrid } from "./CharacterGrid";
@@ -56,8 +56,8 @@ export function CharacterEditor({
   }
 
   return (
-    <div className="editor-panel">
-      <div className="editor-heading">
+    <div className="editor-panel character-editor-shell">
+      <div className="editor-heading character-editor-heading">
         <div>
           <span className="eyebrow">{headingLabel}</span>
           <h2>{characterKey}</h2>
@@ -67,57 +67,80 @@ export function CharacterEditor({
         </span>
       </div>
 
-      <CharacterGrid
-        character={draft}
-        label={`Editable character ${characterKey}`}
-        editable
-        showGrid
-        cellSize={28}
-        onToggle={(row, column) => setDraft((current) => toggleGridCell(current, row, column))}
-        onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
-      />
+      <div className="editor-divider" />
 
-      <div className="control-panel compact">
-        <label>
-          Width
-          <input
-            type="number"
-            min={1}
-            max={24}
-            value={draft.width}
-            onChange={(event) => setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))}
+      <div className="character-editor-body">
+        <div className="character-grid-stage">
+          <CharacterGrid
+            character={draft}
+            label={`Editable character ${characterKey}`}
+            editable
+            showGrid
+            cellSize={28}
+            onToggle={(row, column) => setDraft((current) => toggleGridCell(current, row, column))}
+            onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
           />
-        </label>
-        <label>
-          Height
-          <input
-            type="number"
-            min={1}
-            max={24}
-            value={draft.height}
-            onChange={(event) => setDraft((current) => resizeCharacter(current, current.width, Number(event.target.value)))}
-          />
-        </label>
+        </div>
+
+        <aside className="dimension-editor-panel" aria-label="Character dimensions">
+          <div className="control-panel dimension-controls">
+            <label>
+              Width
+              <input
+                type="number"
+                min={1}
+                max={24}
+                value={draft.width}
+                onChange={(event) =>
+                  setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))
+                }
+              />
+            </label>
+            <label>
+              Height
+              <input
+                type="number"
+                min={1}
+                max={24}
+                value={draft.height}
+                onChange={(event) =>
+                  setDraft((current) => resizeCharacter(current, current.width, Number(event.target.value)))
+                }
+              />
+            </label>
+          </div>
+          <p className="editor-help-card">
+            <Info aria-hidden="true" size={16} />
+            Width and height define the stitch grid size for this character.
+          </p>
+        </aside>
       </div>
 
       {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
       {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
-      {saveStatus ? <p className={saveStatus.type === "success" ? "success-message" : "warning"}>{saveStatus.message}</p> : null}
 
-      <div className="button-row editor-actions">
-        <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
-          <Eraser aria-hidden="true" size={17} />
-          Clear
-        </button>
-        <button className="button secondary" type="button" onClick={() => setDraft(originalCharacter)}>
-          <RotateCcw aria-hidden="true" size={17} />
-          Reset
-        </button>
-        <button className="button primary" type="button" disabled={cannotSave} onClick={handleSave}>
+      <div className="editor-footer">
+        <div className="button-row editor-actions">
+          <button className="button secondary" type="button" onClick={() => setDraft(originalCharacter)}>
+            <RotateCcw aria-hidden="true" size={17} />
+            Reset
+          </button>
+          <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
+            <Eraser aria-hidden="true" size={17} />
+            Clear
+          </button>
+        </div>
+        <button className="button primary save-character-button" type="button" disabled={cannotSave} onClick={handleSave}>
           <Save aria-hidden="true" size={17} />
           {saveLabel}
         </button>
       </div>
+
+      {saveStatus ? (
+        <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"}>
+          {saveStatus.message}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Plus, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { cloneFont } from "@/lib/gridUtils";
@@ -30,6 +31,7 @@ export function EditorClient() {
   const [sourceCharacterKey, setSourceCharacterKey] = useState("");
   const [destinationCharacterKey, setDestinationCharacterKey] = useState("");
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
+  const [newCharacterOpen, setNewCharacterOpen] = useState(false);
   const activeKey = characterKeys.includes(characterKey) ? characterKey : characterKeys[0];
   const destinationKey = firstCharacter(destinationCharacterKey);
   const destinationExists = Boolean(destinationKey && selectedFont?.characters[destinationKey]);
@@ -67,6 +69,7 @@ export function EditorClient() {
     setSourceCharacterKey("");
     setDestinationCharacterKey("");
     setReplaceExistingCharacter(false);
+    setNewCharacterOpen(false);
     return true;
   }
 
@@ -86,13 +89,8 @@ export function EditorClient() {
   }
 
   return (
-    <section className="workspace-layout">
-      <aside className="workspace-sidebar">
-        <div className="page-heading compact-heading">
-          <span className="eyebrow">Character editor</span>
-          <h1>Edit cells</h1>
-          <p>Edit any alphabet directly, then reuse your saved version in the generator.</p>
-        </div>
+    <section className="editor-workspace">
+      <aside className="editor-sidebar" aria-label="Font editor controls">
         <label>
           Font
           <select
@@ -103,6 +101,7 @@ export function EditorClient() {
               setSourceCharacterKey("");
               setDestinationCharacterKey("");
               setReplaceExistingCharacter(false);
+              setNewCharacterOpen(false);
             }}
           >
             {fonts.map((font) => (
@@ -112,104 +111,136 @@ export function EditorClient() {
             ))}
           </select>
         </label>
-        <label>
-          Character
-          <select
-            value={activeKey}
-            onChange={(event) => {
-              setCharacterKey(event.target.value);
+
+        <div className="character-picker" aria-label="Characters">
+          <span className="eyebrow">Characters</span>
+          <div className="character-button-grid">
+            {characterKeys.map((key) => (
+              <button
+                className={key === activeKey && !creatingCharacter ? "character-tile is-active" : "character-tile"}
+                key={key}
+                type="button"
+                onClick={() => {
+                  setCharacterKey(key);
+                  setCreatingCharacter(false);
+                  setNewCharacterOpen(false);
+                }}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+          <button
+            className="button secondary new-character-button"
+            type="button"
+            onClick={() => {
               setCreatingCharacter(false);
+              setSourceCharacterKey("");
+              setDestinationCharacterKey("");
+              setReplaceExistingCharacter(false);
+              setNewCharacterOpen(true);
             }}
           >
-            {characterKeys.map((key) => (
-              <option key={key}>{key}</option>
-            ))}
-          </select>
-        </label>
-        <div className="tool-card compact-tool-card">
-          <div className="card-topline">
+            <Plus aria-hidden="true" size={17} />
+            New Character
+          </button>
+        </div>
+
+        <div className="danger-zone">
+          <span className="eyebrow">Danger zone</span>
+          <p>Delete this font and all of its characters permanently.</p>
+          <button className="button danger" type="button" onClick={removeSelectedFont}>
+            <Trash2 aria-hidden="true" size={17} />
+            Delete Font...
+          </button>
+        </div>
+      </aside>
+
+      {newCharacterOpen ? (
+        <div className="modal-backdrop" role="presentation">
+          <div
+            className="new-character-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-character-title"
+          >
+            <button
+              className="icon-button modal-close"
+              type="button"
+              aria-label="Close new character dialog"
+              onClick={() => setNewCharacterOpen(false)}
+            >
+              <X aria-hidden="true" size={18} />
+            </button>
             <span className="eyebrow">New character</span>
-          </div>
-          <h2>Duplicate or start blank</h2>
-          <p>Create a new mapped character from an existing letter or a blank grid.</p>
-          <div className="control-panel">
-            <label>
-              Start from
-              <select
-                value={sourceCharacterKey}
-                onChange={(event) => {
-                  setSourceCharacterKey(event.target.value);
-                  setCreatingCharacter(true);
-                }}
-              >
-                <option value="">Blank character</option>
-                {characterKeys.map((key) => (
-                  <option key={key} value={key}>
-                    Duplicate {key}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              New character
-              <input
-                value={destinationCharacterKey}
-                onChange={(event) => {
-                  setDestinationCharacterKey(firstCharacter(event.target.value));
-                  setReplaceExistingCharacter(false);
-                  setCreatingCharacter(true);
-                }}
-                placeholder="Type one character"
-                aria-describedby="new-character-help"
-              />
-            </label>
-            <p id="new-character-help" className="form-hint">
-              Save is available after you choose an unmapped character.
-            </p>
-            {destinationExists ? (
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={replaceExistingCharacter}
-                  onChange={(event) => setReplaceExistingCharacter(event.target.checked)}
-                />
-                Replace existing {destinationKey}
+            <h2 id="new-character-title">Duplicate or start blank</h2>
+            <p>Create a new mapped character from an existing letter or a blank grid.</p>
+            <div className="control-panel">
+              <label>
+                Start from
+                <select
+                  value={sourceCharacterKey}
+                  onChange={(event) => {
+                    setSourceCharacterKey(event.target.value);
+                    setCreatingCharacter(true);
+                  }}
+                >
+                  <option value="">Blank character</option>
+                  {characterKeys.map((key) => (
+                    <option key={key} value={key}>
+                      Duplicate {key}
+                    </option>
+                  ))}
+                </select>
               </label>
-            ) : null}
-            <div className="button-row">
-              <button
-                className="button secondary"
-                type="button"
-                onClick={() => {
-                  setCreatingCharacter(true);
-                  setSourceCharacterKey("");
-                  setDestinationCharacterKey("");
-                  setReplaceExistingCharacter(false);
-                }}
-              >
-                Start blank
-              </button>
-              <button
-                className="button secondary"
-                type="button"
-                onClick={() => {
-                  setCreatingCharacter(false);
-                  setSourceCharacterKey("");
-                  setDestinationCharacterKey("");
-                  setReplaceExistingCharacter(false);
-                }}
-              >
-                Cancel
-              </button>
+              <label>
+                New character
+                <input
+                  value={destinationCharacterKey}
+                  onChange={(event) => {
+                    setDestinationCharacterKey(firstCharacter(event.target.value));
+                    setReplaceExistingCharacter(false);
+                    setCreatingCharacter(true);
+                  }}
+                  placeholder="Type one character"
+                  aria-describedby="new-character-help"
+                />
+              </label>
+              <p id="new-character-help" className="form-hint">
+                Save is available after you choose an unmapped character.
+              </p>
+              {destinationExists ? (
+                <label className="checkbox-row">
+                  <input
+                    type="checkbox"
+                    checked={replaceExistingCharacter}
+                    onChange={(event) => setReplaceExistingCharacter(event.target.checked)}
+                  />
+                  Replace existing {destinationKey}
+                </label>
+              ) : null}
+              <div className="button-row">
+                <button
+                  className="button primary"
+                  type="button"
+                  disabled={!destinationKey || (destinationExists && !replaceExistingCharacter)}
+                  onClick={() => {
+                    setCreatingCharacter(true);
+                    setNewCharacterOpen(false);
+                  }}
+                >
+                  {sourceCharacterKey ? "Duplicate character" : "Start blank"}
+                </button>
+                <button className="button secondary" type="button" onClick={() => setNewCharacterOpen(false)}>
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <button className="button danger" type="button" onClick={removeSelectedFont}>
-          Delete font
-        </button>
-      </aside>
+      ) : null}
 
-      <section className="workspace-main">
+      <section className="editor-main">
         <CharacterEditor
           key={`${selectedFont.id}-${creatingCharacter ? `new-${sourceCharacterKey || "blank"}` : activeKey}`}
           characterKey={activeEditorKey}

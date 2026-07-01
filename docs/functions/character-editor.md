@@ -10,10 +10,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Component: `EditorClient` in `src/app/editor/EditorClient.tsx`
 - Component: `CharacterEditor` in `src/components/CharacterEditor.tsx`
 - Component: `CharacterGrid` in `src/components/CharacterGrid.tsx`
+- UI state: `newCharacterOpen`, `creatingCharacter`, `sourceCharacterKey`, `destinationCharacterKey`, `replaceExistingCharacter`
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
 - Inline status message: `Font changes saved successfully.`
+- UI pattern: Sidebar font selector, character tile picker, compact new-character dialog, danger zone delete panel, editor footer action row.
 
 
 ## Decision Required
@@ -33,6 +35,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Draft grid edits.
 - Width and height values.
 - Clear, reset, save and delete actions.
+- New Character button action.
+- Modal close and cancel actions.
 
 ## Outputs
 
@@ -43,6 +47,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Save-disabled warning where applicable.
 - Inline save success or failure status.
 - Font delete request.
+- Sidebar character picker with active selected state.
+- New-character modal for blank or duplicated character setup.
+- Compact dimension controls beside the editable grid.
 
 ## State Transitions
 
@@ -51,11 +58,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 3. `CharacterEditor` receives the active character as a draft.
 4. User edits cells, resizes, clears or resets draft.
 5. Validation runs against draft.
-6. Save either updates existing character or writes a new destination character.
-7. Updated font is saved through `useFonts().saveFont()`.
-8. Save success is returned only after the database save and font refresh complete.
-9. Editor shows an inline success message when save succeeds or a local failure status when save fails.
-10. Editor returns to normal character-editing mode after saving a new character.
+6. User may open New Character, choose a blank or duplicated source, choose a destination character, then close the dialog into character creation mode.
+7. Save either updates existing character or writes a new destination character.
+8. Updated font is saved through `useFonts().saveFont()`.
+9. Save success is returned only after the database save and font refresh complete.
+10. Editor shows an inline success message when save succeeds or a local failure status when save fails.
+11. Editor returns to normal character-editing mode after saving a new character.
 
 ## Rules and Requirements
 
@@ -73,6 +81,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Database save failures must show local editor status. | Confirmed | Implemented | `CharacterEditor` shows local failure status when `onSave()` returns `false` or throws. Existing hook alerts remain in place. |
 | Users must be able to delete fonts from the editor. | Confirmed | Implemented | Delete font button is currently available and user confirmed this should remain. |
 | Any visible font can be edited under the current public shared model. | Confirmed | Implemented | User confirmed editing any visible font is acceptable. |
+| Character selection should be compact and scannable. | Assumed | Implemented | Current editor uses sidebar character tiles instead of a full-width character dropdown. |
+| New-character creation should use a condensed pop-up/modal rather than permanently occupying sidebar space. | Confirmed | Implemented | User requested a condensed version as a pop-up or similar. |
+| Width and height controls should be close to the editable grid without overlapping action buttons. | Confirmed | Implemented | Current editor places dimension controls beside the grid and actions in a separated footer row. |
 
 ## Negative Rules
 
@@ -81,6 +92,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not save invalid character dimensions or rows.
 - Must not mutate the selected font object directly without cloning.
 - Must not lose the selected font after save.
+- Must not leave the full new-character form permanently expanded on the editor screen.
+- Must not let editor action buttons overlap width or height controls.
 
 ## Acceptance Criteria
 
@@ -94,6 +107,10 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given a character is saved successfully, when the save completes, then an inline confirmation message is shown in the editor.
 - Given a database save fails, when the save attempt finishes, then a local editor status message explains that the save failed.
 - Given Delete font is clicked, when the user confirms deletion, then the selected font is deleted according to the active persistence model.
+- Given the Font Editor screen loads, when characters exist for the selected font, then character choices are shown as compact tiles with the active character highlighted.
+- Given New Character is clicked, when the modal opens, then the user can choose a blank character or duplicate source and enter a destination character.
+- Given no destination character is entered in the New Character modal, when the primary modal action is viewed, then it is disabled.
+- Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width or Height fields.
 
 ## Edge Cases
 
@@ -106,6 +123,10 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Width/height outside bounds.
 - Save failure from database.
 - Delete currently selected font.
+- Fonts with many mapped characters.
+- New-character modal opened and closed without saving.
+- Duplicating a source character into a destination key.
+- Mobile layout where dimension controls stack below the grid.
 
 ## Current Code Behaviour
 
@@ -118,6 +139,10 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently shows `Font changes saved successfully.` inline after a successful save.
 - Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.
+- Currently shows font selection, character tiles, New Character and delete actions in a left sidebar.
+- Currently shows new-character setup in a modal dialog controlled by `newCharacterOpen`.
+- Currently places width and height controls beside the editable grid on desktop and stacks them responsively.
+- Currently places Reset and Clear in the editor footer, with Save Character aligned as the primary action.
 
 ## Known Gaps / Defects
 
@@ -149,6 +174,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Inline save confirmation.
 - Local editor save-failure status.
 - Delete font from editor.
+- Sidebar character tile active state.
+- New-character modal open, cancel, blank and duplicate flows.
+- Editor layout source guard for modal, danger zone, dimension panel and action footer.
 
 ## Review Checklist
 

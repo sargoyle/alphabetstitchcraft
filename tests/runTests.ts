@@ -4,6 +4,7 @@ import "./gridUtils.test";
 import "./fontData.test";
 import "./fontPersistence.test";
 import "./migrationScripts.test";
+import "./editorUiSource.test";
 import "./localStorageUtils.test";
 import "./exportUtils.test";
 
