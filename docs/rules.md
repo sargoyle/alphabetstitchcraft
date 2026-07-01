@@ -79,6 +79,8 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Duplicate-name checks for font saves ignore the record currently being edited and reject only different shared font records with the same name.
 - Font slug IDs such as `tiny-serif-7x9` must never be passed into UUID database fields or UUID query filters.
 - Default/shared font slug deletes are blocked in the app unless a future `default_fonts` delete policy is intentionally added.
+- Successful font saves show `Font changes saved successfully.` only after the database save succeeds.
+- Duplicate `Block Needle 5x7` shared data is cleaned by keeping `block-needle-5x7` as the canonical default font and repointing related `custom_fonts.base_default_font_id` references before removing duplicates.
 
 ## Integrations
 - Third-party services, API keys and webhook configurations should be documented here when integration decisions are made.

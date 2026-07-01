@@ -1286,3 +1286,29 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 24.4 Add Save Confirmation And Clean Duplicate Block Needle Data
+
+- [x] Add a user-facing inline success message after a font save completes successfully.
+- [x] Use the exact message `Font changes saved successfully.`.
+- [x] Return save success or failure from the shared font save hook so the editor only confirms successful database saves.
+- [x] Keep existing database save failure messages and add local editor failure status.
+- [x] Add a repeatable Supabase cleanup migration for duplicate `Block Needle 5x7` shared font records.
+- [x] Keep the seeded `block-needle-5x7` default font row as the canonical record.
+- [x] Repoint duplicate default-font references in `custom_fonts.base_default_font_id` to the canonical row before cleanup.
+- [x] Back up accidental custom duplicates before deleting them.
+- [x] Remove duplicate default/shared rows safely without weakening duplicate-name validation.
+- [x] Add automated migration-script coverage for the cleanup migration.
+- [x] Update database, function, task, changelog and test-run documentation.
+
+Acceptance checks:
+
+- [x] Successful editor saves show `Font changes saved successfully.`.
+- [x] Failed saves do not show the success message.
+- [x] The cleanup migration keeps the canonical `block-needle-5x7` default font row.
+- [x] The cleanup migration repoints related custom-font base references before deleting duplicate default rows.
+- [x] The cleanup migration backs up accidental custom duplicates before deletion.
+- [x] The cleanup migration removes accidental custom duplicates based on `block-needle-5x7`.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

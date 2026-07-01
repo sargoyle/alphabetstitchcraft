@@ -19,6 +19,19 @@ supabase/migrations/202607010001_seed_default_fonts.sql
 The seed migration is idempotent and mirrors `src/data/fonts.json`. Re-run it if
 `default_fonts` is empty or if a Supabase project is reset.
 
+Duplicate Block Needle cleanup migration:
+
+```text
+supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql
+```
+
+Run this cleanup after the seed migration if Supabase contains duplicate
+`Block Needle 5x7` shared font records. The cleanup keeps
+`block-needle-5x7` as the canonical default font, repoints related
+`custom_fonts.base_default_font_id` references, removes duplicate default rows
+and backs up then removes accidental custom duplicates based on the canonical
+default.
+
 TypeScript contract:
 
 ```text
@@ -113,6 +126,7 @@ Seed source:
 - `src/data/fonts.json`
 - `supabase/migrations/202607010001_seed_default_fonts.sql`
 - `supabase/migrations/202607010002_public_default_fonts_update.sql`
+- `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql`
 
 RLS:
 
@@ -149,6 +163,7 @@ Client persistence:
 - Duplicate-name checks must ignore the current font record and only reject a different shared font with the same name.
 - Default/shared font slugs must not be passed into `custom_fonts.id`, `custom_font_characters.font_id`, or other UUID columns.
 - Default/shared fonts cannot currently be deleted through the app because `default_fonts` has no public delete policy; UUID custom/shared fonts can be deleted from `custom_fonts`.
+- If duplicate `Block Needle 5x7` shared rows exist from an earlier save bug, run `202607010003_cleanup_duplicate_block_needle.sql` so custom base references point back to `block-needle-5x7` and duplicate-name validation stops conflicting with accidental duplicates. Accidental custom duplicates are backed up before removal.
 
 ### custom_font_characters
 

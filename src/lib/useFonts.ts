@@ -134,7 +134,7 @@ export function useFonts() {
     }
   }
 
-  async function saveEditableFont(font: StitchFont) {
+  async function saveEditableFont(font: StitchFont): Promise<boolean> {
     const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });
 
     try {
@@ -143,16 +143,23 @@ export function useFonts() {
         const message = "Add Supabase environment values before saving fonts to the database.";
         setPersistence((current) => ({ ...current, message, canWrite: false }));
         window.alert(message);
-        return;
+        return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
       window.alert(message);
-      return;
+      return false;
     }
 
-    refresh();
+    await refresh();
+    setPersistence((current) => ({
+      ...current,
+      mode: "remote",
+      message: "Font changes saved successfully.",
+      canWrite: true
+    }));
+    return true;
   }
 
   async function deleteEditableFont(fontId: string) {

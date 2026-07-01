@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Eraser, RotateCcw, Save } from "lucide-react";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { clearCharacter, resizeCharacter, setGridCell, toggleGridCell, validateCharacter } from "@/lib/gridUtils";
@@ -10,7 +10,7 @@ type CharacterEditorProps = {
   characterKey: string;
   character: StitchCharacter;
   originalCharacter: StitchCharacter;
-  onSave: (character: StitchCharacter) => void;
+  onSave: (character: StitchCharacter) => void | Promise<boolean | void>;
   saveDisabled?: boolean;
   saveDisabledReason?: string;
   saveLabel?: string;
@@ -28,8 +28,32 @@ export function CharacterEditor({
   headingLabel = "Selected character"
 }: CharacterEditorProps) {
   const [draft, setDraft] = useState(character);
+  const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const validation = useMemo(() => validateCharacter(draft, characterKey), [draft, characterKey]);
   const cannotSave = saveDisabled || !validation.valid;
+
+  useEffect(() => {
+    setDraft(character);
+    setSaveStatus(null);
+  }, [character, characterKey]);
+
+  async function handleSave() {
+    setSaveStatus(null);
+
+    try {
+      const saved = await onSave(draft);
+      if (saved === false) {
+        setSaveStatus({ type: "error", message: "Database save failed. Font changes were not saved." });
+        return;
+      }
+      setSaveStatus({ type: "success", message: "Font changes saved successfully." });
+    } catch (error) {
+      setSaveStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "Database save failed. Font changes were not saved."
+      });
+    }
+  }
 
   return (
     <div className="editor-panel">
@@ -78,6 +102,7 @@ export function CharacterEditor({
 
       {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
       {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
+      {saveStatus ? <p className={saveStatus.type === "success" ? "success-message" : "warning"}>{saveStatus.message}</p> : null}
 
       <div className="button-row editor-actions">
         <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
@@ -88,7 +113,7 @@ export function CharacterEditor({
           <RotateCcw aria-hidden="true" size={17} />
           Reset
         </button>
-        <button className="button primary" type="button" disabled={cannotSave} onClick={() => onSave(draft)}>
+        <button className="button primary" type="button" disabled={cannotSave} onClick={handleSave}>
           <Save aria-hidden="true" size={17} />
           {saveLabel}
         </button>

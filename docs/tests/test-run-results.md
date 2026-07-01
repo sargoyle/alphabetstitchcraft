@@ -4,6 +4,45 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Save Confirmation And Block Needle Cleanup Run
+
+#### Scope
+
+- Added inline editor confirmation after successful database font saves.
+- Added local editor failure status when a database save returns failure.
+- Added a repeatable Supabase cleanup migration for duplicate `Block Needle 5x7` shared font records.
+- Added backup snapshots before accidental custom duplicate records are deleted by the cleanup.
+- Added utility coverage that verifies the cleanup migration keeps the canonical `block-needle-5x7` record and repoints duplicate references.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Added `tests/migrationScripts.test.ts`.
+- Updated `tests/runTests.ts`.
+- Automated output included `migration script tests passed.` and `All utility tests passed.`
+
+#### Manual Checks Still Required
+
+- Run `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql` in Supabase after the default font seed migration.
+- Confirm only one default/shared `Block Needle 5x7` row remains, with `default_fonts.id = 'block-needle-5x7'`.
+- Confirm any deleted accidental custom duplicates have backup rows in `custom_font_backups`.
+- Edit and save `Block Needle 5x7` in the app and confirm `Font changes saved successfully.` appears.
+- Confirm Supabase logs show no duplicate-name or UUID syntax errors for the save.
+
 ### Slug Versus UUID Font Operation Run
 
 #### Scope

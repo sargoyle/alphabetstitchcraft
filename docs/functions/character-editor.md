@@ -13,6 +13,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
+- Inline status message: `Font changes saved successfully.`
 
 
 ## Decision Required
@@ -40,6 +41,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Saved character changes to selected font.
 - New mapped character when creation mode is active.
 - Save-disabled warning where applicable.
+- Inline save success or failure status.
 - Font delete request.
 
 ## State Transitions
@@ -51,7 +53,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 5. Validation runs against draft.
 6. Save either updates existing character or writes a new destination character.
 7. Updated font is saved through `useFonts().saveFont()`.
-8. Editor returns to normal character-editing mode after saving a new character.
+8. Save success is returned only after the database save and font refresh complete.
+9. Editor shows an inline success message when save succeeds or a local failure status when save fails.
+10. Editor returns to normal character-editing mode after saving a new character.
 
 ## Rules and Requirements
 
@@ -65,8 +69,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | New duplicated characters must require a destination key. | Confirmed | Implemented | Save disabled reason. |
 | Destination characters must be one visible character. | Confirmed | Implemented | User confirmed destination should be one visible character; current code uses the first typed character. |
 | Existing mapped characters must be protected unless replacement is confirmed. | Confirmed | Implemented | Replace checkbox required. |
-| Successful saves must show clear inline confirmation. | Confirmed | Not Implemented | User confirmed save confirmation should be added. |
-| Database save failures must show local editor status. | Confirmed | Not Implemented | User confirmed failures should be shown in the editor, not only by hook alerts. |
+| Successful saves must show clear inline confirmation. | Confirmed | Implemented | `CharacterEditor` shows `Font changes saved successfully.` after `saveFont()` returns success. |
+| Database save failures must show local editor status. | Confirmed | Implemented | `CharacterEditor` shows local failure status when `onSave()` returns `false` or throws. Existing hook alerts remain in place. |
 | Users must be able to delete fonts from the editor. | Confirmed | Implemented | Delete font button is currently available and user confirmed this should remain. |
 | Any visible font can be edited under the current public shared model. | Confirmed | Implemented | User confirmed editing any visible font is acceptable. |
 
@@ -110,12 +114,14 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently takes the first character of destination input.
 - Currently creates blank new characters at a size based on selected font default height, clamped to 1-24.
 - Currently clones the selected font before writing edited characters.
+- Currently waits for `saveFont()` to return success before resetting editor state.
+- Currently shows `Font changes saved successfully.` inline after a successful save.
+- Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.
 
 ## Known Gaps / Defects
 
-- Successful save has no clear inline confirmation, which conflicts with the confirmed requirement to add confirmation.
-- Database save failures are handled by the hook with alerts rather than local editor status, which conflicts with the confirmed requirement to add local editor status.
+- No current Character Editor save-status gaps are known from this documentation pass.
 
 ## Unclear or Assumed Rules
 

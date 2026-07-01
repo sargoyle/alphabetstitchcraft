@@ -50,21 +50,24 @@ export function EditorClient() {
         : undefined
     : undefined;
 
-  function saveCharacter(updated: StitchCharacter) {
-    if (!selectedFont) return;
+  async function saveCharacter(updated: StitchCharacter) {
+    if (!selectedFont) return false;
     const targetKey = creatingCharacter ? destinationKey : activeKey;
-    if (!targetKey) return;
-    if (creatingCharacter && destinationExists && !replaceExistingCharacter) return;
+    if (!targetKey) return false;
+    if (creatingCharacter && destinationExists && !replaceExistingCharacter) return false;
 
     const targetFont = cloneFont(selectedFont);
     targetFont.characters[targetKey] = updated;
-    saveFont(targetFont);
+    const saved = await saveFont(targetFont);
+    if (!saved) return false;
+
     setFontId(targetFont.id);
     setCharacterKey(targetKey);
     setCreatingCharacter(false);
     setSourceCharacterKey("");
     setDestinationCharacterKey("");
     setReplaceExistingCharacter(false);
+    return true;
   }
 
   function removeSelectedFont() {
