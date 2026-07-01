@@ -1181,3 +1181,22 @@ Acceptance checks:
 - [x] Endpoint does not create, update or delete data.
 - [x] Endpoint fetches only a count.
 - [x] App TypeScript compile passes.
+
+## Phase 23: Homepage Messaging And Navigation Language
+
+### 23.1 User-Goal Homepage Copy
+
+- [x] Replace the homepage hero headline with outcome-focused cross-stitch lettering copy.
+- [x] Replace the homepage supporting text with alphabet browsing, instant preview and aligned lettering messaging.
+- [x] Rename homepage CTAs to Create Lettering and Browse Alphabets.
+- [x] Update the hero preview to show centred multi-row lettering: CREATE / YOUR OWN / PATTERNS.
+- [x] Replace homepage workflow links with Browse Alphabets, Create Lettering and Edit Fonts action cards.
+- [x] Rename primary navigation labels to Home, Alphabet Library, Create Pattern and Font Editor while preserving existing routes.
+- [x] Update navigation/routing documentation and project rules.
+
+Acceptance checks:
+
+- [x] Homepage focuses on creating cross-stitch lettering patterns from text.
+- [x] Homepage avoids implementation-focused labels like Fonts, Generator, Render custom text and Manage editable fonts.
+- [x] Action cards link to the relevant existing pages.
+- [x] TypeScript compile passes.

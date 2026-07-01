@@ -9,8 +9,9 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/fonts", label: "Fonts" },
-  { href: "/generator", label: "Generator" }
+  { href: "/fonts", label: "Alphabet Library" },
+  { href: "/generator", label: "Create Pattern" },
+  { href: "/editor", label: "Font Editor" }
 ];
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

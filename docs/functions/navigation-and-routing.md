@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define how users move between the app's primary workflows: home, font browsing, font detail, generator, character editor, manage fonts and auth callback. Primary navigation stays minimal, while Editor and Manage Fonts remain reachable through contextual links; Manage Fonts also needs a more prominent contextual entry after being removed from the top navigation.
+Define how users move between the app's primary workflows: home, alphabet browsing, text pattern creation, font detail, font editing, manage fonts and auth callback. Primary navigation uses user-goal language while preserving existing routes; Manage Fonts remains reachable through contextual links.
 
 ## Source References
 
@@ -17,7 +17,7 @@ Define how users move between the app's primary workflows: home, font browsing, 
 - Auth callback page: `src/app/auth/callback/page.tsx`
 - Component: `FontCard`
 - Related accessibility pattern: active route indicator with visual state and `aria-current`.
-- Related product decision: contextual access is sufficient for Editor and Manage Fonts.
+- Related product decision: primary navigation labels should use user-goal wording.
 - Related product decision: Manage Fonts should have a more prominent contextual entry.
 
 ## Decision Required
@@ -33,7 +33,7 @@ Define how users move between the app's primary workflows: home, font browsing, 
 - Query parameter `font` on editor route.
 - Stored selected font id.
 - Supabase auth callback state.
-- Contextual links from cards and home quick links.
+- Contextual links from cards and homepage action cards.
 - Remote font loading state.
 
 ## Outputs
@@ -50,9 +50,9 @@ Define how users move between the app's primary workflows: home, font browsing, 
 ## State Transitions
 
 1. User opens the app shell.
-2. Primary nav shows Home, Fonts and Generator.
+2. Primary nav shows Home, Alphabet Library, Create Pattern and Font Editor.
 3. The active route is indicated visually and semantically.
-4. User reaches editor/manage routes through contextual links or direct URL.
+4. User reaches font editing through primary navigation or contextual links.
 5. Manage Fonts is discoverable through a prominent contextual entry.
 6. Font card actions route to detail, generator or editor.
 7. Font detail Use action stores selected font id and routes to generator.
@@ -63,8 +63,9 @@ Define how users move between the app's primary workflows: home, font browsing, 
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| Primary navigation should be minimal. | Confirmed | Implemented | Rules doc says Home, Fonts and Generator only. |
-| Editor and Manage Fonts should remain reachable contextually. | Confirmed | Implemented | User confirmed contextual access is sufficient for Editor and Manage Fonts. |
+| Primary navigation should use user-goal labels. | Confirmed | Implemented | Current labels are Home, Alphabet Library, Create Pattern and Font Editor. |
+| Implementation-focused labels such as Fonts and Generator should not be used in primary navigation. | Confirmed | Implemented | Routes remain `/fonts` and `/generator`, but visible labels changed. |
+| Manage Fonts should remain reachable contextually. | Confirmed | Implemented | Manage Fonts is not in primary nav. |
 | Manage Fonts should have a more prominent entry after removal from primary navigation. | Confirmed | Unknown | User confirmed more prominent discoverability is needed; implementation approach needs code/design work. |
 | Primary navigation must show an active route indicator. | Confirmed | Not Implemented | User confirmed this known gap. |
 | Active route should include semantic state such as `aria-current`. | Assumed | Not Implemented | Recommended for accessibility once visual active state is added. |
@@ -78,7 +79,7 @@ Define how users move between the app's primary workflows: home, font browsing, 
 
 - Must not expose Docs in primary navigation under current decision.
 - Must not remove Editor or Manage Fonts routes while contextual links still depend on them.
-- Must not require top navigation access for every workflow.
+- Must not use implementation-focused labels such as Fonts, Generator, Render custom text or Manage editable fonts in user-facing homepage/nav copy.
 - Must not make Manage Fonts difficult to discover.
 - Must not lose selected font when navigating to Generator through Use.
 - Must not show a remote font as not found while remote fonts are still loading.
@@ -86,10 +87,10 @@ Define how users move between the app's primary workflows: home, font browsing, 
 
 ## Acceptance Criteria
 
-- Given the app shell renders, then primary nav shows Home, Fonts and Generator.
+- Given the app shell renders, then primary nav shows Home, Alphabet Library, Create Pattern and Font Editor.
 - Given a primary route is active, then the matching nav item has a visible active state.
 - Given a primary route is active, then the matching nav item exposes `aria-current` or equivalent semantic current-page state.
-- Given Home quick links are shown, then Editor and Manage Fonts are reachable.
+- Given Home action cards are shown, then Alphabet Library, Create Lettering and Edit Fonts are reachable.
 - Given a user needs font management, then a prominent contextual entry to Manage Fonts is available.
 - Given View Alphabet is clicked, then `/fonts/[id]` opens.
 - Given Use is clicked, then `/generator` opens and selected font id is saved.
@@ -111,8 +112,8 @@ Define how users move between the app's primary workflows: home, font browsing, 
 
 ## Current Code Behaviour
 
-- Currently primary nav contains Home, Fonts and Generator.
-- Currently Home quick links include Editor and Manage Fonts.
+- Currently primary nav contains Home, Alphabet Library, Create Pattern and Font Editor.
+- Currently Home action cards include Browse Alphabets, Create Lettering and Edit Fonts.
 - Currently `/docs` app pages are removed, while markdown docs remain in `/docs`.
 - Currently FontCard links perform route navigation.
 - Currently active nav state is not visually indicated.
@@ -135,6 +136,8 @@ Define how users move between the app's primary workflows: home, font browsing, 
 - Remote font detail route should wait for loading before showing not found.
 - Contextual access is sufficient for Editor and Manage Fonts.
 - Manage Fonts should have a more prominent entry after removal from primary navigation.
+- Primary navigation uses user-goal labels: Home, Alphabet Library, Create Pattern and Font Editor.
+- Homepage action cards use Browse Alphabets, Create Lettering and Edit Fonts.
 
 ## Suggested Test Areas
 

@@ -193,16 +193,33 @@ main {
 .quick-links {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
+.quick-links h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 1.35rem;
+}
+
 .quick-links a {
+  display: grid;
+  gap: 6px;
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   color: var(--muted);
+}
+
+.quick-links a strong {
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.quick-links a span {
+  line-height: 1.45;
 }
 
 .page-stack {

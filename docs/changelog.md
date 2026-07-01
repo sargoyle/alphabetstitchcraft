@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-01: Updated homepage messaging, CTA labels, action cards, hero preview text and primary navigation labels to use user-goal language. Files affected: `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/functions/navigation-and-routing.md`, `docs/rules.md`, `docs/tasks.md`.
 - 2026-06-05: Allowed `127.0.0.1` as a Next.js development origin so `/design-system` can be reviewed cleanly from the local browser URL. Files affected: `next.config.ts`.
 - 2026-06-05: Cleaned design-system functional requirements so confirmed decisions are no longer listed under unclear or assumed rules. Files affected: `docs/functions/design-system.md`.
 - 2026-06-05: Renamed design-system display primitives from game-oriented names to app-neutral layout names. Files affected: `src/components/layout/*`, `src/app/design-system/page.tsx`, `src/app/globals.css`, `src/design-system/*`, `docs/functions/design-system.md`, `docs/tasks.md`, `docs/rules.md`.

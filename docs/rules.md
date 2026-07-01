@@ -33,7 +33,8 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Font Browser sample previews include lowercase characters when the font supports lowercase.
 - Font Browser sample previews avoid unsupported characters by choosing sample text each font supports.
 - The app shell and primary content use the full available viewport width rather than a centered fixed-width container.
-- Primary navigation is intentionally minimal: Home, Fonts and Generator; editing and font management are reached through contextual actions.
+- Primary navigation uses user-goal labels: Home, Alphabet Library, Create Pattern and Font Editor.
+- Homepage CTAs use Create Lettering and Browse Alphabets; homepage action cards use Browse Alphabets, Create Lettering and Edit Fonts.
 - Blank font creation is shared through `src/lib/fontFactory.ts` so Font Library and Manage Fonts create identical starter alphabets.
 
 ## Business Logic
