@@ -10,6 +10,15 @@ Migration file:
 supabase/migrations/202604250001_initial_auth_owned_schema.sql
 ```
 
+Default font seed migration:
+
+```text
+supabase/migrations/202607010001_seed_default_fonts.sql
+```
+
+The seed migration is idempotent and mirrors `src/data/fonts.json`. Re-run it if
+`default_fonts` is empty or if a Supabase project is reset.
+
 TypeScript contract:
 
 ```text
@@ -99,6 +108,11 @@ RLS:
 
 Public reference stitch font data.
 
+Seed source:
+
+- `src/data/fonts.json`
+- `supabase/migrations/202607010001_seed_default_fonts.sql`
+
 RLS:
 
 - Anyone can select rows where `is_public = true`.
@@ -128,6 +142,7 @@ Client persistence:
 - Created fonts are visible to all users and editable by all users.
 - Signed-out or unconfigured environments should not silently save newly created fonts to browser-only storage.
 - Local UUID custom fonts are attempted for upload once database sync is configured.
+- Duplicated bundled fonts must use a `base_default_font_id` that exists in seeded `default_fonts`.
 
 ### custom_font_characters
 

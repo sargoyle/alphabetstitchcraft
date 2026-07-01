@@ -1224,3 +1224,23 @@ Acceptance checks:
 - [x] Homepage is more compact and aims to fit one desktop viewport without scrolling.
 - [x] Footer sits close to the How it works section without a large empty gap.
 - [x] Homepage heading includes `lettering patterns`.
+
+## Phase 24: Default Font Database Seed Recovery
+
+### 24.1 Restore Default Font Reference Data
+
+- [x] Investigate Supabase migrations and source data for `default_fonts`.
+- [x] Confirm `default_fonts` was created by schema migration but had no seed migration.
+- [x] Add an idempotent seed migration for bundled default fonts from `src/data/fonts.json`.
+- [x] Keep the `custom_fonts.base_default_font_id` foreign key intact.
+- [x] Add a clear save-path error when a referenced base default font is missing.
+- [x] Update database and font data model documentation.
+
+Acceptance checks:
+
+- [x] Seed migration restores `default_fonts` records for bundled fonts.
+- [x] Duplicated bundled fonts can reference a valid `base_default_font_id` after seed migration is applied.
+- [x] Missing seeded default fonts produce a clear app error before custom font upsert.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Existing utility test runner passes.

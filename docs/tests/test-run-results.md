@@ -4,6 +4,42 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Default Font Seed Recovery Run
+
+#### Scope
+
+- Added an idempotent Supabase migration to seed `default_fonts` from bundled app font data.
+- Added a client-side check that reports a clear missing default font seed error before custom font saves with `base_default_font_id`.
+- Updated database, font data model, task and changelog documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' -e "const fs=require('fs');const fonts=JSON.parse(fs.readFileSync('src/data/fonts.json','utf8'));const sql=fs.readFileSync('supabase/migrations/202607010001_seed_default_fonts.sql','utf8');for (const font of fonts) if (!sql.includes(font.id)) throw new Error('Missing '+font.id); console.log('Seed migration includes '+fonts.length+' font ids.');"
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- Seed migration font-id validation: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- No new automated tests were added in this pass.
+- Existing utility tests were rerun to catch regressions in shared font data, validation and persistence imports.
+
+#### Manual Checks Still Required
+
+- Run `supabase/migrations/202607010001_seed_default_fonts.sql` in Supabase.
+- Confirm `default_fonts` contains the bundled font IDs such as `block-needle-5x7`.
+- Edit or duplicate a bundled font and confirm the save no longer fails with `custom_fonts_base_default_font_id_fkey`.
+
 ### Supabase Keep-Alive Endpoint Run
 
 #### Scope

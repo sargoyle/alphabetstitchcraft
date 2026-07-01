@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- 2026-07-01: Added an idempotent Supabase seed migration to restore bundled default font records in `default_fonts`. Files affected: `supabase/migrations/202607010001_seed_default_fonts.sql`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added public `/api/keep-alive` Supabase endpoint using a read-only count query. Files affected: `src/app/api/keep-alive/route.ts`, `docs/functions/keep-alive-endpoint.md`, `docs/tasks.md`.
 - 2026-06-09: Added public custom font backup storage and restore controls for baseline shared-library hardening. Files affected: `supabase/migrations/202606090001_public_font_backups.sql`, `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `src/lib/databaseTypes.ts`, `docs/functions/security.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`.
 - 2026-06-05: Added renderer and grid visibility tests for confirmed known gaps, plus render/grid test plans and updated run results. Files affected: `tests/renderVisibility.test.ts`, `tests/runTests.ts`, `tests/exportUtils.test.ts`, `docs/tests/*`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/functions/export-png.md`, `docs/tasks/known-gaps-defects.md`, `docs/tasks.md`.
@@ -57,6 +58,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
+- 2026-07-01: Added a clear custom-font save error when a referenced seeded default font is missing, avoiding opaque `custom_fonts_base_default_font_id_fkey` failures. Files affected: `src/lib/fontPersistence.ts`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-06-05: Fixed Generator preview/export parity for PNG visibility settings and added JSON/PNG export parity tests. Files affected: `src/lib/exportUtils.ts`, `src/components/ExportControls.tsx`, `src/app/generator/page.tsx`, `tests/exportUtils.test.ts`, `docs/functions/export-png.md`, `docs/functions/export-json.md`, `docs/functions/grid-rendering.md`, `docs/functions/text-generator.md`, `docs/tests/*`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`.
 - 2026-06-05: Fixed confirmed renderer gaps for whitespace-only input, unsupported character counts, invalid spacing rejection and large-pattern warnings. Files affected: `src/lib/renderTextToGrid.ts`, `src/lib/fontTypes.ts`, `src/app/generator/page.tsx`, `tests/renderTextToGrid.test.ts`, `tests/renderVisibility.test.ts`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/tests/*`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`.
 - 2026-05-04: Empty generator text now returns a true `0 x 0` rendered pattern instead of blank-height rows. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.

@@ -176,6 +176,24 @@ async function createRemoteFontBackup(fontId: string, action: RemoteFontBackup["
   if (error) throw error;
 }
 
+async function ensureBaseDefaultFontExists(baseDefaultFontId: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+
+  const { data, error } = await supabase
+    .from("default_fonts")
+    .select("id")
+    .eq("id", baseDefaultFontId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) {
+    throw new Error(
+      `Default font "${baseDefaultFontId}" is missing from the database. Restore the default_fonts seed migration before saving custom font changes.`
+    );
+  }
+}
+
 export async function getCurrentRemoteUser() {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
@@ -320,6 +338,10 @@ export async function saveRemoteFont(
 
   const baseDefaultFontId = font.baseFontId && !isUuid(font.baseFontId) ? font.baseFontId : null;
   const baseCustomFontId = font.baseFontId && isUuid(font.baseFontId) ? font.baseFontId : null;
+
+  if (baseDefaultFontId) {
+    await ensureBaseDefaultFontExists(baseDefaultFontId);
+  }
 
   const customFontsTable = supabase.from("custom_fonts") as any;
   const customFontCharactersTable = supabase.from("custom_font_characters") as any;

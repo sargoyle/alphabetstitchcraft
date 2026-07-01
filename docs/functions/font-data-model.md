@@ -22,8 +22,10 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Function: `loadRemoteFontBackups()` in `src/lib/fontPersistence.ts`
 - Function: `restoreRemoteFontBackup()` in `src/lib/fontPersistence.ts`
 - File: `src/lib/databaseTypes.ts`
+- Database migration: `supabase/migrations/202604250001_initial_auth_owned_schema.sql`
+- Database seed migration: `supabase/migrations/202607010001_seed_default_fonts.sql`
 - Data source: local default font JSON
-- Data source: Supabase `custom_fonts`, `custom_font_characters` and `custom_font_backups`
+- Data source: Supabase `default_fonts`, `custom_fonts`, `custom_font_characters` and `custom_font_backups`
 - Related UI: font creation and editing flows
 - Related UI: font category fields and filters
 
@@ -55,6 +57,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Supabase row payloads for remote persistence.
 - Supabase backup snapshots for remote font restore.
 - User-visible error/status reporting for invalid remote fonts that need attention.
+- User-visible error reporting when a custom font references a missing seeded default font.
 
 ## Worked Examples
 
@@ -110,6 +113,7 @@ Expected output:
 8. User-editable category changes are persisted with the font data.
 9. Before public update, restore or delete operations, the current database font can be copied into `custom_font_backups`.
 10. Restore actions map a validated backup snapshot back into the same `StitchFont` data model and save path.
+11. Custom font saves that reference bundled default fonts confirm the base default id exists in Supabase before writing `custom_fonts`.
 
 ## Rules and Requirements
 
@@ -127,6 +131,8 @@ Expected output:
 | Invalid remote fonts must be shown as errors needing attention, not silently skipped. | Confirmed | Implemented | `loadRemoteFontResult()` returns invalid font warnings and `useFonts()` surfaces them in font sync status. |
 | User-created fonts should be marked as custom. | Assumed | Implemented | `createBlankFont()` and `ensureDatabaseFont()` set `isCustom`. |
 | Shared public fonts should have database-backed backup snapshots before update, restore and delete operations. | Confirmed | Implemented | `custom_font_backups` stores validated `StitchFont` snapshots for restore. |
+| Bundled default fonts must be seeded into `default_fonts` before custom fonts can reference them. | Confirmed | Implemented | `202607010001_seed_default_fonts.sql` inserts or updates the bundled default font rows. |
+| Custom font saves with `base_default_font_id` must show a clear error if the referenced default font is missing. | Confirmed | Implemented | `ensureBaseDefaultFontExists()` checks Supabase before the custom font upsert. |
 
 ## Negative Rules
 
@@ -139,6 +145,8 @@ Expected output:
 - Must not use normal computer font outlines as stitch data in v1.
 - Must not silently skip invalid remote fonts.
 - Must not allow invalid hidden font rows to accumulate in the database without user-visible attention.
+- Must not save a custom font with a `base_default_font_id` that is missing from `default_fonts`.
+- Must not remove the `custom_fonts.base_default_font_id` foreign key to bypass missing seed data.
 
 ## Acceptance Criteria
 
@@ -151,6 +159,8 @@ Expected output:
 - Given a user edits a font category, when the font is saved, then the selected category is retained with the font data.
 - Given invalid remote character rows, when mapped, then invalid font data is not included in the usable list and an error needing attention is shown.
 - Given invalid remote font rows exist in the database, when fonts are loaded, then the app does not silently hide the issue.
+- Given `default_fonts` is empty and a duplicated bundled font is saved, when the save runs, then the app shows a clear missing default font seed error instead of relying on a raw database foreign-key error.
+- Given the default font seed migration is run more than once, when it completes, then it restores or updates the same default font rows without creating duplicates.
 
 ## Edge Cases
 
@@ -166,6 +176,9 @@ Expected output:
 - User changes category before saving a new font.
 - Remote font row exists without valid character rows.
 - Database contains multiple invalid remote fonts.
+- `default_fonts` table is empty after project reset.
+- `default_fonts` contains only some bundled font ids.
+- A custom font references a stale base default font id.
 
 ## Current Code Behaviour
 
@@ -177,6 +190,8 @@ Expected output:
 - Currently database TypeScript types reflect nullable public custom font owners and include `custom_font_backups`.
 - Currently remote font backup rows store a `font_snapshot` JSON value that is validated as a `StitchFont` before being exposed to restore UI.
 - Current implementation status for user-editable categories needs to be checked before implementation or test work.
+- Currently `202607010001_seed_default_fonts.sql` restores the bundled default fonts into Supabase `default_fonts`.
+- Currently `saveRemoteFont()` checks for a referenced base default font before writing to `custom_fonts`.
 
 ## Known Gaps / Defects
 
@@ -197,6 +212,8 @@ Expected output:
 - Font categories should be user-editable.
 - Invalid remote fonts should be shown as errors needing attention, not silently skipped.
 - Invalid hidden fonts should not be allowed to accumulate in the database unnoticed.
+- Bundled default fonts must be restorable through an idempotent database seed migration.
+- Missing default font seed data must be reported clearly before custom font saves fail.
 
 ## Suggested Test Areas
 
@@ -210,6 +227,8 @@ Expected output:
 - Blank font creation data shape.
 - Mixed character heights against `defaultHeight`.
 - User-editable category persistence.
+- Default font seed migration idempotency.
+- Custom font save error handling when `default_fonts` is missing a referenced id.
 
 ## Review Checklist
 
