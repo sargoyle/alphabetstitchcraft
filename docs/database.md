@@ -32,7 +32,8 @@ Run this cleanup after the seed migration if Supabase contains duplicate
 `custom_fonts.base_default_font_id` references, removes duplicate default rows
 and backs up then removes accidental custom duplicates based on the canonical
 default. The second cleanup also catches spacing variants such as
-`Block Needle 5 x 7`.
+`Block Needle 5 x 7` and creates `custom_font_backups` first if that backup
+table has not already been applied to the Supabase project.
 
 TypeScript contract:
 
@@ -167,7 +168,7 @@ Client persistence:
 - Default/shared font slugs must not be passed into `custom_fonts.id`, `custom_font_characters.font_id`, or other UUID columns.
 - Default/shared fonts cannot currently be deleted through the app because `default_fonts` has no public delete policy; UUID custom/shared fonts can be deleted from `custom_fonts`.
 - If duplicate `Block Needle 5x7` shared rows exist from an earlier save bug, run `202607010003_cleanup_duplicate_block_needle.sql` so custom base references point back to `block-needle-5x7` and duplicate-name validation stops conflicting with accidental duplicates. Accidental custom duplicates are backed up before removal.
-- If the duplicate uses the display spelling `Block Needle 5 x 7`, run `202607010004_cleanup_block_needle_name_variants.sql` as well.
+- If the duplicate uses the display spelling `Block Needle 5 x 7`, run `202607010004_cleanup_block_needle_name_variants.sql` as well. This cleanup is self-contained and creates `custom_font_backups` if it is missing.
 
 ### custom_font_characters
 

@@ -150,7 +150,7 @@ Expected output:
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
 | Font slugs must not be sent to UUID database fields. | Confirmed | Implemented | Custom duplicate-name exclusion only applies `.neq("id", ...)` when the current ID is a UUID. |
 | Default/shared font deletion is not allowed through the app while `default_fonts` has no delete policy. | Confirmed | Implemented | `getRemoteFontDeleteTarget()` blocks slug deletes before any database delete query. |
-| Duplicate `Block Needle 5x7` or `Block Needle 5 x 7` records must be cleaned without removing the foreign key constraint. | Confirmed | Implemented | `202607010003_cleanup_duplicate_block_needle.sql` handles compact-name duplicates. `202607010004_cleanup_block_needle_name_variants.sql` handles spacing variants. Both keep `block-needle-5x7`, repoint `custom_fonts.base_default_font_id`, back up accidental custom duplicates, and remove duplicate rows. |
+| Duplicate `Block Needle 5x7` or `Block Needle 5 x 7` records must be cleaned without removing the foreign key constraint. | Confirmed | Implemented | `202607010003_cleanup_duplicate_block_needle.sql` handles compact-name duplicates. `202607010004_cleanup_block_needle_name_variants.sql` handles spacing variants and creates `custom_font_backups` if missing. Both keep `block-needle-5x7`, repoint `custom_fonts.base_default_font_id`, back up accidental custom duplicates, and remove duplicate rows. |
 
 ## Negative Rules
 
@@ -233,7 +233,7 @@ Expected output:
 - Currently duplicate-name checks avoid passing slug IDs into `custom_fonts.id`.
 - Currently default/shared slug deletes are blocked before the database delete path.
 - Currently `202607010003_cleanup_duplicate_block_needle.sql` provides a repeatable cleanup for duplicate `Block Needle 5x7` data created before the save-flow fixes.
-- Currently `202607010004_cleanup_block_needle_name_variants.sql` provides a repeatable cleanup for `Block Needle 5 x 7` spacing variants.
+- Currently `202607010004_cleanup_block_needle_name_variants.sql` provides a repeatable cleanup for `Block Needle 5 x 7` spacing variants and is self-contained when `custom_font_backups` is missing.
 
 ## Known Gaps / Defects
 

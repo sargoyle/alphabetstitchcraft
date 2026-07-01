@@ -51,6 +51,12 @@ assert.match(
 
 assert.match(
   variantCleanupSql,
+  /create table if not exists public\.custom_font_backups/,
+  "Block Needle variant cleanup should create the backup table if it is missing."
+);
+
+assert.match(
+  variantCleanupSql,
   /insert into public\.custom_font_backups[\s\S]*font_snapshot/,
   "Block Needle variant cleanup should back up accidental custom duplicates before deleting them."
 );

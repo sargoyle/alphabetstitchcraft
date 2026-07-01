@@ -9,6 +9,7 @@ This file records meaningful test runs for Alphabet Stitch.
 #### Scope
 
 - Added cleanup for `Block Needle 5 x 7` display-name variants not caught by the compact `Block Needle 5x7` cleanup.
+- Made the variant cleanup create `custom_font_backups` if the target Supabase project has not applied the backup migration yet.
 - Improved duplicate-name error logging so conflicts identify whether they came from `default_fonts` or `custom_fonts`.
 - Updated migration-script coverage for the variant cleanup.
 
@@ -34,7 +35,7 @@ This file records meaningful test runs for Alphabet Stitch.
 
 #### Manual Checks Still Required
 
-- Run `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql` in Supabase.
+- Run the updated `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql` in Supabase.
 - Refresh the app and save the visible Block Needle font again.
 - If a duplicate error still appears, note whether it says `default_fonts` or `custom_fonts`.
 
