@@ -1244,3 +1244,24 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Existing utility test runner passes.
+
+### 24.2 Correct Default And Custom Font Save Flow
+
+- [x] Investigate the full font save flow for default/shared and custom/shared fonts.
+- [x] Stop converting default font edits into new UUID custom font create operations.
+- [x] Route non-UUID bundled default font saves to `default_fonts` updates.
+- [x] Keep UUID custom font saves on the existing `custom_fonts` path.
+- [x] Update duplicate-name validation to ignore the current record and reject only different shared records.
+- [x] Add a Supabase policy migration allowing updates to existing public default font rows.
+- [x] Add save-flow utility tests for create/edit/rename duplicate scenarios.
+- [x] Update database, function, rules, task and changelog documentation.
+
+Acceptance checks:
+
+- [x] Editing `Block Needle 5x7` updates `default_fonts` rather than creating a `custom_fonts` duplicate.
+- [x] Renaming a default font is allowed when the name is unique.
+- [x] Renaming a default or custom font to another shared font's name is blocked.
+- [x] Creating and editing UUID custom fonts retains the existing `custom_fonts` behaviour.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

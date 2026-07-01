@@ -112,11 +112,13 @@ Seed source:
 
 - `src/data/fonts.json`
 - `supabase/migrations/202607010001_seed_default_fonts.sql`
+- `supabase/migrations/202607010002_public_default_fonts_update.sql`
 
 RLS:
 
 - Anyone can select rows where `is_public = true`.
-- No client insert, update or delete policies are provided.
+- Anyone can update existing public default font rows under the current no-login shared editing model.
+- No client insert or delete policies are provided for default fonts.
 
 ### custom_fonts
 
@@ -143,6 +145,8 @@ Client persistence:
 - Signed-out or unconfigured environments should not silently save newly created fonts to browser-only storage.
 - Local UUID custom fonts are attempted for upload once database sync is configured.
 - Duplicated bundled fonts must use a `base_default_font_id` that exists in seeded `default_fonts`.
+- Existing UUID fonts update their current `custom_fonts` record.
+- Duplicate-name checks must ignore the current font record and only reject a different shared font with the same name.
 
 ### custom_font_characters
 

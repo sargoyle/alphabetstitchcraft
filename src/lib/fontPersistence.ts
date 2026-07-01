@@ -39,6 +39,19 @@ type RemoteFontRow = {
   updated_at: string;
 };
 
+type RemoteDefaultFontRow = {
+  id: string;
+  name: string;
+  description: string;
+  category: StitchFont["category"];
+  default_height: number;
+  recommended_use: string;
+  licence: string;
+  characters: unknown;
+  created_at: string;
+  updated_at: string;
+};
+
 type RemoteCharacterRow = {
   font_id: string;
   character_key: string;
@@ -64,6 +77,21 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+export function getRemoteFontSaveTarget(font: Pick<StitchFont, "id">) {
+  return isUuid(font.id)
+    ? { table: "custom_fonts" as const, operation: "upsert" as const }
+    : { table: "default_fonts" as const, operation: "update" as const };
+}
+
+export function hasSharedFontNameConflict(
+  fonts: Array<Pick<StitchFont, "id" | "name">>,
+  currentFontId: string,
+  name: string
+) {
+  const normalisedName = name.trim().toLowerCase();
+  return fonts.some((font) => font.id !== currentFontId && font.name.trim().toLowerCase() === normalisedName);
+}
+
 function withTimeout<T>(promise: Promise<T>, message: string, timeoutMs = 6000): Promise<T> {
   return Promise.race([
     promise,
@@ -87,6 +115,25 @@ function validateSharedFont(font: StitchFont) {
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+function toDefaultStitchFont(font: RemoteDefaultFontRow): { font: StitchFont | null; errors: string[] } {
+  const stitchFont: StitchFont = {
+    id: font.id,
+    name: font.name,
+    description: font.description,
+    category: font.category,
+    defaultHeight: font.default_height,
+    recommendedUse: font.recommended_use,
+    licence: font.licence,
+    canEdit: true,
+    createdAt: font.created_at,
+    updatedAt: font.updated_at,
+    characters: font.characters as StitchFont["characters"]
+  };
+
+  const validation = validateSharedFont(stitchFont);
+  return validation.valid ? { font: stitchFont, errors: [] } : { font: null, errors: validation.errors };
 }
 
 function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { font: StitchFont | null; errors: string[] } {
@@ -194,6 +241,39 @@ async function ensureBaseDefaultFontExists(baseDefaultFontId: string) {
   }
 }
 
+async function assertUniqueSharedFontName(name: string, currentFontId: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+
+  const { data: defaultDuplicates, error: defaultDuplicateError } = await supabase
+    .from("default_fonts")
+    .select("id, name")
+    .ilike("name", name)
+    .neq("id", currentFontId)
+    .limit(1);
+
+  if (defaultDuplicateError) throw defaultDuplicateError;
+
+  const { data: customDuplicates, error: customDuplicateError } = await supabase
+    .from("custom_fonts")
+    .select("id, name")
+    .ilike("name", name)
+    .neq("id", currentFontId)
+    .limit(1);
+
+  if (customDuplicateError) throw customDuplicateError;
+
+  if (
+    hasSharedFontNameConflict(
+      [...(defaultDuplicates ?? []), ...(customDuplicates ?? [])] as Array<Pick<StitchFont, "id" | "name">>,
+      currentFontId,
+      name
+    )
+  ) {
+    throw new Error(`Another shared font named "${name}" already exists.`);
+  }
+}
+
 export async function getCurrentRemoteUser() {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
@@ -210,13 +290,46 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
   const supabase = getSupabaseClient();
   if (!supabase) return null;
 
+  const invalidFonts: InvalidRemoteFont[] = [];
+
+  const { data: defaultFontRows, error: defaultFontError } = await supabase
+    .from("default_fonts")
+    .select("*")
+    .order("name", { ascending: true });
+
+  if (defaultFontError) throw defaultFontError;
+
+  const remoteDefaultFonts = ((defaultFontRows ?? []) as unknown as RemoteDefaultFontRow[])
+    .map((font) => {
+      const result = toDefaultStitchFont(font);
+
+      if (result.errors.length) {
+        invalidFonts.push({
+          id: font.id,
+          name: font.name,
+          errors: result.errors
+        });
+      }
+
+      return result.font;
+    })
+    .filter((font): font is StitchFont => Boolean(font));
+
+  if (!defaultFontRows?.length) {
+    invalidFonts.push({
+      id: "default_fonts",
+      name: "Default fonts",
+      errors: ["No default font records were found. Run the default font seed migration before editing bundled fonts."]
+    });
+  }
+
   const { data: fontRows, error: fontError } = await supabase
     .from("custom_fonts")
     .select("*")
     .order("updated_at", { ascending: false });
 
   if (fontError) throw fontError;
-  if (!fontRows?.length) return { fonts: [], invalidFonts: [] };
+  if (!fontRows?.length) return { fonts: remoteDefaultFonts, invalidFonts };
 
   const remoteFontRows = fontRows as unknown as RemoteFontRow[];
   const ids = remoteFontRows.map((font) => font.id);
@@ -227,7 +340,6 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
 
   if (characterError) throw characterError;
 
-  const invalidFonts: InvalidRemoteFont[] = [];
   const fonts = remoteFontRows
     .map((font) => {
       const result = toStitchFont(
@@ -247,7 +359,7 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
     })
     .filter((font): font is StitchFont => Boolean(font));
 
-  return { fonts, invalidFonts };
+  return { fonts: [...remoteDefaultFonts, ...fonts], invalidFonts };
 }
 
 export async function loadRemoteFonts(): Promise<StitchFont[] | null> {
@@ -313,7 +425,7 @@ export async function saveRemoteFont(
   font: StitchFont,
   options: { backupAction?: RemoteFontBackup["action"] | null } = {}
 ): Promise<boolean> {
-  if (!isSupabaseConfigured() || !isUuid(font.id)) return false;
+  if (!isSupabaseConfigured()) return false;
 
   const supabase = getSupabaseClient();
   if (!supabase) return false;
@@ -324,16 +436,34 @@ export async function saveRemoteFont(
   }
 
   const trimmedName = font.name.trim();
-  const { data: duplicateFonts, error: duplicateError } = await supabase
-    .from("custom_fonts")
-    .select("id")
-    .ilike("name", trimmedName)
-    .neq("id", font.id)
-    .limit(1);
+  await assertUniqueSharedFontName(trimmedName, font.id);
 
-  if (duplicateError) throw duplicateError;
-  if (duplicateFonts?.length) {
-    throw new Error(`A shared font named "${trimmedName}" already exists.`);
+  const saveTarget = getRemoteFontSaveTarget(font);
+
+  if (saveTarget.table === "default_fonts") {
+    const defaultFontsTable = supabase.from("default_fonts") as any;
+    const { data, error } = await defaultFontsTable
+      .update({
+        name: trimmedName,
+        description: font.description,
+        category: font.category,
+        default_height: font.defaultHeight,
+        recommended_use: font.recommendedUse,
+        licence: font.licence,
+        characters: font.characters,
+        is_public: true,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", font.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
+      throw new Error(`Default font "${font.id}" was not found in the database. Run the default font seed migration before saving changes.`);
+    }
+
+    return true;
   }
 
   const baseDefaultFontId = font.baseFontId && !isUuid(font.baseFontId) ? font.baseFontId : null;

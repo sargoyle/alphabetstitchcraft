@@ -62,16 +62,11 @@ export function useFonts() {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
   }
 
-  function ensureDatabaseFont(font: StitchFont): StitchFont {
+  function prepareDatabaseFont(font: StitchFont): StitchFont {
     if (isUuid(font.id)) return font;
-    const now = new Date().toISOString();
     return {
       ...font,
-      id: crypto.randomUUID(),
-      baseFontId: font.baseFontId ?? font.id,
-      isCustom: true,
-      createdAt: now,
-      updatedAt: now
+      updatedAt: new Date().toISOString()
     };
   }
 
@@ -140,7 +135,7 @@ export function useFonts() {
   }
 
   async function saveEditableFont(font: StitchFont) {
-    const nextFont = ensureDatabaseFont({ ...font, isCustom: true, updatedAt: new Date().toISOString() });
+    const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });
 
     try {
       const savedRemotely = await saveRemoteFont(nextFont);
@@ -216,7 +211,7 @@ export function useFonts() {
 
   return {
     fonts,
-    customFonts: savedFonts,
+    customFonts: savedFonts.filter((font) => isUuid(font.id)),
     savedFonts,
     deletedFonts,
     persistence,

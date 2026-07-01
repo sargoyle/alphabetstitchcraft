@@ -4,6 +4,46 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Default And Custom Font Save Flow Run
+
+#### Scope
+
+- Fixed save routing for default/shared versus custom/shared fonts.
+- Added a Supabase policy migration for updating existing default font rows.
+- Added utility tests for save target selection and duplicate-name conflict rules.
+- Updated database, font data model, rules, task and changelog documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Added `tests/fontPersistence.test.ts`.
+- Added assertions for default/shared font update targeting.
+- Added assertions for custom/shared font create/edit targeting.
+- Added assertions that duplicate-name validation ignores the current record.
+- Added assertions that renaming to another shared font's name is detected as a conflict.
+
+#### Manual Checks Still Required
+
+- Run `supabase/migrations/202607010002_public_default_fonts_update.sql` in Supabase.
+- Refresh the app and edit `Block Needle 5x7`.
+- Confirm the save updates `default_fonts` and no longer creates a duplicate `custom_fonts` row.
+- Rename a default font to a unique name and confirm it saves.
+- Try renaming a font to another existing shared font name and confirm the clear duplicate-name error appears.
+
 ### Default Font Seed Recovery Run
 
 #### Scope

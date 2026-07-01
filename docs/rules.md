@@ -75,6 +75,8 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Public database font editing remains allowed, but the system must be hardened for safe public use.
 - Public font hardening uses validation, edit history or backups, restore tools and simple abuse monitoring.
 - Public shared font updates, restores and deletes create database-backed backup snapshots in `custom_font_backups` before replacing or removing the current font.
+- Default/shared fonts with non-UUID IDs update existing `default_fonts` rows; custom/shared fonts with UUID IDs save through `custom_fonts`.
+- Duplicate-name checks for font saves ignore the record currently being edited and reject only different shared font records with the same name.
 
 ## Integrations
 - Third-party services, API keys and webhook configurations should be documented here when integration decisions are made.

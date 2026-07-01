@@ -24,6 +24,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - File: `src/lib/databaseTypes.ts`
 - Database migration: `supabase/migrations/202604250001_initial_auth_owned_schema.sql`
 - Database seed migration: `supabase/migrations/202607010001_seed_default_fonts.sql`
+- Database migration: `supabase/migrations/202607010002_public_default_fonts_update.sql`
 - Data source: local default font JSON
 - Data source: Supabase `default_fonts`, `custom_fonts`, `custom_font_characters` and `custom_font_backups`
 - Related UI: font creation and editing flows
@@ -58,6 +59,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Supabase backup snapshots for remote font restore.
 - User-visible error/status reporting for invalid remote fonts that need attention.
 - User-visible error reporting when a custom font references a missing seeded default font.
+- Save target decisions for default font updates and custom font upserts.
 
 ## Worked Examples
 
@@ -114,6 +116,9 @@ Expected output:
 9. Before public update, restore or delete operations, the current database font can be copied into `custom_font_backups`.
 10. Restore actions map a validated backup snapshot back into the same `StitchFont` data model and save path.
 11. Custom font saves that reference bundled default fonts confirm the base default id exists in Supabase before writing `custom_fonts`.
+12. Saves for non-UUID bundled default font IDs update `default_fonts`.
+13. Saves for UUID custom/shared font IDs upsert `custom_fonts` and replace the related character rows.
+14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
 
 ## Rules and Requirements
 
@@ -133,6 +138,10 @@ Expected output:
 | Shared public fonts should have database-backed backup snapshots before update, restore and delete operations. | Confirmed | Implemented | `custom_font_backups` stores validated `StitchFont` snapshots for restore. |
 | Bundled default fonts must be seeded into `default_fonts` before custom fonts can reference them. | Confirmed | Implemented | `202607010001_seed_default_fonts.sql` inserts or updates the bundled default font rows. |
 | Custom font saves with `base_default_font_id` must show a clear error if the referenced default font is missing. | Confirmed | Implemented | `ensureBaseDefaultFontExists()` checks Supabase before the custom font upsert. |
+| Editing a bundled default/shared font must update the existing `default_fonts` record. | Confirmed | Implemented | `getRemoteFontSaveTarget()` sends non-UUID font IDs to `default_fonts` update. |
+| Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
+| Duplicate-name validation must ignore the record currently being edited. | Confirmed | Implemented | `hasSharedFontNameConflict()` compares IDs before reporting a conflict. |
+| Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
 
 ## Negative Rules
 
@@ -147,6 +156,8 @@ Expected output:
 - Must not allow invalid hidden font rows to accumulate in the database without user-visible attention.
 - Must not save a custom font with a `base_default_font_id` that is missing from `default_fonts`.
 - Must not remove the `custom_fonts.base_default_font_id` foreign key to bypass missing seed data.
+- Must not convert a default font edit into a new UUID custom font create operation.
+- Must not report the current edited record as a duplicate of itself.
 
 ## Acceptance Criteria
 
@@ -161,6 +172,10 @@ Expected output:
 - Given invalid remote font rows exist in the database, when fonts are loaded, then the app does not silently hide the issue.
 - Given `default_fonts` is empty and a duplicated bundled font is saved, when the save runs, then the app shows a clear missing default font seed error instead of relying on a raw database foreign-key error.
 - Given the default font seed migration is run more than once, when it completes, then it restores or updates the same default font rows without creating duplicates.
+- Given a default font is edited without changing its name, when saved, then the existing `default_fonts` record is updated and no duplicate-name error is shown for the same record.
+- Given a default font is renamed, when no other shared font has that name, then the same `default_fonts` record is updated.
+- Given a default font is renamed to another shared font's name, when saved, then the save is blocked with a clear duplicate-name error.
+- Given a UUID custom font is edited, when saved, then the existing `custom_fonts` record is updated.
 
 ## Edge Cases
 
@@ -179,6 +194,8 @@ Expected output:
 - `default_fonts` table is empty after project reset.
 - `default_fonts` contains only some bundled font ids.
 - A custom font references a stale base default font id.
+- A default font is renamed to match an existing custom/shared font.
+- A custom/shared font is renamed to match an existing default font.
 
 ## Current Code Behaviour
 
@@ -192,6 +209,8 @@ Expected output:
 - Current implementation status for user-editable categories needs to be checked before implementation or test work.
 - Currently `202607010001_seed_default_fonts.sql` restores the bundled default fonts into Supabase `default_fonts`.
 - Currently `saveRemoteFont()` checks for a referenced base default font before writing to `custom_fonts`.
+- Currently non-UUID bundled default font saves update `default_fonts` instead of creating UUID custom-font records.
+- Currently UUID custom font saves keep using the `custom_fonts` path.
 
 ## Known Gaps / Defects
 
@@ -214,6 +233,9 @@ Expected output:
 - Invalid hidden fonts should not be allowed to accumulate in the database unnoticed.
 - Bundled default fonts must be restorable through an idempotent database seed migration.
 - Missing default font seed data must be reported clearly before custom font saves fail.
+- Existing default/shared font edits update `default_fonts`.
+- Existing custom/shared font edits update `custom_fonts`.
+- Duplicate-name validation ignores the record currently being saved.
 
 ## Suggested Test Areas
 
@@ -229,6 +251,8 @@ Expected output:
 - User-editable category persistence.
 - Default font seed migration idempotency.
 - Custom font save error handling when `default_fonts` is missing a referenced id.
+- Save target selection for default versus custom font IDs.
+- Duplicate-name validation for create, edit and rename flows.
 
 ## Review Checklist
 

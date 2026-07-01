@@ -2,6 +2,7 @@ import "./renderTextToGrid.test";
 import "./renderVisibility.test";
 import "./gridUtils.test";
 import "./fontData.test";
+import "./fontPersistence.test";
 import "./localStorageUtils.test";
 import "./exportUtils.test";
 
