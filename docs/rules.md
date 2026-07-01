@@ -77,6 +77,8 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Public shared font updates, restores and deletes create database-backed backup snapshots in `custom_font_backups` before replacing or removing the current font.
 - Default/shared fonts with non-UUID IDs update existing `default_fonts` rows; custom/shared fonts with UUID IDs save through `custom_fonts`.
 - Duplicate-name checks for font saves ignore the record currently being edited and reject only different shared font records with the same name.
+- Font slug IDs such as `tiny-serif-7x9` must never be passed into UUID database fields or UUID query filters.
+- Default/shared font slug deletes are blocked in the app unless a future `default_fonts` delete policy is intentionally added.
 
 ## Integrations
 - Third-party services, API keys and webhook configurations should be documented here when integration decisions are made.

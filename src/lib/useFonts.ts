@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   deleteRemoteFont,
+  getRemoteFontDeleteTarget,
   loadRemoteFontBackups,
   loadRemoteFontResult,
   restoreRemoteFontBackup,
@@ -12,7 +13,6 @@ import {
 import { defaultFonts } from "./fonts";
 import type { StitchFont } from "./fontTypes";
 import {
-  deleteFont as deleteLocalFont,
   loadCustomFonts,
   loadDeletedFontIds,
   resetFontEdits,
@@ -156,9 +156,13 @@ export function useFonts() {
   }
 
   async function deleteEditableFont(fontId: string) {
-    if (!isUuid(fontId)) {
-      deleteLocalFont(fontId);
-      refresh();
+    const deleteTarget = getRemoteFontDeleteTarget(fontId);
+
+    if (!deleteTarget.allowed) {
+      const message = `Default/shared font "${fontId}" uses a slug ID and cannot be deleted from the app. Create or edit custom fonts instead.`;
+      console.warn(`[useFonts] ${message}`);
+      setPersistence((current) => ({ ...current, message }));
+      window.alert(message);
       return;
     }
 

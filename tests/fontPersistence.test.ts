@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { createBlankFont } from "../src/lib/fontFactory";
-import { getRemoteFontSaveTarget, hasSharedFontNameConflict } from "../src/lib/fontPersistence";
+import {
+  getFontIdKind,
+  getRemoteFontDeleteTarget,
+  getRemoteFontSaveTarget,
+  hasSharedFontNameConflict
+} from "../src/lib/fontPersistence";
 import type { StitchFont } from "../src/lib/fontTypes";
 
 const defaultFont: StitchFont = {
@@ -23,6 +28,10 @@ const defaultFont: StitchFont = {
 const renamedDefaultFont = { ...defaultFont, name: "Renamed Block Needle" };
 const customFont = createBlankFont("Custom Shared Font");
 const editedCustomFont = { ...customFont, name: "Edited Custom Shared Font" };
+const customFontFromDefault = { ...createBlankFont("Copied Tiny Serif"), baseFontId: "tiny-serif-7x9" };
+
+assert.equal(getFontIdKind(defaultFont.id), "slug", "Default/shared font IDs are slugs.");
+assert.equal(getFontIdKind(customFont.id), "uuid", "Custom/shared font IDs are UUIDs.");
 
 assert.deepEqual(
   getRemoteFontSaveTarget(defaultFont),
@@ -46,6 +55,24 @@ assert.deepEqual(
   getRemoteFontSaveTarget(editedCustomFont),
   { table: "custom_fonts", operation: "upsert" },
   "Editing a custom/shared font should save through custom_fonts using the existing UUID."
+);
+
+assert.deepEqual(
+  getRemoteFontSaveTarget(customFontFromDefault),
+  { table: "custom_fonts", operation: "upsert" },
+  "A custom font copied from a default slug should still save by its UUID custom-font ID."
+);
+
+assert.deepEqual(
+  getRemoteFontDeleteTarget(customFont.id),
+  { allowed: true, table: "custom_fonts", idKind: "uuid" },
+  "Deleting a custom font should target custom_fonts by UUID."
+);
+
+assert.deepEqual(
+  getRemoteFontDeleteTarget(defaultFont.id),
+  { allowed: false, table: "default_fonts", idKind: "slug" },
+  "Deleting a default/shared font slug is not allowed through the custom font delete path."
 );
 
 assert.equal(

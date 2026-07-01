@@ -4,6 +4,45 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Slug Versus UUID Font Operation Run
+
+#### Scope
+
+- Fixed duplicate-name validation so slug IDs are not passed to UUID columns.
+- Added explicit save/delete target helpers for default/shared slugs and custom/shared UUIDs.
+- Blocked default/shared slug deletes with a clear message.
+- Added console logging for save and delete target decisions.
+- Expanded font persistence utility tests.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/fontPersistence.test.ts`.
+- Added ID-kind checks for slug versus UUID IDs.
+- Added delete-target checks for UUID custom fonts and default/shared slugs.
+- Added custom-font-from-default-slug save-target coverage.
+
+#### Manual Checks Still Required
+
+- Refresh the app and save `tiny-serif-7x9`.
+- Confirm Supabase no longer logs `invalid input syntax for type uuid: "tiny-serif-7x9"`.
+- Delete a UUID custom/shared font and confirm it is removed from `custom_fonts`.
+- Try deleting a default/shared font and confirm the app shows the clear blocked-delete message.
+
 ### Default And Custom Font Save Flow Run
 
 #### Scope

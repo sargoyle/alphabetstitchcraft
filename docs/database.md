@@ -147,6 +147,8 @@ Client persistence:
 - Duplicated bundled fonts must use a `base_default_font_id` that exists in seeded `default_fonts`.
 - Existing UUID fonts update their current `custom_fonts` record.
 - Duplicate-name checks must ignore the current font record and only reject a different shared font with the same name.
+- Default/shared font slugs must not be passed into `custom_fonts.id`, `custom_font_characters.font_id`, or other UUID columns.
+- Default/shared fonts cannot currently be deleted through the app because `default_fonts` has no public delete policy; UUID custom/shared fonts can be deleted from `custom_fonts`.
 
 ### custom_font_characters
 

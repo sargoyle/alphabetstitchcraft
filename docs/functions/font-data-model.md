@@ -119,6 +119,8 @@ Expected output:
 12. Saves for non-UUID bundled default font IDs update `default_fonts`.
 13. Saves for UUID custom/shared font IDs upsert `custom_fonts` and replace the related character rows.
 14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
+15. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
+16. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs are blocked with a clear message.
 
 ## Rules and Requirements
 
@@ -142,6 +144,8 @@ Expected output:
 | Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
 | Duplicate-name validation must ignore the record currently being edited. | Confirmed | Implemented | `hasSharedFontNameConflict()` compares IDs before reporting a conflict. |
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
+| Font slugs must not be sent to UUID database fields. | Confirmed | Implemented | Custom duplicate-name exclusion only applies `.neq("id", ...)` when the current ID is a UUID. |
+| Default/shared font deletion is not allowed through the app while `default_fonts` has no delete policy. | Confirmed | Implemented | `getRemoteFontDeleteTarget()` blocks slug deletes before any database delete query. |
 
 ## Negative Rules
 
@@ -158,6 +162,8 @@ Expected output:
 - Must not remove the `custom_fonts.base_default_font_id` foreign key to bypass missing seed data.
 - Must not convert a default font edit into a new UUID custom font create operation.
 - Must not report the current edited record as a duplicate of itself.
+- Must not pass default font slugs into UUID database columns or UUID query filters.
+- Must not delete default/shared font slugs through the custom-font delete path.
 
 ## Acceptance Criteria
 
@@ -176,6 +182,9 @@ Expected output:
 - Given a default font is renamed, when no other shared font has that name, then the same `default_fonts` record is updated.
 - Given a default font is renamed to another shared font's name, when saved, then the save is blocked with a clear duplicate-name error.
 - Given a UUID custom font is edited, when saved, then the existing `custom_fonts` record is updated.
+- Given a default/shared font slug is checked for duplicate names, when custom shared fonts are queried, then the slug is not passed to `custom_fonts.id`.
+- Given a UUID custom/shared font is deleted, when the delete runs, then `custom_fonts` is targeted with the UUID.
+- Given a default/shared font slug is deleted, when the user confirms delete, then the app blocks the action with a clear message and does not query UUID delete fields.
 
 ## Edge Cases
 
@@ -196,6 +205,8 @@ Expected output:
 - A custom font references a stale base default font id.
 - A default font is renamed to match an existing custom/shared font.
 - A custom/shared font is renamed to match an existing default font.
+- A default/shared slug such as `tiny-serif-7x9` is used while checking `custom_fonts`.
+- A custom/shared font has a UUID ID but a `baseFontId` slug pointing at a default font.
 
 ## Current Code Behaviour
 
@@ -211,6 +222,8 @@ Expected output:
 - Currently `saveRemoteFont()` checks for a referenced base default font before writing to `custom_fonts`.
 - Currently non-UUID bundled default font saves update `default_fonts` instead of creating UUID custom-font records.
 - Currently UUID custom font saves keep using the `custom_fonts` path.
+- Currently duplicate-name checks avoid passing slug IDs into `custom_fonts.id`.
+- Currently default/shared slug deletes are blocked before the database delete path.
 
 ## Known Gaps / Defects
 
@@ -236,6 +249,8 @@ Expected output:
 - Existing default/shared font edits update `default_fonts`.
 - Existing custom/shared font edits update `custom_fonts`.
 - Duplicate-name validation ignores the record currently being saved.
+- UUID fields and slug fields must remain separate in save/delete logic.
+- Default/shared font deletion is blocked until a deliberate `default_fonts` delete model is designed.
 
 ## Suggested Test Areas
 
@@ -253,6 +268,9 @@ Expected output:
 - Custom font save error handling when `default_fonts` is missing a referenced id.
 - Save target selection for default versus custom font IDs.
 - Duplicate-name validation for create, edit and rename flows.
+- Slug versus UUID handling in duplicate checks.
+- Custom UUID delete targeting.
+- Default/shared slug delete blocking.
 
 ## Review Checklist
 

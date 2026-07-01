@@ -1265,3 +1265,24 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 24.3 Fix Slug Versus UUID Font Operations
+
+- [x] Identify duplicate-name validation as a source of slug values being passed to the UUID `custom_fonts.id` field.
+- [x] Add explicit font ID classification for slug versus UUID IDs.
+- [x] Prevent slug IDs such as `tiny-serif-7x9` from being used in UUID query filters.
+- [x] Add save/delete target helpers for default/shared and custom/shared fonts.
+- [x] Block default/shared slug deletes with a clear user-facing message instead of using the custom-font delete path.
+- [x] Add clear console logging for save and delete target decisions, including whether the ID is a UUID or slug.
+- [x] Add tests for default/shared edit targeting, custom delete targeting, default/shared delete blocking, and custom fonts copied from default slugs.
+- [x] Update database, function, rules, task, changelog and test-run documentation.
+
+Acceptance checks:
+
+- [x] Saving `tiny-serif-7x9` no longer passes that slug into `custom_fonts.id`.
+- [x] UUID custom/shared font deletes target `custom_fonts`.
+- [x] Default/shared slug deletes are blocked before any UUID delete query.
+- [x] Duplicate-name validation still ignores the current record when editing.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

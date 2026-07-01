@@ -77,10 +77,20 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+export function getFontIdKind(fontId: string) {
+  return isUuid(fontId) ? "uuid" : "slug";
+}
+
 export function getRemoteFontSaveTarget(font: Pick<StitchFont, "id">) {
   return isUuid(font.id)
     ? { table: "custom_fonts" as const, operation: "upsert" as const }
     : { table: "default_fonts" as const, operation: "update" as const };
+}
+
+export function getRemoteFontDeleteTarget(fontId: string) {
+  return isUuid(fontId)
+    ? { allowed: true as const, table: "custom_fonts" as const, idKind: "uuid" as const }
+    : { allowed: false as const, table: "default_fonts" as const, idKind: "slug" as const };
 }
 
 export function hasSharedFontNameConflict(
@@ -254,12 +264,17 @@ async function assertUniqueSharedFontName(name: string, currentFontId: string) {
 
   if (defaultDuplicateError) throw defaultDuplicateError;
 
-  const { data: customDuplicates, error: customDuplicateError } = await supabase
+  let customDuplicateQuery = supabase
     .from("custom_fonts")
     .select("id, name")
     .ilike("name", name)
-    .neq("id", currentFontId)
     .limit(1);
+
+  if (isUuid(currentFontId)) {
+    customDuplicateQuery = customDuplicateQuery.neq("id", currentFontId);
+  }
+
+  const { data: customDuplicates, error: customDuplicateError } = await customDuplicateQuery;
 
   if (customDuplicateError) throw customDuplicateError;
 
@@ -439,6 +454,9 @@ export async function saveRemoteFont(
   await assertUniqueSharedFontName(trimmedName, font.id);
 
   const saveTarget = getRemoteFontSaveTarget(font);
+  console.info(
+    `[fontPersistence] Saving font "${font.id}" as ${getFontIdKind(font.id)} via ${saveTarget.table}.${saveTarget.operation}.`
+  );
 
   if (saveTarget.table === "default_fonts") {
     const defaultFontsTable = supabase.from("default_fonts") as any;
@@ -520,7 +538,12 @@ export async function saveRemoteFont(
 }
 
 export async function deleteRemoteFont(fontId: string): Promise<boolean> {
-  if (!isSupabaseConfigured() || !isUuid(fontId)) return false;
+  const deleteTarget = getRemoteFontDeleteTarget(fontId);
+  console.info(
+    `[fontPersistence] Delete requested for font "${fontId}" as ${deleteTarget.idKind}; allowed=${deleteTarget.allowed}.`
+  );
+
+  if (!isSupabaseConfigured() || !deleteTarget.allowed) return false;
 
   const supabase = getSupabaseClient();
   if (!supabase) return false;
