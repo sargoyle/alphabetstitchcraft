@@ -13,6 +13,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Type: `GeneratedPattern`
 - Type: `GeneratorSettings`
 - File: `src/data/fonts.json`
+- Hook: `useFonts()` in `src/lib/useFonts.ts`
 - File: `src/lib/fonts.ts`
 - File: `src/lib/gridUtils.ts`
 - Function: `validateCharacter()` in `src/lib/gridUtils.ts`
@@ -135,6 +136,8 @@ Expected output:
 | Every row length must equal character width. | Confirmed | Implemented | Validation checks this. |
 | Character keys must be single characters in v1. | Confirmed | Unknown | User confirmed this product rule; implementation validation is not clearly confirmed from this doc review. |
 | `defaultHeight` is a baseline/display value, not a strict height for every character. | Confirmed | Implemented | Mixed character heights are allowed by the type and validation rules. |
+| Font refresh must not clear the current saved font list before replacement remote data has loaded. | Confirmed | Implemented | Prevents the UI from flashing back to older bundled/default font versions during save/load refreshes. |
+| Successful font saves should keep the just-saved font in local state while the remote refresh completes. | Confirmed | Implemented | Prevents a brief return to the pre-save version after editing. |
 | Font IDs must be unique. | Confirmed | Partially Implemented | Utility exists; runtime uniqueness enforcement depends on data source. |
 | Fonts must include metadata and character data. | Confirmed | Implemented | Types require these fields. |
 | Font categories should be user-editable. | Confirmed | Unknown | User confirmed categories are editable; current implementation status should be checked before implementation/test work. |
@@ -225,6 +228,8 @@ Expected output:
 - Currently `toStitchFont()` returns `null` for invalid remote mapped fonts and `loadRemoteFontResult()` returns warning details for user attention.
 - Currently database TypeScript types reflect nullable public custom font owners and include `custom_font_backups`.
 - Currently remote font backup rows store a `font_snapshot` JSON value that is validated as a `StitchFont` before being exposed to restore UI.
+- Currently `useFonts().refresh()` keeps existing `savedFonts` in state while remote data reloads.
+- Currently `useFonts().saveFont()` optimistically keeps the saved font in local state after a successful database save while refresh completes.
 - Current implementation status for user-editable categories needs to be checked before implementation or test work.
 - Currently `202607010001_seed_default_fonts.sql` restores the bundled default fonts into Supabase `default_fonts`.
 - Currently `saveRemoteFont()` checks for a referenced base default font before writing to `custom_fonts`.

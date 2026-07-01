@@ -4,6 +4,43 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Character Tile State And Font Refresh Stability Run
+
+#### Scope
+
+- Corrected Font Editor tile state styling so selected characters use the filled style, existing unselected characters use a solid outline and not-created characters use a different-colour dashed outline.
+- Prevented the editor from falling back to the first available font while a requested routed font is still loading.
+- Prevented `useFonts().refresh()` from clearing saved fonts before remote data resolves.
+- Added optimistic saved-font state after successful database saves to avoid flashing back to older font data while refresh completes.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/editorUiSource.test.ts`.
+- Added `tests/fontRefreshSource.test.ts`.
+- Updated `tests/runTests.ts`.
+- Automated output included `font refresh source tests passed.`, `editor UI source tests passed.` and `All utility tests passed.`
+
+#### Manual Checks Still Required
+
+- Open `/editor?font=block-needle-5x7`.
+- Confirm Selected is the filled state, Exists is a solid outline and Not Created is a dashed different-colour outline.
+- Save a font edit and confirm the editor does not briefly flash to an older or different font.
+
 ### Font Editor UI Refinement Run
 
 #### Scope

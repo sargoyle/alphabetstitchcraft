@@ -15,7 +15,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
 - Inline status message: `Font changes saved successfully.`
-- UI pattern: Sidebar font selector, ordered character tile picker, exists/not-created/selected legend, compact duplicate-source dialog, danger zone delete panel, editor footer action row.
+- UI pattern: Sidebar font selector, ordered character tile picker, exists/not-created/selected legend, compact duplicate-source dialog, loading state for requested fonts, danger zone delete panel, editor footer action row.
 
 
 ## Decision Required
@@ -88,9 +88,11 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Character selection should be compact and scannable. | Assumed | Implemented | Current editor uses sidebar character tiles instead of a full-width character dropdown. |
 | Character selection must show A-Z first, then a-z, then 0-9, then other mapped characters. | Confirmed | Implemented | User requested this ordering for the sidebar section. |
 | Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Current UI uses exists, dashed not-created and blue selected states with a legend. |
+| Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | User corrected the legend and border semantics after visual review. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
 | Duplicate selection should copy the selected source into the currently selected character. | Confirmed | Implemented | The selected character remains the destination; source selection changes the draft only. |
 | Width and height controls should sit below the editable character grid. | Confirmed | Implemented | User requested controls and message below the character rather than beside it. |
+| The editor must not briefly fall back to another font while the requested font is loading or refreshing. | Confirmed | Implemented | The editor now shows a loading state for unresolved requested fonts rather than rendering the first font. |
 
 ## Negative Rules
 
@@ -104,6 +106,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not hide not-created standard letters or numbers from the picker.
 - Must not use a dropdown for duplicate-source selection.
 - Must not change the selected destination character when choosing a duplicate source.
+- Must not use the filled tile style for existing unselected characters.
+- Must not flash to the first available font while a routed or selected font is still loading.
 
 ## Acceptance Criteria
 
@@ -120,6 +124,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the Font Editor screen loads, when characters exist for the selected font, then character choices are shown as compact tiles with the active character highlighted.
 - Given the Font Editor screen loads, when the character picker renders, then A-Z appears before a-z, a-z appears before 0-9, and other mapped characters appear last.
 - Given a standard character has not been created, when the picker renders, then the character appears with the not-created border state.
+- Given a character exists and is not selected, when the picker renders, then the character uses a solid outline and not the filled selected style.
+- Given a character is selected, when the picker renders, then the selected character uses the filled tile style with the selected border treatment.
+- Given a font route points to a font that has not loaded yet, when the editor first renders, then it shows a loading state rather than briefly showing another font.
 - Given Select Duplicate is clicked, when the modal opens, then the user can choose Blank or an existing source character from a tile selector.
 - Given a duplicate source is selected, when the user confirms the modal, then the selected destination character draft uses the source grid.
 - Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width or Height fields.
@@ -157,7 +164,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently uses `window.confirm` for font deletion.
 - Currently shows font selection, ordered character tiles, Select Duplicate and delete actions in a left sidebar.
 - Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
-- Currently shows exists, not-created and selected tile states with a legend.
+- Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
+- Currently avoids falling back to the first font while a requested `font` query parameter is unresolved.
 - Currently shows duplicate-source setup in a modal dialog controlled by `newCharacterOpen`.
 - Currently places width and height controls below the editable grid.
 - Currently places Reset and Clear in the editor footer, with Save Character aligned as the primary action.
@@ -194,7 +202,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Delete font from editor.
 - Sidebar character tile active state.
 - Select Duplicate modal open, cancel, blank and duplicate flows.
-- Editor layout source guard for ordered picker, exists/not-created/selected states, duplicate-source grid, modal, danger zone, dimension panel and action footer.
+- Editor layout source guard for ordered picker, exists/not-created/selected states, duplicate-source grid, loading fallback prevention, modal, danger zone, dimension panel and action footer.
 
 ## Review Checklist
 

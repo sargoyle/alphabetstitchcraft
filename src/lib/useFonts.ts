@@ -87,7 +87,6 @@ export function useFonts() {
   async function refresh() {
     const localFonts = loadCustomFonts();
     const localDeletedFontIds = loadDeletedFontIds();
-    setSavedFonts([]);
     setDeletedFontIds(localDeletedFontIds);
 
     if (!isSupabaseConfigured()) {
@@ -123,7 +122,6 @@ export function useFonts() {
         warnings
       });
     } catch (error) {
-      setSavedFonts([]);
       setFontBackups({});
       setPersistence({
         mode: "error",
@@ -152,6 +150,10 @@ export function useFonts() {
       return false;
     }
 
+    setSavedFonts((current) => {
+      const nextFonts = current.filter((savedFont) => savedFont.id !== nextFont.id);
+      return [...nextFonts, nextFont];
+    });
     await refresh();
     setPersistence((current) => ({
       ...current,

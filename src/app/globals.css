@@ -660,29 +660,29 @@ textarea {
 }
 
 .character-tile.exists {
-  border-color: rgba(69, 246, 189, 0.32);
+  border-color: rgba(69, 246, 189, 0.6);
+  border-style: solid;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .character-tile.not-created {
   color: rgba(245, 247, 239, 0.68);
-  border-color: rgba(255, 255, 255, 0.32);
+  border-color: rgba(243, 179, 90, 0.72);
   border-style: dashed;
   background: rgba(255, 255, 255, 0.035);
 }
 
 .character-tile.is-active {
-  color: var(--text);
-  border-color: #2b9dff;
+  color: #03140f;
+  border-color: transparent;
   border-style: solid;
-  box-shadow: 0 0 0 2px rgba(43, 157, 255, 0.18);
-  background: rgba(43, 157, 255, 0.12);
+  box-shadow: 0 0 0 2px rgba(43, 157, 255, 0.72);
+  background: linear-gradient(135deg, var(--accent), #86f8cc);
 }
 
 .character-tile.exists.is-active {
   color: #03140f;
-  background:
-    linear-gradient(135deg, rgba(43, 157, 255, 0.26), rgba(43, 157, 255, 0.16)),
-    linear-gradient(135deg, var(--accent), #86f8cc);
+  background: linear-gradient(135deg, var(--accent), #86f8cc);
 }
 
 .character-picker-legend {
@@ -707,15 +707,16 @@ textarea {
 }
 
 .legend-swatch.exists {
-  background: rgba(69, 246, 189, 0.64);
+  border: 1px solid rgba(69, 246, 189, 0.72);
 }
 
 .legend-swatch.not-created {
-  border: 1px dashed rgba(255, 255, 255, 0.52);
+  border: 1px dashed rgba(243, 179, 90, 0.78);
 }
 
 .legend-swatch.selected {
-  border: 2px solid #2b9dff;
+  border: 2px solid rgba(43, 157, 255, 0.86);
+  background: linear-gradient(135deg, var(--accent), #86f8cc);
 }
 
 .field-label {

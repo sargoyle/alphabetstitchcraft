@@ -37,6 +37,12 @@ assert.ok(
 );
 
 assert.ok(
+  editorClientSource.includes("fontId ? undefined : fonts[0]") &&
+    editorClientSource.includes("Loading font data..."),
+  "EDITOR-UI-010: Editor should avoid falling back to the first font while a requested font is still loading."
+);
+
+assert.ok(
   editorClientSource.includes("Select duplicate") &&
     editorClientSource.includes("duplicate-source-grid") &&
     !editorClientSource.includes("<select\n                  value={sourceCharacterKey}"),

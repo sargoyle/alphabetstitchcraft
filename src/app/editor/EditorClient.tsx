@@ -27,9 +27,9 @@ const orderedBaseCharacters = new Set([...uppercaseCharacters, ...lowercaseChara
 
 export function EditorClient() {
   const params = useSearchParams();
-  const { fonts, saveFont, deleteFont } = useFonts();
+  const { fonts, saveFont, deleteFont, persistence } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
-  const selectedFont = fonts.find((font) => font.id === fontId) ?? fonts[0];
+  const selectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
   const characterKeys = useMemo(() => Object.keys(selectedFont?.characters ?? {}).sort(), [selectedFont]);
   const displayedCharacterKeys = useMemo(() => {
     const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
@@ -93,7 +93,9 @@ export function EditorClient() {
   if (!selectedFont || !character) {
     return (
       <section className="page-stack">
-        <div className="empty-preview">No editable font data is available yet.</div>
+        <div className="empty-preview">
+          {persistence.mode === "loading" ? "Loading font data..." : "No editable font data is available yet."}
+        </div>
       </section>
     );
   }

@@ -1382,3 +1382,26 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.3 Character Tile State And Font Refresh Stability
+
+- [x] Change Selected character styling to the filled tile treatment.
+- [x] Change Exists styling to a solid outline without the filled selected treatment.
+- [x] Change Not Created styling to a different-colour dashed outline.
+- [x] Keep the legend aligned with the actual tile state styling.
+- [x] Prevent the editor from falling back to another font while a requested font is still loading.
+- [x] Prevent font refresh from clearing saved fonts before remote data resolves.
+- [x] Keep the just-saved font in local state while the database refresh completes.
+- [x] Update function documentation for tile states and font refresh behaviour.
+- [x] Add source-level tests for editor fallback and font refresh behaviour.
+
+Acceptance checks:
+
+- [x] Selected is the filled visual state.
+- [x] Existing unselected characters use a solid outline.
+- [x] Not-created characters use a different-colour dashed outline.
+- [x] The editor shows a loading state rather than flashing to the first available font when a routed font is unresolved.
+- [x] Saving does not briefly revert the editor to an older font version while refresh completes.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
