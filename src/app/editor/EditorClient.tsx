@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Trash2, X } from "lucide-react";
+import { Copy, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { cloneFont } from "@/lib/gridUtils";
@@ -20,20 +20,30 @@ function firstCharacter(value: string) {
   return Array.from(value.trim())[0] ?? "";
 }
 
+const uppercaseCharacters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+const lowercaseCharacters = Array.from("abcdefghijklmnopqrstuvwxyz");
+const numberCharacters = Array.from("0123456789");
+const orderedBaseCharacters = new Set([...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters]);
+
 export function EditorClient() {
   const params = useSearchParams();
   const { fonts, saveFont, deleteFont } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const selectedFont = fonts.find((font) => font.id === fontId) ?? fonts[0];
   const characterKeys = useMemo(() => Object.keys(selectedFont?.characters ?? {}).sort(), [selectedFont]);
+  const displayedCharacterKeys = useMemo(() => {
+    const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
+    return [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...otherCharacters];
+  }, [characterKeys]);
   const [characterKey, setCharacterKey] = useState("A");
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [sourceCharacterKey, setSourceCharacterKey] = useState("");
   const [destinationCharacterKey, setDestinationCharacterKey] = useState("");
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
-  const activeKey = characterKeys.includes(characterKey) ? characterKey : characterKeys[0];
-  const destinationKey = firstCharacter(destinationCharacterKey);
+  const activeKey = characterKey;
+  const selectedCharacterExists = Boolean(activeKey && selectedFont?.characters[activeKey]);
+  const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
   const destinationExists = Boolean(destinationKey && selectedFont?.characters[destinationKey]);
   const sourceCharacter = sourceCharacterKey ? selectedFont?.characters[sourceCharacterKey] : null;
   const newCharacter = sourceCharacter
@@ -42,8 +52,8 @@ export function EditorClient() {
         Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10)),
         Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10))
       );
-  const activeEditorKey = creatingCharacter ? destinationKey || "New unmapped character" : activeKey;
-  const character = creatingCharacter ? newCharacter : selectedFont?.characters[activeKey];
+  const activeEditorKey = destinationKey || activeKey || "New unmapped character";
+  const character = creatingCharacter || !selectedCharacterExists ? newCharacter : selectedFont?.characters[activeKey];
   const saveDisabledReason = creatingCharacter
     ? !destinationKey
       ? "Choose a new character before saving."
@@ -115,34 +125,63 @@ export function EditorClient() {
         <div className="character-picker" aria-label="Characters">
           <span className="eyebrow">Characters</span>
           <div className="character-button-grid">
-            {characterKeys.map((key) => (
-              <button
-                className={key === activeKey && !creatingCharacter ? "character-tile is-active" : "character-tile"}
-                key={key}
-                type="button"
-                onClick={() => {
-                  setCharacterKey(key);
-                  setCreatingCharacter(false);
-                  setNewCharacterOpen(false);
-                }}
-              >
-                {key}
-              </button>
-            ))}
+            {displayedCharacterKeys.map((key) => {
+              const exists = Boolean(selectedFont.characters[key]);
+              const selected = key === activeKey;
+              const className = [
+                "character-tile",
+                exists ? "exists" : "not-created",
+                selected ? "is-active" : ""
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              return (
+                <button
+                  className={className}
+                  key={key}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setCharacterKey(key);
+                    setDestinationCharacterKey(key);
+                    setSourceCharacterKey("");
+                    setReplaceExistingCharacter(exists);
+                    setCreatingCharacter(!exists);
+                    setNewCharacterOpen(false);
+                  }}
+                >
+                  {key}
+                </button>
+              );
+            })}
+          </div>
+          <div className="character-picker-legend" aria-label="Character tile legend">
+            <span>
+              <span className="legend-swatch exists" />
+              Exists
+            </span>
+            <span>
+              <span className="legend-swatch not-created" />
+              Not created
+            </span>
+            <span>
+              <span className="legend-swatch selected" />
+              Selected
+            </span>
           </div>
           <button
             className="button secondary new-character-button"
             type="button"
             onClick={() => {
-              setCreatingCharacter(false);
+              setDestinationCharacterKey(activeKey);
               setSourceCharacterKey("");
-              setDestinationCharacterKey("");
-              setReplaceExistingCharacter(false);
+              setReplaceExistingCharacter(Boolean(selectedFont.characters[activeKey]));
               setNewCharacterOpen(true);
             }}
           >
-            <Plus aria-hidden="true" size={17} />
-            New Character
+            <Copy aria-hidden="true" size={17} />
+            Select duplicate
           </button>
         </div>
 
@@ -172,42 +211,40 @@ export function EditorClient() {
             >
               <X aria-hidden="true" size={18} />
             </button>
-            <span className="eyebrow">New character</span>
-            <h2 id="new-character-title">Duplicate or start blank</h2>
-            <p>Create a new mapped character from an existing letter or a blank grid.</p>
+            <span className="eyebrow">Select duplicate</span>
+            <h2 id="new-character-title">Copy into {activeKey}</h2>
+            <p>Choose an existing character to duplicate into the selected character, or start from a blank grid.</p>
             <div className="control-panel">
-              <label>
-                Start from
-                <select
-                  value={sourceCharacterKey}
-                  onChange={(event) => {
-                    setSourceCharacterKey(event.target.value);
+              <span className="field-label">Start from</span>
+              <div className="duplicate-source-grid" aria-label="Duplicate source characters">
+                <button
+                  className={sourceCharacterKey ? "duplicate-source-tile" : "duplicate-source-tile is-active"}
+                  type="button"
+                  onClick={() => {
+                    setSourceCharacterKey("");
+                    setDestinationCharacterKey(activeKey);
                     setCreatingCharacter(true);
                   }}
                 >
-                  <option value="">Blank character</option>
-                  {characterKeys.map((key) => (
-                    <option key={key} value={key}>
-                      Duplicate {key}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                New character
-                <input
-                  value={destinationCharacterKey}
-                  onChange={(event) => {
-                    setDestinationCharacterKey(firstCharacter(event.target.value));
-                    setReplaceExistingCharacter(false);
-                    setCreatingCharacter(true);
-                  }}
-                  placeholder="Type one character"
-                  aria-describedby="new-character-help"
-                />
-              </label>
+                  Blank
+                </button>
+                {characterKeys.map((key) => (
+                  <button
+                    className={sourceCharacterKey === key ? "duplicate-source-tile is-active" : "duplicate-source-tile"}
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      setSourceCharacterKey(key);
+                      setDestinationCharacterKey(activeKey);
+                      setCreatingCharacter(true);
+                    }}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
               <p id="new-character-help" className="form-hint">
-                Save is available after you choose an unmapped character.
+                The selected source will replace the current draft for {activeKey}. Save only happens when you click Save character.
               </p>
               {destinationExists ? (
                 <label className="checkbox-row">
@@ -229,7 +266,7 @@ export function EditorClient() {
                     setNewCharacterOpen(false);
                   }}
                 >
-                  {sourceCharacterKey ? "Duplicate character" : "Start blank"}
+                  {sourceCharacterKey ? "Use duplicate" : "Start blank"}
                 </button>
                 <button className="button secondary" type="button" onClick={() => setNewCharacterOpen(false)}>
                   Cancel

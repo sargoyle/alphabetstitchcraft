@@ -81,40 +81,40 @@ export function CharacterEditor({
             onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
           />
         </div>
-
-        <aside className="dimension-editor-panel" aria-label="Character dimensions">
-          <div className="control-panel dimension-controls">
-            <label>
-              Width
-              <input
-                type="number"
-                min={1}
-                max={24}
-                value={draft.width}
-                onChange={(event) =>
-                  setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))
-                }
-              />
-            </label>
-            <label>
-              Height
-              <input
-                type="number"
-                min={1}
-                max={24}
-                value={draft.height}
-                onChange={(event) =>
-                  setDraft((current) => resizeCharacter(current, current.width, Number(event.target.value)))
-                }
-              />
-            </label>
-          </div>
-          <p className="editor-help-card">
-            <Info aria-hidden="true" size={16} />
-            Width and height define the stitch grid size for this character.
-          </p>
-        </aside>
       </div>
+
+      <aside className="dimension-editor-panel" aria-label="Character dimensions">
+        <div className="control-panel dimension-controls">
+          <label>
+            Width
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={draft.width}
+              onChange={(event) =>
+                setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))
+              }
+            />
+          </label>
+          <label>
+            Height
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={draft.height}
+              onChange={(event) =>
+                setDraft((current) => resizeCharacter(current, current.width, Number(event.target.value)))
+              }
+            />
+          </label>
+        </div>
+        <p className="editor-help-card">
+          <Info aria-hidden="true" size={16} />
+          Width and height define the stitch grid size for this character.
+        </p>
+      </aside>
 
       {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
       {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}

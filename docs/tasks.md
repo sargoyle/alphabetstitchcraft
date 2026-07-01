@@ -1358,3 +1358,27 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.2 Ordered Character Picker And Duplicate Selection
+
+- [x] Order the Font Editor character picker as A-Z, then a-z, then 0-9, then other mapped characters.
+- [x] Show not-created standard characters in the picker instead of hiding them.
+- [x] Add visual states for exists, not-created and selected characters.
+- [x] Add a picker legend explaining the character tile states.
+- [x] Rename the New Character action to Select Duplicate.
+- [x] Replace the duplicate-source dropdown with a tile-based duplicate selector.
+- [x] Copy the selected duplicate source into the currently selected character draft.
+- [x] Move Width, Height and helper text below the editable character grid.
+- [x] Update Character Editor function documentation.
+- [x] Update automated source-level editor UI coverage.
+
+Acceptance checks:
+
+- [x] Characters appear in the requested order: A-Z, a-z, 0-9, then other characters.
+- [x] Missing characters are visible and styled differently from existing characters.
+- [x] Selected character has a distinct border state.
+- [x] Select Duplicate uses tiles rather than a dropdown list.
+- [x] Width and Height controls appear below the character grid.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

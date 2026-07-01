@@ -15,8 +15,32 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes("character-button-grid") && editorClientSource.includes("character-tile is-active"),
+  editorClientSource.includes("character-button-grid") &&
+    editorClientSource.includes("\"character-tile\"") &&
+    editorClientSource.includes("selected ? \"is-active\""),
   "EDITOR-UI-003: Editor sidebar should expose character tile navigation with active state."
+);
+
+assert.ok(
+  editorClientSource.includes("uppercaseCharacters") &&
+    editorClientSource.includes("lowercaseCharacters") &&
+    editorClientSource.includes("numberCharacters") &&
+    editorClientSource.includes("displayedCharacterKeys"),
+  "EDITOR-UI-007: Character picker should order A-Z first, then a-z, then 0-9, then other mapped characters."
+);
+
+assert.ok(
+  editorClientSource.includes("exists ? \"exists\" : \"not-created\"") &&
+    editorClientSource.includes("character-picker-legend") &&
+    editorClientSource.includes("Not created"),
+  "EDITOR-UI-008: Character picker should expose exists, not-created and selected visual states."
+);
+
+assert.ok(
+  editorClientSource.includes("Select duplicate") &&
+    editorClientSource.includes("duplicate-source-grid") &&
+    !editorClientSource.includes("<select\n                  value={sourceCharacterKey}"),
+  "EDITOR-UI-009: Duplicate selection should use a tile picker rather than a dropdown."
 );
 
 assert.ok(
@@ -28,7 +52,7 @@ assert.ok(
   characterEditorSource.includes("character-editor-body") &&
     characterEditorSource.includes("dimension-editor-panel") &&
     characterEditorSource.includes("editor-help-card"),
-  "EDITOR-UI-005: Character editor should place grid and dimension controls in the compact editor body."
+  "EDITOR-UI-005: Character editor should keep dimension controls and help text near the character grid."
 );
 
 assert.ok(
