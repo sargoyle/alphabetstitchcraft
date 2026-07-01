@@ -1190,6 +1190,7 @@ Acceptance checks:
 - [x] Replace the homepage supporting text with alphabet browsing, instant preview and aligned lettering messaging.
 - [x] Rename homepage CTAs to Create Lettering and Browse Alphabets.
 - [x] Update the hero preview to show centred multi-row lettering: CREATE / YOUR OWN / PATTERNS.
+- [x] Set the hero preview font to Block Needle 5x7 with two blank stitch rows between text lines.
 - [x] Replace homepage workflow links with Browse Alphabets, Create Lettering and Edit Fonts action cards.
 - [x] Rename primary navigation labels to Home, Alphabet Library, Create Pattern and Font Editor while preserving existing routes.
 - [x] Update navigation/routing documentation and project rules.
@@ -1199,4 +1200,5 @@ Acceptance checks:
 - [x] Homepage focuses on creating cross-stitch lettering patterns from text.
 - [x] Homepage avoids implementation-focused labels like Fonts, Generator, Render custom text and Manage editable fonts.
 - [x] Action cards link to the relevant existing pages.
+- [x] Centred Lettering Preview uses Block Needle 5x7 and two blank rows between preview text lines.
 - [x] TypeScript compile passes.

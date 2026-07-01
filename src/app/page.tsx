@@ -4,7 +4,8 @@ import { renderTextToGrid } from "@/lib/renderTextToGrid";
 import { TextPatternPreview } from "@/components/TextPatternPreview";
 
 export default function HomePage() {
-  const pattern = renderTextToGrid("CREATE\nYOUR OWN\nPATTERNS", defaultFonts[2], {
+  const previewFont = defaultFonts.find((font) => font.name === "Block Needle 5x7") ?? defaultFonts[0];
+  const pattern = renderTextToGrid("CREATE\nYOUR OWN\nPATTERNS", previewFont, {
     letterSpacing: 1,
     wordSpacing: 3,
     lineSpacing: 2,
