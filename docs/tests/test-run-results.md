@@ -4,6 +4,40 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-01
 
+### Block Needle Name Variant Cleanup Run
+
+#### Scope
+
+- Added cleanup for `Block Needle 5 x 7` display-name variants not caught by the compact `Block Needle 5x7` cleanup.
+- Improved duplicate-name error logging so conflicts identify whether they came from `default_fonts` or `custom_fonts`.
+- Updated migration-script coverage for the variant cleanup.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/migrationScripts.test.ts`.
+- Automated output included `migration script tests passed.` and `All utility tests passed.`
+
+#### Manual Checks Still Required
+
+- Run `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql` in Supabase.
+- Refresh the app and save the visible Block Needle font again.
+- If a duplicate error still appears, note whether it says `default_fonts` or `custom_fonts`.
+
 ### Save Confirmation And Block Needle Cleanup Run
 
 #### Scope

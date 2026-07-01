@@ -26,6 +26,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Database seed migration: `supabase/migrations/202607010001_seed_default_fonts.sql`
 - Database migration: `supabase/migrations/202607010002_public_default_fonts_update.sql`
 - Database cleanup migration: `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql`
+- Database cleanup migration: `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql`
 - Data source: local default font JSON
 - Data source: Supabase `default_fonts`, `custom_fonts`, `custom_font_characters` and `custom_font_backups`
 - Related UI: font creation and editing flows
@@ -61,7 +62,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - User-visible error/status reporting for invalid remote fonts that need attention.
 - User-visible error reporting when a custom font references a missing seeded default font.
 - Save target decisions for default font updates and custom font upserts.
-- Safe cleanup of duplicate `Block Needle 5x7` shared font rows while retaining the canonical `block-needle-5x7` default record and backing up accidental custom duplicates before deletion.
+- Safe cleanup of duplicate `Block Needle 5x7` or `Block Needle 5 x 7` shared font rows while retaining the canonical `block-needle-5x7` default record and backing up accidental custom duplicates before deletion.
 
 ## Worked Examples
 
@@ -123,7 +124,7 @@ Expected output:
 14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
 15. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
 16. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs are blocked with a clear message.
-17. Duplicate `Block Needle 5x7` shared rows are cleaned by retaining `block-needle-5x7`, repointing related custom base references, backing up accidental custom duplicates, and removing accidental duplicate records.
+17. Duplicate `Block Needle 5x7` and `Block Needle 5 x 7` shared rows are cleaned by retaining `block-needle-5x7`, repointing related custom base references, backing up accidental custom duplicates, and removing accidental duplicate records.
 
 ## Rules and Requirements
 
@@ -149,7 +150,7 @@ Expected output:
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
 | Font slugs must not be sent to UUID database fields. | Confirmed | Implemented | Custom duplicate-name exclusion only applies `.neq("id", ...)` when the current ID is a UUID. |
 | Default/shared font deletion is not allowed through the app while `default_fonts` has no delete policy. | Confirmed | Implemented | `getRemoteFontDeleteTarget()` blocks slug deletes before any database delete query. |
-| Duplicate `Block Needle 5x7` records must be cleaned without removing the foreign key constraint. | Confirmed | Implemented | `202607010003_cleanup_duplicate_block_needle.sql` keeps `block-needle-5x7`, repoints `custom_fonts.base_default_font_id`, backs up accidental custom duplicates, and removes duplicate rows. |
+| Duplicate `Block Needle 5x7` or `Block Needle 5 x 7` records must be cleaned without removing the foreign key constraint. | Confirmed | Implemented | `202607010003_cleanup_duplicate_block_needle.sql` handles compact-name duplicates. `202607010004_cleanup_block_needle_name_variants.sql` handles spacing variants. Both keep `block-needle-5x7`, repoint `custom_fonts.base_default_font_id`, back up accidental custom duplicates, and remove duplicate rows. |
 
 ## Negative Rules
 
@@ -190,7 +191,7 @@ Expected output:
 - Given a default/shared font slug is checked for duplicate names, when custom shared fonts are queried, then the slug is not passed to `custom_fonts.id`.
 - Given a UUID custom/shared font is deleted, when the delete runs, then `custom_fonts` is targeted with the UUID.
 - Given a default/shared font slug is deleted, when the user confirms delete, then the app blocks the action with a clear message and does not query UUID delete fields.
-- Given duplicate `Block Needle 5x7` rows exist, when the cleanup migration runs after default fonts are seeded, then only the canonical `block-needle-5x7` default font remains with related custom-font base references repointed to it and accidental custom duplicates backed up before removal.
+- Given duplicate `Block Needle 5x7` or `Block Needle 5 x 7` rows exist, when the cleanup migrations run after default fonts are seeded, then only the canonical `block-needle-5x7` default font remains with related custom-font base references repointed to it and accidental custom duplicates backed up before removal.
 
 ## Edge Cases
 
@@ -213,7 +214,7 @@ Expected output:
 - A custom/shared font is renamed to match an existing default font.
 - A default/shared slug such as `tiny-serif-7x9` is used while checking `custom_fonts`.
 - A custom/shared font has a UUID ID but a `baseFontId` slug pointing at a default font.
-- Duplicate `Block Needle 5x7` rows exist in `default_fonts` or `custom_fonts` from earlier save-flow bugs.
+- Duplicate `Block Needle 5x7` or `Block Needle 5 x 7` rows exist in `default_fonts` or `custom_fonts` from earlier save-flow bugs.
 
 ## Current Code Behaviour
 
@@ -232,6 +233,7 @@ Expected output:
 - Currently duplicate-name checks avoid passing slug IDs into `custom_fonts.id`.
 - Currently default/shared slug deletes are blocked before the database delete path.
 - Currently `202607010003_cleanup_duplicate_block_needle.sql` provides a repeatable cleanup for duplicate `Block Needle 5x7` data created before the save-flow fixes.
+- Currently `202607010004_cleanup_block_needle_name_variants.sql` provides a repeatable cleanup for `Block Needle 5 x 7` spacing variants.
 
 ## Known Gaps / Defects
 
@@ -240,7 +242,7 @@ Expected output:
 - Default font validation exists but is not automatically enforced at every app startup path.
 - Character key single-character enforcement is confirmed as a product rule, but implementation enforcement is not clearly confirmed from the current documentation pass.
 - User-editable font category support is confirmed as a product rule, but implementation status needs code verification.
-- Live Supabase duplicate records cannot be inspected from the local test runner; the cleanup migration must be run and verified in the target Supabase project.
+- Live Supabase duplicate records cannot be inspected from the local test runner; both cleanup migrations must be run and verified in the target Supabase project.
 
 ## Unclear or Assumed Rules
 

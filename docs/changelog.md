@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- 2026-07-01: Added a follow-up Supabase cleanup migration for `Block Needle 5x7` display-name variants such as `Block Needle 5 x 7`. Files affected: `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql`, `tests/migrationScripts.test.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added a repeatable Supabase cleanup migration for duplicate `Block Needle 5x7` shared font records, including backup snapshots for accidental custom duplicates before deletion. Files affected: `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql`, `tests/migrationScripts.test.ts`, `tests/runTests.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added a Supabase migration that allows the current public editing model to update existing default font rows. Files affected: `supabase/migrations/202607010002_public_default_fonts_update.sql`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added an idempotent Supabase seed migration to restore bundled default font records in `default_fonts`. Files affected: `supabase/migrations/202607010001_seed_default_fonts.sql`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
@@ -60,6 +61,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
+- 2026-07-01: Improved duplicate font-name errors so they identify whether the conflict is in `default_fonts` or `custom_fonts`. Files affected: `src/lib/fontPersistence.ts`, `docs/tasks.md`.
 - 2026-07-01: Added inline font save confirmation after successful database saves and local editor failure status when saves fail. Files affected: `src/lib/useFonts.ts`, `src/components/CharacterEditor.tsx`, `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `docs/functions/character-editor.md`, `docs/rules.md`, `docs/tasks.md`.
 - 2026-07-01: Fixed slug-versus-UUID font operations so default font slugs are not passed to UUID fields, custom font deletes target UUID records, and default/shared slug deletes are blocked with a clear message. Files affected: `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `tests/fontPersistence.test.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/rules.md`, `docs/tasks.md`.
 - 2026-07-01: Fixed font save routing so default/shared font edits update `default_fonts`, custom/shared font edits stay in `custom_fonts`, and duplicate-name checks ignore the current record. Files affected: `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `tests/fontPersistence.test.ts`, `tests/runTests.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/rules.md`, `docs/tasks.md`.

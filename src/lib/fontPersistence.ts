@@ -255,7 +255,7 @@ async function assertUniqueSharedFontName(name: string, currentFontId: string) {
   const supabase = getSupabaseClient();
   if (!supabase) return;
 
-  const { data: defaultDuplicates, error: defaultDuplicateError } = await supabase
+  const { data: defaultDuplicateRows, error: defaultDuplicateError } = await supabase
     .from("default_fonts")
     .select("id, name")
     .ilike("name", name)
@@ -274,18 +274,29 @@ async function assertUniqueSharedFontName(name: string, currentFontId: string) {
     customDuplicateQuery = customDuplicateQuery.neq("id", currentFontId);
   }
 
-  const { data: customDuplicates, error: customDuplicateError } = await customDuplicateQuery;
+  const { data: customDuplicateRows, error: customDuplicateError } = await customDuplicateQuery;
 
   if (customDuplicateError) throw customDuplicateError;
 
-  if (
-    hasSharedFontNameConflict(
-      [...(defaultDuplicates ?? []), ...(customDuplicates ?? [])] as Array<Pick<StitchFont, "id" | "name">>,
-      currentFontId,
-      name
-    )
-  ) {
-    throw new Error(`Another shared font named "${name}" already exists.`);
+  const duplicates = [
+    ...((defaultDuplicateRows ?? []) as Array<Pick<StitchFont, "id" | "name">>).map((font) => ({
+      ...font,
+      table: "default_fonts"
+    })),
+    ...((customDuplicateRows ?? []) as Array<Pick<StitchFont, "id" | "name">>).map((font) => ({
+      ...font,
+      table: "custom_fonts"
+    }))
+  ];
+
+  const duplicate = duplicates.find((font) => hasSharedFontNameConflict([font], currentFontId, name));
+
+  if (duplicate) {
+    console.warn(
+      `[fontPersistence] Duplicate shared font name "${name}" while saving "${currentFontId}". ` +
+        `Matched ${duplicate.table} id "${duplicate.id}".`
+    );
+    throw new Error(`Another shared font named "${name}" already exists in ${duplicate.table}.`);
   }
 }
 

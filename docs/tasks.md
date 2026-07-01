@@ -1312,3 +1312,22 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 24.5 Clean Block Needle Name Variant Duplicates
+
+- [x] Identify `Block Needle 5 x 7` as a possible duplicate-name variant not covered by the compact `Block Needle 5x7` cleanup.
+- [x] Add a follow-up cleanup migration that normalises spaces around the `x` in `5x7`.
+- [x] Keep `block-needle-5x7` as the canonical default font row.
+- [x] Repoint duplicate default-font references in `custom_fonts.base_default_font_id` to the canonical row.
+- [x] Back up accidental custom duplicates before deleting them.
+- [x] Improve duplicate-name logging and errors so they identify whether the conflict is in `default_fonts` or `custom_fonts`.
+- [x] Update migration-script coverage and project documentation.
+
+Acceptance checks:
+
+- [x] The variant cleanup catches both `Block Needle 5x7` and `Block Needle 5 x 7`.
+- [x] Accidental custom duplicates are backed up before deletion.
+- [x] Duplicate-name errors now include the conflicting table name.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
