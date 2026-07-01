@@ -1211,6 +1211,8 @@ Acceptance checks:
 - [x] Tighten hero and workflow section alignment within the same page margins.
 - [x] Add a subtle footer with `© Sara Gillard 2026`.
 - [x] Remove the remaining Create Lettering hero button and reduce homepage vertical whitespace.
+- [x] Minimise the vertical space between the How it works section and the footer copyright.
+- [x] Update the homepage heading to say `Create beautiful cross-stitch lettering patterns in minutes.`
 
 Acceptance checks:
 
@@ -1220,3 +1222,5 @@ Acceptance checks:
 - [x] Footer displays `© Sara Gillard 2026`.
 - [x] Desktop and mobile layouts remain responsive.
 - [x] Homepage is more compact and aims to fit one desktop viewport without scrolling.
+- [x] Footer sits close to the How it works section without a large empty gap.
+- [x] Homepage heading includes `lettering patterns`.

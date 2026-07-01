@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-01: Updated the homepage headline to say `Create beautiful cross-stitch lettering patterns in minutes.` Files affected: `src/app/page.tsx`, `docs/tasks.md`.
+- 2026-07-01: Reduced the vertical spacing between the homepage How it works section and copyright footer. Files affected: `src/app/globals.css`, `docs/tasks.md`.
 - 2026-07-01: Further compacted the homepage by removing the remaining hero CTA button and reducing header, hero and workflow spacing. Files affected: `src/app/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 - 2026-07-01: Refined the homepage by removing duplicated hero navigation, replacing action cards with a How it works section, tightening alignment and adding a copyright footer. Files affected: `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 - 2026-07-01: Updated the homepage Centred Lettering Preview to use Block Needle 5x7 with two blank stitch rows between text lines. Files affected: `src/app/page.tsx`, `docs/tasks.md`.

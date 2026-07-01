@@ -16,7 +16,7 @@ export default function HomePage() {
     <section className="hero-grid">
       <div className="hero-copy">
         <span className="eyebrow">Cross-stitch lettering patterns</span>
-        <h1>Create beautiful cross-stitch lettering in minutes.</h1>
+        <h1>Create beautiful cross-stitch lettering patterns in minutes.</h1>
         <p>
           Browse a growing library of stitch alphabets, preview your text instantly, and generate perfectly aligned
           lettering ready for your next pattern.
