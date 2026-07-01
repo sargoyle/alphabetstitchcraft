@@ -1163,3 +1163,21 @@ Acceptance checks:
 
 
 
+## Phase 22: Supabase Keep-Alive Endpoint
+
+### 22.1 Public Keep-Alive Route
+
+- [x] Create `/api/keep-alive`.
+- [x] Use existing Supabase public URL and anon-key configuration.
+- [x] Perform a lightweight read-only count query against `custom_fonts`.
+- [x] Return `{ "status": "ok" }` when the Supabase query succeeds.
+- [x] Return a JSON error response when Supabase is unconfigured or the query fails.
+- [x] Avoid exposing Supabase keys, tokens or environment values in the response.
+- [x] Update matching function documentation.
+
+Acceptance checks:
+
+- [x] Endpoint exists at `/api/keep-alive`.
+- [x] Endpoint does not create, update or delete data.
+- [x] Endpoint fetches only a count.
+- [x] App TypeScript compile passes.

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- 2026-07-01: Added public `/api/keep-alive` Supabase endpoint using a read-only count query. Files affected: `src/app/api/keep-alive/route.ts`, `docs/functions/keep-alive-endpoint.md`, `docs/tasks.md`.
 - 2026-06-09: Added public custom font backup storage and restore controls for baseline shared-library hardening. Files affected: `supabase/migrations/202606090001_public_font_backups.sql`, `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `src/lib/databaseTypes.ts`, `docs/functions/security.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`.
 - 2026-06-05: Added renderer and grid visibility tests for confirmed known gaps, plus render/grid test plans and updated run results. Files affected: `tests/renderVisibility.test.ts`, `tests/runTests.ts`, `tests/exportUtils.test.ts`, `docs/tests/*`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/functions/export-png.md`, `docs/tasks/known-gaps-defects.md`, `docs/tasks.md`.
 - 2026-06-05: Added test planning documentation and expanded automated utility coverage for grid utilities and font data contracts. Files affected: `docs/tests/*`, `tests/gridUtils.test.ts`, `tests/fontData.test.ts`, `tests/runTests.ts`, `docs/tasks.md`.

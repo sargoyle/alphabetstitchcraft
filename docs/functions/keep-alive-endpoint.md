@@ -19,8 +19,8 @@ Created to satisfy the project rule that every new function or feature must have
   - `supabase/migrations/202604260001_public_custom_fonts_read.sql`
   - `supabase/migrations/202604260002_public_custom_fonts_write.sql`
 - Related security documentation: `docs/functions/security.md`
-- Source not found: existing `src/app/api` route handlers.
-- Evidence gap: endpoint implementation does not exist yet.
+- Implemented endpoint: `src/app/api/keep-alive/route.ts`
+- Existing route handlers: `/api/keep-alive` is currently the only app API route found for this feature area.
 
 Note: `src/lib/supabaseClient.ts` is currently marked with `"use client"`. The endpoint should reuse the same Supabase URL and anon-key configuration, but implementation may need a server-safe Supabase helper for route handlers rather than importing a client-only module directly.
 
@@ -28,7 +28,11 @@ Note: `src/lib/supabaseClient.ts` is currently marked with `"use client"`. The e
 
 | Decision | Options | Recommendation | Impact if not confirmed |
 |---|---|---|---|
-| Supabase table to query | `custom_fonts` / `default_fonts` / another existing public table | Query `custom_fonts` with a count-only or one-row read because it is part of the current shared font persistence model | Choosing the wrong table could fail under RLS or not exercise the database connection used by the app. |
+| None currently outstanding for Keep-Alive Endpoint decisions captured in this document. | N/A | N/A | N/A |
+
+Resolved decision:
+
+- The endpoint queries `custom_fonts` using a count-only, read-only request.
 
 ## Inputs
 
@@ -58,17 +62,17 @@ Note: `src/lib/supabaseClient.ts` is currently marked with `"use client"`. The e
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| The endpoint must exist at `/api/keep-alive`. | Confirmed | Not Implemented | User requirement. |
-| The endpoint must be public. | Confirmed | Not Implemented | User wants to ping it externally. |
-| The endpoint must perform a Supabase query. | Confirmed | Not Implemented | Query keeps the database connection active. |
-| The Supabase query must be read-only. | Confirmed | Not Implemented | Must not insert, update, upsert or delete. |
-| The query must fetch only one row or one count. | Confirmed | Not Implemented | Keep-alive should be lightweight. |
-| The success response should be simple JSON such as `{ "status": "ok" }`. | Confirmed | Not Implemented | Keep response small and predictable. |
-| Failed Supabase queries must return an error response. | Confirmed | Not Implemented | Do not report success if Supabase failed. |
-| The endpoint must not expose secret keys in frontend code or responses. | Confirmed | Not Implemented | Use only existing public config and never return key values. |
-| The endpoint should use existing Supabase configuration. | Confirmed | Not Implemented | May require a server-safe helper using the same env values. |
-| The route should not log or return sensitive internals. | Assumed | Not Implemented | Error response should be useful but not leak credentials. |
-| The endpoint should support `GET` only unless another method is explicitly needed. | Assumed | Not Implemented | Keep the public surface minimal. |
+| The endpoint must exist at `/api/keep-alive`. | Confirmed | Implemented | Implemented in `src/app/api/keep-alive/route.ts`. |
+| The endpoint must be public. | Confirmed | Implemented | Route has no auth requirement. |
+| The endpoint must perform a Supabase query. | Confirmed | Implemented | Uses Supabase client with existing public URL/key config. |
+| The Supabase query must be read-only. | Confirmed | Implemented | Uses `select()` only. |
+| The query must fetch only one row or one count. | Confirmed | Implemented | Uses a count-only `select("id", { count: "exact", head: true })`. |
+| The success response should be simple JSON such as `{ "status": "ok" }`. | Confirmed | Implemented | Returns `{ "status": "ok" }`. |
+| Failed Supabase queries must return an error response. | Confirmed | Implemented | Returns JSON error with HTTP 500 on query failure. |
+| The endpoint must not expose secret keys in frontend code or responses. | Confirmed | Implemented | Uses public anon config and does not return env values. |
+| The endpoint should use existing Supabase configuration. | Confirmed | Implemented | Uses the same `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` env values. |
+| The route should not log or return sensitive internals. | Assumed | Implemented | Returns a generic failure message, not the raw Supabase error. |
+| The endpoint should support `GET` only unless another method is explicitly needed. | Assumed | Implemented | Only `GET` is exported. |
 
 ## Negative Rules
 
@@ -108,25 +112,30 @@ Note: `src/lib/supabaseClient.ts` is currently marked with `"use client"`. The e
 
 ## Current Code Behaviour
 
-- No `/api/keep-alive` route currently appears to exist.
+- `/api/keep-alive` currently exists as a Next.js route handler.
 - Existing Supabase configuration uses `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `src/lib/supabaseClient.ts`.
-- Existing Supabase client helper is marked `"use client"`, so a route handler may need a server-safe helper rather than importing it directly.
+- Existing Supabase client helper is marked `"use client"`, so the route handler creates a server-safe Supabase client directly using the same public env values.
+- The endpoint currently performs a count-only, read-only query against `custom_fonts`.
+- The endpoint currently returns `{ "status": "ok" }` on success.
+- The endpoint currently returns a 503 JSON error when Supabase env values are missing.
+- The endpoint currently returns a 500 JSON error when the Supabase query fails.
 - Existing Supabase persistence reads and writes custom font data through Supabase.
 - Current migrations define public custom font read/write policies.
 
 ## Known Gaps / Defects
 
-- `/api/keep-alive` is not implemented yet.
-- A server-safe Supabase route helper may be needed because the existing helper is client-marked.
-- The exact table to query is not yet confirmed, though `custom_fonts` is recommended.
+- No automated route test exists yet for `/api/keep-alive`.
 - No keep-alive monitoring or ping schedule is documented yet.
 
 ## Unclear or Assumed Rules
 
 - Assumption: The endpoint should use `GET` only.
-- Assumption: Querying `custom_fonts` is acceptable for the keep-alive check.
 - Assumption: A count-only query is preferred over fetching row data.
-- Needs confirmation: Should the endpoint return only `{ "status": "ok" }`, or may it include harmless details such as a timestamp?
+
+## Confirmed Product Decisions
+
+- Querying `custom_fonts` is acceptable for the keep-alive check.
+- The endpoint returns only `{ "status": "ok" }` on success.
 
 ## Suggested Test Areas
 

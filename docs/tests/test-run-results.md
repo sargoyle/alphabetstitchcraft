@@ -2,6 +2,34 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
+## 2026-07-01
+
+### Supabase Keep-Alive Endpoint Run
+
+#### Scope
+
+- Added public `GET /api/keep-alive` route.
+- Route performs a read-only count query against `custom_fonts`.
+- Route returns `{ "status": "ok" }` when Supabase responds successfully.
+- Route returns JSON error responses for missing Supabase config or query failure.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+
+#### Manual Checks Still Required
+
+- Start the app locally and visit `/api/keep-alive`.
+- Confirm a configured Supabase project returns `{ "status": "ok" }`.
+- Confirm the route returns a JSON error response if Supabase env values are missing or invalid.
+
 ## 2026-06-09
 
 ### Public Font Backup Hardening Run
