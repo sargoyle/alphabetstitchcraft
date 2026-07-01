@@ -1210,6 +1210,7 @@ Acceptance checks:
 - [x] Keep workflow card links only where they support the described step.
 - [x] Tighten hero and workflow section alignment within the same page margins.
 - [x] Add a subtle footer with `© Sara Gillard 2026`.
+- [x] Remove the remaining Create Lettering hero button and reduce homepage vertical whitespace.
 
 Acceptance checks:
 
@@ -1218,3 +1219,4 @@ Acceptance checks:
 - [x] How it works section explains Choose an alphabet, Add your text and Export your pattern.
 - [x] Footer displays `© Sara Gillard 2026`.
 - [x] Desktop and mobile layouts remain responsive.
+- [x] Homepage is more compact and aims to fit one desktop viewport without scrolling.

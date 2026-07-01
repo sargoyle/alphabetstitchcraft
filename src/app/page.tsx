@@ -21,11 +21,6 @@ export default function HomePage() {
           Browse a growing library of stitch alphabets, preview your text instantly, and generate perfectly aligned
           lettering ready for your next pattern.
         </p>
-        <div className="button-row">
-          <Link className="button primary" href="/generator">
-            Create Lettering
-          </Link>
-        </div>
       </div>
 
       <div className="hero-preview" aria-label="Sample stitch lettering preview">
