@@ -59,6 +59,8 @@ select:focus-visible {
 }
 
 .aura-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   padding: 20px;
   width: 100%;
@@ -121,6 +123,7 @@ select:focus-visible {
 }
 
 main {
+  flex: 1;
   width: 100%;
   margin: 0;
 }
@@ -135,7 +138,14 @@ main {
 .hero-grid {
   grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
   align-items: center;
-  min-height: calc(100vh - 126px);
+  align-content: center;
+  min-height: calc(100vh - 176px);
+  row-gap: 28px;
+  column-gap: 28px;
+}
+
+.hero-copy {
+  align-self: center;
 }
 
 .hero-copy h1,
@@ -183,6 +193,10 @@ main {
   min-width: 0;
 }
 
+.hero-preview {
+  align-self: center;
+}
+
 .editor-panel {
   display: grid;
   align-content: start;
@@ -194,7 +208,8 @@ main {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
+  margin-top: 4px;
 }
 
 .quick-links h2 {
@@ -205,8 +220,11 @@ main {
 
 .quick-links a {
   display: grid;
-  gap: 6px;
-  padding: 14px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 12px;
+  align-items: start;
+  min-height: 128px;
+  padding: 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
@@ -214,12 +232,37 @@ main {
 }
 
 .quick-links a strong {
+  align-self: center;
   color: var(--text);
   font-size: 1.05rem;
 }
 
 .quick-links a span {
+  grid-column: 2;
   line-height: 1.45;
+}
+
+.quick-links a .step-number {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(69, 246, 189, 0.35);
+  border-radius: 999px;
+  color: #02110d;
+  background: linear-gradient(135deg, var(--accent), #74f6c5);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.site-footer {
+  width: 100%;
+  padding: 18px 4px 4px;
+  color: rgba(184, 197, 189, 0.76);
+  font-size: 0.86rem;
+  text-align: center;
 }
 
 .page-stack {

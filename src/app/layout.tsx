@@ -33,6 +33,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </nav>
           </header>
           <main>{children}</main>
+          <footer className="site-footer">© Sara Gillard 2026</footer>
         </div>
       </body>
     </html>

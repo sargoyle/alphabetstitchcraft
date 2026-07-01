@@ -25,9 +25,6 @@ export default function HomePage() {
           <Link className="button primary" href="/generator">
             Create Lettering
           </Link>
-          <Link className="button secondary" href="/fonts">
-            Browse Alphabets
-          </Link>
         </div>
       </div>
 
@@ -42,18 +39,21 @@ export default function HomePage() {
       </div>
 
       <section className="quick-links" aria-labelledby="homepage-actions-heading">
-        <h2 id="homepage-actions-heading">What would you like to do?</h2>
+        <h2 id="homepage-actions-heading">How it works</h2>
         <Link href="/fonts">
-          <strong>Browse Alphabets</strong>
-          <span>Explore the available stitch alphabets.</span>
+          <span className="step-number">1</span>
+          <strong>Choose an alphabet</strong>
+          <span>Browse stitch alphabets and select a lettering style.</span>
         </Link>
         <Link href="/generator">
-          <strong>Create Lettering</strong>
-          <span>Generate centred text for your next project.</span>
+          <span className="step-number">2</span>
+          <strong>Add your text</strong>
+          <span>Enter your wording and preview centred multi-line lettering.</span>
         </Link>
-        <Link href="/editor">
-          <strong>Edit Fonts</strong>
-          <span>Create or customise stitch alphabets.</span>
+        <Link href="/generator">
+          <span className="step-number">3</span>
+          <strong>Export your pattern</strong>
+          <span>Generate a clean pattern ready to print and stitch.</span>
         </Link>
       </section>
     </section>

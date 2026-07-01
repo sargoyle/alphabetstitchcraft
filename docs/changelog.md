@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-01: Refined the homepage by removing duplicated hero navigation, replacing action cards with a How it works section, tightening alignment and adding a copyright footer. Files affected: `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 - 2026-07-01: Updated the homepage Centred Lettering Preview to use Block Needle 5x7 with two blank stitch rows between text lines. Files affected: `src/app/page.tsx`, `docs/tasks.md`.
 - 2026-07-01: Updated homepage messaging, CTA labels, action cards, hero preview text and primary navigation labels to use user-goal language. Files affected: `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `docs/functions/navigation-and-routing.md`, `docs/rules.md`, `docs/tasks.md`.
 - 2026-06-05: Allowed `127.0.0.1` as a Next.js development origin so `/design-system` can be reviewed cleanly from the local browser URL. Files affected: `next.config.ts`.

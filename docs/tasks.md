@@ -1202,3 +1202,19 @@ Acceptance checks:
 - [x] Action cards link to the relevant existing pages.
 - [x] Centred Lettering Preview uses Block Needle 5x7 and two blank rows between preview text lines.
 - [x] TypeScript compile passes.
+
+### 23.2 Homepage Layout, CTAs And Footer
+
+- [x] Remove the secondary Browse Alphabets hero CTA.
+- [x] Replace the repeated bottom action cards with a How it works workflow section.
+- [x] Keep workflow card links only where they support the described step.
+- [x] Tighten hero and workflow section alignment within the same page margins.
+- [x] Add a subtle footer with `© Sara Gillard 2026`.
+
+Acceptance checks:
+
+- [x] Hero has one primary CTA only: Create Lettering.
+- [x] Top navigation remains Home, Alphabet Library, Create Pattern and Font Editor.
+- [x] How it works section explains Choose an alphabet, Add your text and Export your pattern.
+- [x] Footer displays `© Sara Gillard 2026`.
+- [x] Desktop and mobile layouts remain responsive.
