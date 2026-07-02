@@ -2,7 +2,41 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
-## 2026-07-01
+## 2026-07-02
+
+### Blank Starter Grid Not-Created State Run
+
+#### Scope
+
+- Fixed Font Editor character state detection so blank starter grids are not treated as existing created characters.
+- Character tiles now count as Exists only when the character grid contains at least one filled stitch.
+- Updated source-level editor UI coverage for the blank starter-grid rule.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/editorUiSource.test.ts`.
+- Automated output included `editor UI source tests passed.` and `All utility tests passed.`
+
+#### Manual Checks Still Required
+
+- Open a brand-new blank font in `/editor`.
+- Confirm blank starter letters show as Not Created unless they contain filled stitches.
+- Fill and save a character, then confirm it changes to Exists when it is no longer selected.
 
 ### Character Tile State And Font Refresh Stability Run
 
@@ -40,6 +74,8 @@ This file records meaningful test runs for Alphabet Stitch.
 - Open `/editor?font=block-needle-5x7`.
 - Confirm Selected is the filled state, Exists is a solid outline and Not Created is a dashed different-colour outline.
 - Save a font edit and confirm the editor does not briefly flash to an older or different font.
+
+## 2026-07-01
 
 ### Font Editor UI Refinement Run
 

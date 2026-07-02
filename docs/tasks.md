@@ -1405,3 +1405,20 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.4 Blank Starter Grid Not-Created State
+
+- [x] Treat a character as existing only when its grid contains at least one filled stitch.
+- [x] Show blank starter characters in brand-new fonts as Not Created.
+- [x] Keep selected blank characters editable without marking all starter grids as existing.
+- [x] Update Character Editor function documentation.
+- [x] Add source-level coverage for blank starter grids.
+
+Acceptance checks:
+
+- [x] A brand-new blank font shows unfilled starter characters as Not Created.
+- [x] Existing unselected characters still use the Exists solid outline only after they contain filled stitches.
+- [x] Selected characters still use the filled selected treatment.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

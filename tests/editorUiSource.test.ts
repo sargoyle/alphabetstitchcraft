@@ -37,6 +37,13 @@ assert.ok(
 );
 
 assert.ok(
+  editorClientSource.includes("function hasFilledStitches") &&
+    editorClientSource.includes('row.includes("1")') &&
+    editorClientSource.includes("const exists = hasFilledStitches"),
+  "EDITOR-UI-011: Character picker should treat blank starter grids as not-created until they contain filled stitches."
+);
+
+assert.ok(
   editorClientSource.includes("fontId ? undefined : fonts[0]") &&
     editorClientSource.includes("Loading font data..."),
   "EDITOR-UI-010: Editor should avoid falling back to the first font while a requested font is still loading."

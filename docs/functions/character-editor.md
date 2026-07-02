@@ -87,8 +87,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Any visible font can be edited under the current public shared model. | Confirmed | Implemented | User confirmed editing any visible font is acceptable. |
 | Character selection should be compact and scannable. | Assumed | Implemented | Current editor uses sidebar character tiles instead of a full-width character dropdown. |
 | Character selection must show A-Z first, then a-z, then 0-9, then other mapped characters. | Confirmed | Implemented | User requested this ordering for the sidebar section. |
-| Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Current UI uses exists, dashed not-created and blue selected states with a legend. |
-| Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | User corrected the legend and border semantics after visual review. |
+| Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Existing means the character has at least one filled stitch, not merely that a blank starter grid exists. |
+| Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
 | Duplicate selection should copy the selected source into the currently selected character. | Confirmed | Implemented | The selected character remains the destination; source selection changes the draft only. |
 | Width and height controls should sit below the editable character grid. | Confirmed | Implemented | User requested controls and message below the character rather than beside it. |
@@ -107,6 +107,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not use a dropdown for duplicate-source selection.
 - Must not change the selected destination character when choosing a duplicate source.
 - Must not use the filled tile style for existing unselected characters.
+- Must not treat blank starter grids as existing created letters.
 - Must not flash to the first available font while a routed or selected font is still loading.
 
 ## Acceptance Criteria
@@ -124,6 +125,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the Font Editor screen loads, when characters exist for the selected font, then character choices are shown as compact tiles with the active character highlighted.
 - Given the Font Editor screen loads, when the character picker renders, then A-Z appears before a-z, a-z appears before 0-9, and other mapped characters appear last.
 - Given a standard character has not been created, when the picker renders, then the character appears with the not-created border state.
+- Given a brand-new font contains blank starter grids, when the picker renders, then blank characters appear as not-created unless their grid contains at least one filled stitch.
 - Given a character exists and is not selected, when the picker renders, then the character uses a solid outline and not the filled selected style.
 - Given a character is selected, when the picker renders, then the selected character uses the filled tile style with the selected border treatment.
 - Given a font route points to a font that has not loaded yet, when the editor first renders, then it shows a loading state rather than briefly showing another font.
@@ -165,6 +167,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently shows font selection, ordered character tiles, Select Duplicate and delete actions in a left sidebar.
 - Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
+- Currently treats a character as existing only when its grid contains at least one `1` cell.
 - Currently avoids falling back to the first font while a requested `font` query parameter is unresolved.
 - Currently shows duplicate-source setup in a modal dialog controlled by `newCharacterOpen`.
 - Currently places width and height controls below the editable grid.

@@ -20,6 +20,10 @@ function firstCharacter(value: string) {
   return Array.from(value.trim())[0] ?? "";
 }
 
+function hasFilledStitches(character: StitchCharacter | undefined) {
+  return Boolean(character?.grid.some((row) => row.includes("1")));
+}
+
 const uppercaseCharacters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 const lowercaseCharacters = Array.from("abcdefghijklmnopqrstuvwxyz");
 const numberCharacters = Array.from("0123456789");
@@ -42,9 +46,10 @@ export function EditorClient() {
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
   const activeKey = characterKey;
-  const selectedCharacterExists = Boolean(activeKey && selectedFont?.characters[activeKey]);
+  const selectedCharacter = activeKey ? selectedFont?.characters[activeKey] : undefined;
+  const selectedCharacterExists = hasFilledStitches(selectedCharacter);
   const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
-  const destinationExists = Boolean(destinationKey && selectedFont?.characters[destinationKey]);
+  const destinationExists = hasFilledStitches(destinationKey ? selectedFont?.characters[destinationKey] : undefined);
   const sourceCharacter = sourceCharacterKey ? selectedFont?.characters[sourceCharacterKey] : null;
   const newCharacter = sourceCharacter
     ? (JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter)
@@ -53,7 +58,7 @@ export function EditorClient() {
         Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10))
       );
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
-  const character = creatingCharacter || !selectedCharacterExists ? newCharacter : selectedFont?.characters[activeKey];
+  const character = creatingCharacter ? newCharacter : selectedCharacter ?? newCharacter;
   const saveDisabledReason = creatingCharacter
     ? !destinationKey
       ? "Choose a new character before saving."
@@ -128,7 +133,7 @@ export function EditorClient() {
           <span className="eyebrow">Characters</span>
           <div className="character-button-grid">
             {displayedCharacterKeys.map((key) => {
-              const exists = Boolean(selectedFont.characters[key]);
+              const exists = hasFilledStitches(selectedFont.characters[key]);
               const selected = key === activeKey;
               const className = [
                 "character-tile",
@@ -149,7 +154,7 @@ export function EditorClient() {
                     setDestinationCharacterKey(key);
                     setSourceCharacterKey("");
                     setReplaceExistingCharacter(exists);
-                    setCreatingCharacter(!exists);
+                    setCreatingCharacter(false);
                     setNewCharacterOpen(false);
                   }}
                 >
@@ -178,7 +183,7 @@ export function EditorClient() {
             onClick={() => {
               setDestinationCharacterKey(activeKey);
               setSourceCharacterKey("");
-              setReplaceExistingCharacter(Boolean(selectedFont.characters[activeKey]));
+              setReplaceExistingCharacter(hasFilledStitches(selectedFont.characters[activeKey]));
               setNewCharacterOpen(true);
             }}
           >
