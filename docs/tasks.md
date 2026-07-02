@@ -1422,3 +1422,27 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.5 Font-Level Height And Editable Font Name
+
+- [x] Move character height control to the font level.
+- [x] Keep font height selectable from the Font Editor screen.
+- [x] Resize all characters in a font when the font height changes.
+- [x] Ensure saved character edits always match the selected font height.
+- [x] Add editable font name controls to the Font Editor screen.
+- [x] Update font data validation so each character height must match the font height.
+- [x] Normalise bundled font data so every character matches its font height.
+- [x] Update Character Editor function documentation.
+- [x] Update Font Data Model function documentation.
+- [x] Add automated coverage for font-level height validation and editor source structure.
+
+Acceptance checks:
+
+- [x] Font Editor exposes Font name and Font height controls.
+- [x] Character editor no longer exposes per-character height editing.
+- [x] Changing font height applies that height to every character in the font.
+- [x] Saving a character writes it at the font-level height.
+- [x] Font validation rejects characters whose height differs from the font height.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

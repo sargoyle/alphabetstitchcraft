@@ -87,15 +87,16 @@ Input:
 Output:
 - Validation fails because row 2 width does not equal 3.
 
-### Default height as baseline
+### Font height as shared character height
 
 Input:
 - Font `defaultHeight`: `9`
 - Character `A`: height `9`
-- Character punctuation mark: height `5`
+- Character `a`: height `7`
 
 Expected output:
-- The font can still be valid because `defaultHeight` is a baseline/display value, not a strict height requirement for every character.
+- The font is invalid until character `a` is resized to height `9`.
+- The editor should resize every character to the selected font height when font settings are saved.
 
 ### Invalid remote font
 
@@ -135,7 +136,10 @@ Expected output:
 | Character row count must equal character height. | Confirmed | Implemented | Validation checks this. |
 | Every row length must equal character width. | Confirmed | Implemented | Validation checks this. |
 | Character keys must be single characters in v1. | Confirmed | Unknown | User confirmed this product rule; implementation validation is not clearly confirmed from this doc review. |
-| `defaultHeight` is a baseline/display value, not a strict height for every character. | Confirmed | Implemented | Mixed character heights are allowed by the type and validation rules. |
+| `defaultHeight` is the font-level character height. | Confirmed | Implemented | User confirmed every character in a font must have this height. |
+| Every character in a font must have the same height as `defaultHeight`. | Confirmed | Implemented | `validateFont()` reports mismatched character heights and editor font settings resize all characters. |
+| Font height must remain user-selectable at the font level. | Confirmed | Implemented | Font Editor exposes a font-height input and saves it through the font save path. |
+| Font name must be editable from the editor screen. | Confirmed | Implemented | Font Editor exposes a font-name input and saves it through the font save path. |
 | Font refresh must not clear the current saved font list before replacement remote data has loaded. | Confirmed | Implemented | Prevents the UI from flashing back to older bundled/default font versions during save/load refreshes. |
 | Successful font saves should keep the just-saved font in local state while the remote refresh completes. | Confirmed | Implemented | Prevents a brief return to the pre-save version after editing. |
 | Font IDs must be unique. | Confirmed | Partially Implemented | Utility exists; runtime uniqueness enforcement depends on data source. |
@@ -161,7 +165,8 @@ Expected output:
 - Must not treat non-rectangular character data as valid.
 - Must not silently change a character key during mapping.
 - Must not allow multi-character glyph keys in v1 unless a future feature explicitly changes this.
-- Must not treat `defaultHeight` as a strict height that invalidates shorter or taller valid characters.
+- Must not allow mixed character heights inside one font.
+- Must not treat font height as a per-character setting.
 - Must not mutate default font JSON when editing user data.
 - Must not use normal computer font outlines as stitch data in v1.
 - Must not silently skip invalid remote fonts.
@@ -181,7 +186,8 @@ Expected output:
 - Given a character key contains more than one character, when font data is validated for v1, then validation fails or the font is reported as invalid.
 - Given valid default font data, when loaded, then it produces `StitchFont` objects.
 - Given valid remote font and character rows, when mapped, then a valid `StitchFont` is produced.
-- Given a valid font has characters with heights different from `defaultHeight`, when validated, then the font remains valid as long as each character's own height and grid are valid.
+- Given a font has a character with height different from `defaultHeight`, when validated, then validation fails.
+- Given a font height is changed in the editor, when font settings are saved, then every character height and grid row count is updated to the new font height.
 - Given a user edits a font category, when the font is saved, then the selected category is retained with the font data.
 - Given invalid remote character rows, when mapped, then invalid font data is not included in the usable list and an error needing attention is shown.
 - Given invalid remote font rows exist in the database, when fonts are loaded, then the app does not silently hide the issue.
@@ -205,7 +211,7 @@ Expected output:
 - Missing metadata.
 - Remote grid field not an array of strings.
 - Character key longer than one visible character.
-- Mixed character heights inside one font.
+- Existing data with mixed character heights from older versions.
 - Category value missing or not part of the known category set.
 - User changes category before saving a new font.
 - Remote font row exists without valid character rows.
@@ -223,6 +229,7 @@ Expected output:
 
 - Currently defines shared app types in `fontTypes.ts`.
 - Currently validates character dimensions and binary cell values.
+- Currently validates that every character height matches the font `defaultHeight`.
 - Currently loads default font data from JSON without runtime validation in the loading function.
 - Currently validates remote mapped fonts before returning them.
 - Currently `toStitchFont()` returns `null` for invalid remote mapped fonts and `loadRemoteFontResult()` returns warning details for user attention.
@@ -256,7 +263,7 @@ Expected output:
 ## Confirmed Product Decisions
 
 - Character keys are single characters in v1.
-- `defaultHeight` is a baseline, not a strict height for all characters.
+- `defaultHeight` is the font-level height and every character in the font should match it.
 - Font categories should be user-editable.
 - Invalid remote fonts should be shown as errors needing attention, not silently skipped.
 - Invalid hidden fonts should not be allowed to accumulate in the database unnoticed.
@@ -279,7 +286,9 @@ Expected output:
 - Invalid remote font reporting.
 - Default font data validation.
 - Blank font creation data shape.
-- Mixed character heights against `defaultHeight`.
+- Rejection of mixed character heights against `defaultHeight`.
+- Font-level height resizing across every character.
+- Font name editing from the editor screen.
 - User-editable category persistence.
 - Default font seed migration idempotency.
 - Custom font save error handling when `default_fonts` is missing a referenced id.

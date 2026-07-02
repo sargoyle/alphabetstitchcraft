@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Copy, Trash2, X } from "lucide-react";
+import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import type { StitchCharacter } from "@/lib/fontTypes";
-import { cloneFont } from "@/lib/gridUtils";
+import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
 import { useFonts } from "@/lib/useFonts";
 
 function blankCharacter(width = 8, height = 10): StitchCharacter {
@@ -45,6 +45,11 @@ export function EditorClient() {
   const [destinationCharacterKey, setDestinationCharacterKey] = useState("");
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
+  const [fontNameDraft, setFontNameDraft] = useState("");
+  const [fontHeightDraft, setFontHeightDraft] = useState(10);
+  const [fontSettingsStatus, setFontSettingsStatus] = useState<{ type: "success" | "error"; message: string } | null>(
+    null
+  );
   const activeKey = characterKey;
   const selectedCharacter = activeKey ? selectedFont?.characters[activeKey] : undefined;
   const selectedCharacterExists = hasFilledStitches(selectedCharacter);
@@ -67,6 +72,40 @@ export function EditorClient() {
         : undefined
     : undefined;
 
+  useEffect(() => {
+    if (!selectedFont) return;
+    setFontNameDraft(selectedFont.name);
+    setFontHeightDraft(selectedFont.defaultHeight);
+    setFontSettingsStatus(null);
+  }, [selectedFont?.id, selectedFont?.name, selectedFont?.defaultHeight]);
+
+  async function saveFontSettings() {
+    if (!selectedFont) return;
+
+    const nextName = fontNameDraft.trim();
+    const nextHeight = Math.max(1, Math.min(24, Math.round(fontHeightDraft)));
+
+    if (!nextName) {
+      setFontSettingsStatus({ type: "error", message: "Font name is required." });
+      return;
+    }
+
+    const targetFont = resizeFontCharactersHeight(cloneFont(selectedFont), nextHeight);
+    targetFont.name = nextName;
+    targetFont.updatedAt = new Date().toISOString();
+
+    const saved = await saveFont(targetFont);
+    setFontSettingsStatus(
+      saved
+        ? { type: "success", message: "Font settings saved successfully." }
+        : { type: "error", message: "Font settings were not saved." }
+    );
+
+    if (saved) {
+      setFontId(targetFont.id);
+    }
+  }
+
   async function saveCharacter(updated: StitchCharacter) {
     if (!selectedFont) return false;
     const targetKey = creatingCharacter ? destinationKey : activeKey;
@@ -74,7 +113,7 @@ export function EditorClient() {
     if (creatingCharacter && destinationExists && !replaceExistingCharacter) return false;
 
     const targetFont = cloneFont(selectedFont);
-    targetFont.characters[targetKey] = updated;
+    targetFont.characters[targetKey] = resizeCharacter(updated, updated.width, targetFont.defaultHeight);
     const saved = await saveFont(targetFont);
     if (!saved) return false;
 
@@ -128,6 +167,44 @@ export function EditorClient() {
             ))}
           </select>
         </label>
+
+        <div className="font-settings-panel">
+          <span className="eyebrow">Font settings</span>
+          <label>
+            Font name
+            <input
+              value={fontNameDraft}
+              onChange={(event) => {
+                setFontNameDraft(event.target.value);
+                setFontSettingsStatus(null);
+              }}
+              placeholder="Font name"
+            />
+          </label>
+          <label>
+            Font height
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={fontHeightDraft}
+              onChange={(event) => {
+                setFontHeightDraft(Number(event.target.value));
+                setFontSettingsStatus(null);
+              }}
+            />
+          </label>
+          <p className="form-hint">Height applies to every character in this font.</p>
+          <button className="button secondary" type="button" onClick={saveFontSettings}>
+            <Save aria-hidden="true" size={17} />
+            Save font settings
+          </button>
+          {fontSettingsStatus ? (
+            <p className={fontSettingsStatus.type === "success" ? "success-message compact-status" : "warning compact-status"}>
+              {fontSettingsStatus.message}
+            </p>
+          ) : null}
+        </div>
 
         <div className="character-picker" aria-label="Characters">
           <span className="eyebrow">Characters</span>

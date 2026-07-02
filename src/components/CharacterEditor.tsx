@@ -97,22 +97,10 @@ export function CharacterEditor({
               }
             />
           </label>
-          <label>
-            Height
-            <input
-              type="number"
-              min={1}
-              max={24}
-              value={draft.height}
-              onChange={(event) =>
-                setDraft((current) => resizeCharacter(current, current.width, Number(event.target.value)))
-              }
-            />
-          </label>
         </div>
         <p className="editor-help-card">
           <Info aria-hidden="true" size={16} />
-          Width and height define the stitch grid size for this character.
+          Character width is edited here. Font height is set once for the whole font in the sidebar.
         </p>
       </aside>
 

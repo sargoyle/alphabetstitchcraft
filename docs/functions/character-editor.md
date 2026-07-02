@@ -33,7 +33,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Destination character input.
 - Replace-existing checkbox.
 - Draft grid edits.
-- Width and height values.
+- Character width value.
+- Font name draft.
+- Font height draft.
 - Clear, reset, save and delete actions.
 - New Character button action.
 - Select Duplicate button action.
@@ -53,6 +55,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Exists, not-created and selected tile states.
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
 - Compact dimension controls below the editable grid.
+- Editable font name and font-level height controls in the editor sidebar.
 
 ## State Transitions
 
@@ -63,11 +66,13 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 5. Validation runs against draft.
 6. User may select an existing or not-created character tile. Not-created characters open as blank draft characters that can be saved.
 7. User may open Select Duplicate, choose a blank grid or an existing source character from a tile picker, then copy that source into the selected character draft.
-8. Save either updates existing character or writes a new destination character.
-9. Updated font is saved through `useFonts().saveFont()`.
-10. Save success is returned only after the database save and font refresh complete.
-11. Editor shows an inline success message when save succeeds or a local failure status when save fails.
-12. Editor returns to normal character-editing mode after saving a new character.
+8. User may edit the font name or font height in the sidebar and save font settings.
+9. Font height save resizes every character in the font to the selected height.
+10. Character save either updates an existing character or writes a new destination character at the current font height.
+11. Updated font is saved through `useFonts().saveFont()`.
+12. Save success is returned only after the database save and font refresh complete.
+13. Editor shows an inline success message when save succeeds or a local failure status when save fails.
+14. Editor returns to normal character-editing mode after saving a new character.
 
 ## Rules and Requirements
 
@@ -76,7 +81,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Users must be able to toggle cells. | Confirmed | Implemented | CharacterGrid editable mode. |
 | Users must be able to clear a character. | Confirmed | Implemented | Clear button. |
 | Users must be able to reset a character. | Confirmed | Implemented | Reset button. |
-| Users must be able to resize width and height. | Confirmed | Implemented | Number inputs and `resizeCharacter()`. |
+| Users must be able to resize character width. | Confirmed | Implemented | Character width remains editable per character. |
 | Save must prevent invalid grids. | Confirmed | Implemented | Validation disables save. |
 | New duplicated characters must require a destination key. | Confirmed | Implemented | Save disabled reason. |
 | Destination characters must be one visible character. | Confirmed | Implemented | User confirmed destination should be one visible character; current code uses the first typed character. |
@@ -91,7 +96,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
 | Duplicate selection should copy the selected source into the currently selected character. | Confirmed | Implemented | The selected character remains the destination; source selection changes the draft only. |
-| Width and height controls should sit below the editable character grid. | Confirmed | Implemented | User requested controls and message below the character rather than beside it. |
+| Character width controls should sit below the editable character grid. | Confirmed | Implemented | Font height is controlled in the sidebar; character width stays below the grid. |
+| Font height must be set at the font level. | Confirmed | Implemented | The editor exposes font height in the sidebar and character save resizes the saved character to the font height. |
+| Every character in a font must have the same height as the font height. | Confirmed | Implemented | Saving font settings resizes all characters to the selected font height. |
+| Font height must remain selectable on the font. | Confirmed | Implemented | Font height is editable from the editor sidebar. |
+| Font name must be editable on the editor screen. | Confirmed | Implemented | Font name is editable from the editor sidebar. |
+| Character height must not be edited per character. | Confirmed | Implemented | Character editor now only exposes character width; height is controlled by the font. |
 | The editor must not briefly fall back to another font while the requested font is loading or refreshing. | Confirmed | Implemented | The editor now shows a loading state for unresolved requested fonts rather than rendering the first font. |
 
 ## Negative Rules
@@ -102,12 +112,15 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not mutate the selected font object directly without cloning.
 - Must not lose the selected font after save.
 - Must not leave the full new-character form permanently expanded on the editor screen.
-- Must not let editor action buttons overlap width or height controls.
+- Must not let editor action buttons overlap character width or font-height controls.
 - Must not hide not-created standard letters or numbers from the picker.
 - Must not use a dropdown for duplicate-source selection.
 - Must not change the selected destination character when choosing a duplicate source.
 - Must not use the filled tile style for existing unselected characters.
 - Must not treat blank starter grids as existing created letters.
+- Must not allow one character in a font to have a different height from the font height.
+- Must not expose per-character height editing while height is a font-level setting.
+- Must not save a blank font name.
 - Must not flash to the first available font while a routed or selected font is still loading.
 
 ## Acceptance Criteria
@@ -131,8 +144,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given a font route points to a font that has not loaded yet, when the editor first renders, then it shows a loading state rather than briefly showing another font.
 - Given Select Duplicate is clicked, when the modal opens, then the user can choose Blank or an existing source character from a tile selector.
 - Given a duplicate source is selected, when the user confirms the modal, then the selected destination character draft uses the source grid.
-- Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width or Height fields.
-- Given the editor grid is visible, when width and height controls render, then they appear below the character grid and not beside it.
+- Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width field or font settings fields.
+- Given the editor grid is visible, when character dimension controls render, then character Width appears below the character grid and Height is controlled in the sidebar.
+- Given the editor screen is open, when the user changes the font name and saves font settings, then the font is saved with the new name.
+- Given the editor screen is open, when the user changes font height and saves font settings, then every character in the font is resized to the selected height.
+- Given a character is edited and saved, when the character is written to the font, then its height matches the font height.
+- Given the character editor is shown, when dimension controls render, then only character width is editable in the character panel.
 
 ## Edge Cases
 
@@ -142,7 +159,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Destination input longer than one character.
 - Blank destination input.
 - Replace existing unchecked.
-- Width/height outside bounds.
+- Width or font-height outside bounds.
 - Save failure from database.
 - Delete currently selected font.
 - Fonts with many mapped characters.
@@ -152,6 +169,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Selecting an unmapped uppercase, lowercase or numeric character.
 - Fonts with no lowercase mappings.
 - Source duplicate selection into an existing character.
+- Font height changed after multiple characters already contain stitches.
+- Font name cleared before saving settings.
+- Remote save failure after font settings are changed.
 
 ## Current Code Behaviour
 
@@ -170,7 +190,10 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently treats a character as existing only when its grid contains at least one `1` cell.
 - Currently avoids falling back to the first font while a requested `font` query parameter is unresolved.
 - Currently shows duplicate-source setup in a modal dialog controlled by `newCharacterOpen`.
-- Currently places width and height controls below the editable grid.
+- Currently places character width controls below the editable grid.
+- Currently places font name and font height controls in the editor sidebar.
+- Currently resizes every character to the selected font height when font settings are saved.
+- Currently resizes saved character edits to the selected font height before saving.
 - Currently places Reset and Clear in the editor footer, with Save Character aligned as the primary action.
 
 ## Known Gaps / Defects
@@ -206,6 +229,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Sidebar character tile active state.
 - Select Duplicate modal open, cancel, blank and duplicate flows.
 - Editor layout source guard for ordered picker, exists/not-created/selected states, duplicate-source grid, loading fallback prevention, modal, danger zone, dimension panel and action footer.
+- Font settings source guard for editable font name, font-level height and no per-character height input.
 
 ## Review Checklist
 

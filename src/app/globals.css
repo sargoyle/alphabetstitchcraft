@@ -628,9 +628,21 @@ textarea {
 }
 
 .character-picker,
+.font-settings-panel,
 .danger-zone {
   display: grid;
   gap: 10px;
+}
+
+.font-settings-panel {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.compact-status {
+  margin: 0;
 }
 
 .character-button-grid {
@@ -886,7 +898,7 @@ textarea {
 }
 
 .dimension-controls {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(220px, 420px);
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;

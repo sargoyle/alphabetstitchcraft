@@ -39,6 +39,9 @@ export function validateFont(font: StitchFont): ValidationResult {
   for (const [key, character] of Object.entries(font.characters || {})) {
     const result = validateCharacter(character, `${font.id}:${key}`);
     errors.push(...result.errors);
+    if (Number.isInteger(font.defaultHeight) && character.height !== font.defaultHeight) {
+      errors.push(`${font.id}:${key} height must match font height ${font.defaultHeight}.`);
+    }
   }
 
   return { valid: errors.length === 0, errors };
@@ -63,15 +66,34 @@ export function clearCharacter(character: StitchCharacter): StitchCharacter {
   };
 }
 
+function clampGridDimension(value: number, fallback = 1) {
+  const nextValue = Number.isFinite(value) ? value : fallback;
+  return Math.max(1, Math.min(24, Math.round(nextValue)));
+}
+
 export function resizeCharacter(character: StitchCharacter, width: number, height: number): StitchCharacter {
-  const safeWidth = Math.max(1, Math.min(24, Math.round(width)));
-  const safeHeight = Math.max(1, Math.min(24, Math.round(height)));
+  const safeWidth = clampGridDimension(width, character.width);
+  const safeHeight = clampGridDimension(height, character.height);
   const grid = Array.from({ length: safeHeight }, (_, rowIndex) => {
     const existing = character.grid[rowIndex] ?? "";
     return existing.padEnd(safeWidth, "0").slice(0, safeWidth);
   });
 
   return { width: safeWidth, height: safeHeight, grid };
+}
+
+export function resizeFontCharactersHeight(font: StitchFont, height: number): StitchFont {
+  const safeHeight = clampGridDimension(height, font.defaultHeight);
+  return {
+    ...font,
+    defaultHeight: safeHeight,
+    characters: Object.fromEntries(
+      Object.entries(font.characters).map(([key, character]) => [
+        key,
+        resizeCharacter(character, character.width, safeHeight)
+      ])
+    )
+  };
 }
 
 export function cloneFont(font: StitchFont): StitchFont {
@@ -92,4 +114,3 @@ export function setGridCell(character: StitchCharacter, row: number, column: num
 export function toggleGridCell(character: StitchCharacter, row: number, column: number): StitchCharacter {
   return setGridCell(character, row, column, character.grid[row]?.[column] !== "1");
 }
-

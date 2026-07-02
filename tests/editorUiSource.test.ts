@@ -44,6 +44,14 @@ assert.ok(
 );
 
 assert.ok(
+  editorClientSource.includes("fontNameDraft") &&
+    editorClientSource.includes("fontHeightDraft") &&
+    editorClientSource.includes("saveFontSettings") &&
+    editorClientSource.includes("resizeFontCharactersHeight"),
+  "EDITOR-UI-012: Editor should expose editable font name and font-level height settings."
+);
+
+assert.ok(
   editorClientSource.includes("fontId ? undefined : fonts[0]") &&
     editorClientSource.includes("Loading font data..."),
   "EDITOR-UI-010: Editor should avoid falling back to the first font while a requested font is still loading."
@@ -66,6 +74,12 @@ assert.ok(
     characterEditorSource.includes("dimension-editor-panel") &&
     characterEditorSource.includes("editor-help-card"),
   "EDITOR-UI-005: Character editor should keep dimension controls and help text near the character grid."
+);
+
+assert.ok(
+  !characterEditorSource.includes("Height\n            <input") &&
+    characterEditorSource.includes("Font height is set once for the whole font"),
+  "EDITOR-UI-013: Character editor should not expose per-character height editing."
 );
 
 assert.ok(

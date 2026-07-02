@@ -4,6 +4,39 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-02
 
+### Font-Level Height And Editable Font Name Run
+
+#### Scope
+
+- Updated the Font Editor so font name and font height are edited as font-level settings.
+- Added validation coverage that every character height must match the font height.
+- Added source-level checks that per-character height editing is no longer exposed.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/fontData.test.ts`.
+- Updated `tests/editorUiSource.test.ts`.
+
+#### Findings
+
+- Initial app TypeScript compile timed out at two minutes without reporting an error; rerunning with a longer timeout passed.
+- Automated output included `fontData tests passed.`, `editor UI source tests passed.` and `All utility tests passed.`
+
 ### Blank Starter Grid Not-Created State Run
 
 #### Scope
