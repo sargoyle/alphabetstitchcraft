@@ -606,7 +606,7 @@ textarea {
 
 .editor-workspace {
   display: grid;
-  grid-template-columns: minmax(230px, 260px) minmax(250px, 290px) minmax(0, 1fr);
+  grid-template-columns: minmax(230px, 260px) minmax(350px, 390px) minmax(0, 1fr);
   align-items: start;
   gap: 10px;
 }
@@ -633,8 +633,8 @@ textarea {
 }
 
 .editor-character-panel {
-  max-height: calc(100vh - 104px);
-  overflow: hidden;
+  max-height: none;
+  overflow: visible;
 }
 
 .character-picker,
@@ -657,11 +657,11 @@ textarea {
 
 .character-button-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
-  max-height: min(430px, calc(100vh - 310px));
-  overflow: auto;
-  padding-right: 2px;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .character-tile {

@@ -97,6 +97,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Font Editor must use three desktop panels: Font panel, Character panel and Character editor panel. | Confirmed | Implemented | Font selector/settings/delete are separated from character selection and editing. |
 | Font actions must live in the Font panel. | Confirmed | Implemented | Delete Font remains in the Font panel Danger Zone only. |
 | Character selection and duplicate/create controls must live in the Character panel. | Confirmed | Implemented | Character picker, legend and Select Duplicate sit in their own middle panel. |
+| Desktop Character panel should be wide enough to avoid an internal character-picker scrollbar where practical. | Confirmed | Implemented | Desktop uses a wider middle panel and seven character columns. |
 | Character editing and save actions must live in the Character editor panel. | Confirmed | Implemented | Selected character grid, width, Reset, Clear and Save Character are grouped in the right panel. |
 | Delete Font copy must clarify that it deletes the full font and all characters. | Confirmed | Implemented | Danger Zone text says `Deletes the full font and all characters permanently.` |
 | Character selection must show A-Z first, then a-z, then 0-9, then other mapped characters. | Confirmed | Implemented | User requested this ordering for the sidebar section. |
@@ -163,6 +164,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the Font Editor opens on desktop, when the layout renders, then Font panel, Character panel and Character editor panel appear as separate side-by-side areas.
 - Given the Font panel renders, when the user reviews destructive actions, then Delete Font appears only in the Danger Zone and explains that it deletes the full font and all characters.
 - Given the Character panel renders, when many characters exist, then character scrolling stays within the character picker area.
+- Given the Font Editor renders on desktop, when the character picker shows the standard alphabet set, then the Character panel is wide enough to show seven tile columns without its own scrollbar.
 - Given the Character editor panel renders, when selected character controls are visible, then grid, width, guidance text, Reset, Clear and Save Character remain grouped in the editor panel.
 
 ## Edge Cases
@@ -181,7 +183,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Duplicating a source character into a destination key.
 - Mobile layout where dimension controls stack below the grid.
 - Tablet layout where the three panels stack into a usable single column.
-- Narrow desktop layout where the character picker scrolls inside the character panel.
+- Narrow desktop layout where the wider character panel must still leave enough room for the editor panel.
 - Selecting an unmapped uppercase, lowercase or numeric character.
 - Fonts with no lowercase mappings.
 - Source duplicate selection into an existing character.
@@ -201,7 +203,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.
 - Currently shows font selection, font settings and Delete Font in a dedicated Font panel.
-- Currently shows ordered character tiles, legend and Select Duplicate in a dedicated Character panel.
+- Currently shows ordered character tiles, legend and Select Duplicate in a wider dedicated Character panel with seven desktop columns and no internal desktop scrollbar.
 - Currently shows selected character grid, width, guidance text, Reset, Clear and Save Character in a compact Character editor panel.
 - Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.

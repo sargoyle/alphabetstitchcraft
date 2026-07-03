@@ -4,6 +4,38 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-03
 
+### Wider Font Editor Character Panel Run
+
+#### Scope
+
+- Widened the Font Editor Character panel on desktop.
+- Restored seven desktop character tile columns.
+- Removed the desktop character-picker scrollbar where the standard alphabet set fits.
+- Added source-level coverage for the wider no-scroll desktop character picker.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/editorUiSource.test.ts`.
+
+#### Findings
+
+- Automated output included `editor UI source tests passed.` and `All utility tests passed.`
+
 ### Compact Three-Panel Font Editor Layout Run
 
 #### Scope

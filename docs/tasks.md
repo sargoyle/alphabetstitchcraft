@@ -1471,3 +1471,22 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.7 Wider Font Editor Character Panel
+
+- [x] Widen the Font Editor Character panel on desktop.
+- [x] Restore seven desktop character tile columns.
+- [x] Remove the desktop character-picker scrollbar where the standard alphabet set fits.
+- [x] Keep smaller-screen responsive stacking intact.
+- [x] Update Character Editor function documentation.
+- [x] Update automated source-level editor UI coverage.
+
+Acceptance checks:
+
+- [x] Character panel is wider on desktop.
+- [x] Character tiles render in seven columns on desktop.
+- [x] The character picker does not show its own scrollbar for the standard alphabet view on desktop.
+- [x] The character editor panel remains usable with the wider middle panel.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

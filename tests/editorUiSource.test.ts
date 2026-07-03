@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const editorClientSource = readFileSync("src/app/editor/EditorClient.tsx", "utf8");
 const characterEditorSource = readFileSync("src/components/CharacterEditor.tsx", "utf8");
+const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 
 assert.ok(
   editorClientSource.includes("newCharacterOpen"),
@@ -14,6 +15,14 @@ assert.ok(
     editorClientSource.includes("editor-character-panel") &&
     editorClientSource.includes("editor-main"),
   "EDITOR-UI-014: Font Editor should use separate font, character and character-editor panels."
+);
+
+assert.ok(
+  globalCssSource.includes("minmax(350px, 390px)") &&
+    globalCssSource.includes("grid-template-columns: repeat(7, minmax(0, 1fr));") &&
+    globalCssSource.includes("max-height: none;") &&
+    globalCssSource.includes("overflow: visible;"),
+  "EDITOR-UI-015: Desktop character panel should be wide enough to avoid a character picker scrollbar."
 );
 
 assert.ok(
