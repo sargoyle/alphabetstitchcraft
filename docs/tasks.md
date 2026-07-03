@@ -1446,3 +1446,28 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.6 Compact Three-Panel Font Editor Layout
+
+- [x] Split the Font Editor into Font panel, Character panel and Character editor panel.
+- [x] Keep font selector, font settings and Danger Zone in the Font panel.
+- [x] Move character selector, legend and Select Duplicate into a separate Character panel.
+- [x] Keep selected character grid, width, guidance, Reset, Clear and Save Character in the Character editor panel.
+- [x] Update Delete Font copy to clarify it deletes the full font and all characters.
+- [x] Keep character scrolling inside the Character panel.
+- [x] Preserve stacked responsive behaviour for smaller screens.
+- [x] Update Character Editor function documentation.
+- [x] Update automated source-level editor UI coverage.
+
+Acceptance checks:
+
+- [x] Desktop Font Editor uses a compact three-column layout.
+- [x] Character selector is separated from Font Settings.
+- [x] Character editor panel no longer stretches awkwardly across the full page.
+- [x] Font height remains managed at font level.
+- [x] Character width remains managed at character level.
+- [x] Delete Font remains a font-level Danger Zone action.
+- [x] Save Character remains clear and available.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

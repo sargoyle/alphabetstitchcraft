@@ -2,6 +2,39 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
+## 2026-07-03
+
+### Compact Three-Panel Font Editor Layout Run
+
+#### Scope
+
+- Split the Font Editor into Font, Character and Character editor panels.
+- Tightened the selected-character editor panel with grid, width, guidance and actions grouped together.
+- Updated source-level coverage for the three-panel layout and full-font delete copy.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/editorUiSource.test.ts`.
+
+#### Findings
+
+- Automated output included `editor UI source tests passed.` and `All utility tests passed.`
+
 ## 2026-07-02
 
 ### Font-Level Height And Editable Font Name Run

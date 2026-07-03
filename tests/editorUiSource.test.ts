@@ -10,6 +10,13 @@ assert.ok(
 );
 
 assert.ok(
+  editorClientSource.includes("editor-font-panel") &&
+    editorClientSource.includes("editor-character-panel") &&
+    editorClientSource.includes("editor-main"),
+  "EDITOR-UI-014: Font Editor should use separate font, character and character-editor panels."
+);
+
+assert.ok(
   editorClientSource.includes('role="dialog"') && editorClientSource.includes('aria-modal="true"'),
   "EDITOR-UI-002: New-character creation should render as an accessible dialog."
 );
@@ -65,15 +72,17 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes("danger-zone") && editorClientSource.includes("Delete Font..."),
-  "EDITOR-UI-004: Editor sidebar should keep delete controls in a danger zone."
+  editorClientSource.includes("danger-zone") &&
+    editorClientSource.includes("Delete Font...") &&
+    editorClientSource.includes("Deletes the full font and all characters permanently."),
+  "EDITOR-UI-004: Editor font panel should keep delete controls in a danger zone with full-font delete copy."
 );
 
 assert.ok(
-  characterEditorSource.includes("character-editor-body") &&
-    characterEditorSource.includes("dimension-editor-panel") &&
+  characterEditorSource.includes("character-editor-layout") &&
+    characterEditorSource.includes("character-editor-controls") &&
     characterEditorSource.includes("editor-help-card"),
-  "EDITOR-UI-005: Character editor should keep dimension controls and help text near the character grid."
+  "EDITOR-UI-005: Character editor should keep grid, width controls, help text and save actions in a compact editor layout."
 );
 
 assert.ok(

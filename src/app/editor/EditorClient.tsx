@@ -146,7 +146,7 @@ export function EditorClient() {
 
   return (
     <section className="editor-workspace">
-      <aside className="editor-sidebar" aria-label="Font editor controls">
+      <aside className="editor-sidebar editor-font-panel" aria-label="Font settings and font actions">
         <label>
           Font
           <select
@@ -206,6 +206,17 @@ export function EditorClient() {
           ) : null}
         </div>
 
+        <div className="danger-zone">
+          <span className="eyebrow">Danger zone</span>
+          <p>Deletes the full font and all characters permanently.</p>
+          <button className="button danger" type="button" onClick={removeSelectedFont}>
+            <Trash2 aria-hidden="true" size={17} />
+            Delete Font...
+          </button>
+        </div>
+      </aside>
+
+      <aside className="editor-sidebar editor-character-panel" aria-label="Character selection and duplicate controls">
         <div className="character-picker" aria-label="Characters">
           <span className="eyebrow">Characters</span>
           <div className="character-button-grid">
@@ -266,15 +277,6 @@ export function EditorClient() {
           >
             <Copy aria-hidden="true" size={17} />
             Select duplicate
-          </button>
-        </div>
-
-        <div className="danger-zone">
-          <span className="eyebrow">Danger zone</span>
-          <p>Delete this font and all of its characters permanently.</p>
-          <button className="button danger" type="button" onClick={removeSelectedFont}>
-            <Trash2 aria-hidden="true" size={17} />
-            Delete Font...
           </button>
         </div>
       </aside>

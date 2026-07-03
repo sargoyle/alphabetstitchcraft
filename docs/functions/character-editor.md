@@ -15,7 +15,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
 - Inline status message: `Font changes saved successfully.`
-- UI pattern: Sidebar font selector, ordered character tile picker, exists/not-created/selected legend, compact duplicate-source dialog, loading state for requested fonts, danger zone delete panel, editor footer action row.
+- UI pattern: Three-panel Font Editor layout with Font panel, Character panel and Character editor panel; ordered character tile picker; exists/not-created/selected legend; compact duplicate-source dialog; loading state for requested fonts; danger zone delete panel; compact character editor action area.
 
 
 ## Decision Required
@@ -56,6 +56,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
 - Compact dimension controls below the editable grid.
 - Editable font name and font-level height controls in the editor sidebar.
+- Font panel containing font selector, font settings and Delete Font danger zone.
+- Character panel containing character picker, legend and Select Duplicate action.
+- Character editor panel containing selected character grid, width control, guidance text, Reset, Clear and Save Character actions.
 
 ## State Transitions
 
@@ -91,6 +94,11 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Users must be able to delete fonts from the editor. | Confirmed | Implemented | Delete font button is currently available and user confirmed this should remain. |
 | Any visible font can be edited under the current public shared model. | Confirmed | Implemented | User confirmed editing any visible font is acceptable. |
 | Character selection should be compact and scannable. | Assumed | Implemented | Current editor uses sidebar character tiles instead of a full-width character dropdown. |
+| Font Editor must use three desktop panels: Font panel, Character panel and Character editor panel. | Confirmed | Implemented | Font selector/settings/delete are separated from character selection and editing. |
+| Font actions must live in the Font panel. | Confirmed | Implemented | Delete Font remains in the Font panel Danger Zone only. |
+| Character selection and duplicate/create controls must live in the Character panel. | Confirmed | Implemented | Character picker, legend and Select Duplicate sit in their own middle panel. |
+| Character editing and save actions must live in the Character editor panel. | Confirmed | Implemented | Selected character grid, width, Reset, Clear and Save Character are grouped in the right panel. |
+| Delete Font copy must clarify that it deletes the full font and all characters. | Confirmed | Implemented | Danger Zone text says `Deletes the full font and all characters permanently.` |
 | Character selection must show A-Z first, then a-z, then 0-9, then other mapped characters. | Confirmed | Implemented | User requested this ordering for the sidebar section. |
 | Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Existing means the character has at least one filled stitch, not merely that a blank starter grid exists. |
 | Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
@@ -122,6 +130,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not expose per-character height editing while height is a font-level setting.
 - Must not save a blank font name.
 - Must not flash to the first available font while a routed or selected font is still loading.
+- Must not place Delete Font beside selected-character save controls.
+- Must not make the character picker scroll the full page awkwardly when many characters exist.
 
 ## Acceptance Criteria
 
@@ -150,6 +160,10 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the editor screen is open, when the user changes font height and saves font settings, then every character in the font is resized to the selected height.
 - Given a character is edited and saved, when the character is written to the font, then its height matches the font height.
 - Given the character editor is shown, when dimension controls render, then only character width is editable in the character panel.
+- Given the Font Editor opens on desktop, when the layout renders, then Font panel, Character panel and Character editor panel appear as separate side-by-side areas.
+- Given the Font panel renders, when the user reviews destructive actions, then Delete Font appears only in the Danger Zone and explains that it deletes the full font and all characters.
+- Given the Character panel renders, when many characters exist, then character scrolling stays within the character picker area.
+- Given the Character editor panel renders, when selected character controls are visible, then grid, width, guidance text, Reset, Clear and Save Character remain grouped in the editor panel.
 
 ## Edge Cases
 
@@ -166,6 +180,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - New-character modal opened and closed without saving.
 - Duplicating a source character into a destination key.
 - Mobile layout where dimension controls stack below the grid.
+- Tablet layout where the three panels stack into a usable single column.
+- Narrow desktop layout where the character picker scrolls inside the character panel.
 - Selecting an unmapped uppercase, lowercase or numeric character.
 - Fonts with no lowercase mappings.
 - Source duplicate selection into an existing character.
@@ -184,7 +200,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently shows `Font changes saved successfully.` inline after a successful save.
 - Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.
-- Currently shows font selection, ordered character tiles, Select Duplicate and delete actions in a left sidebar.
+- Currently shows font selection, font settings and Delete Font in a dedicated Font panel.
+- Currently shows ordered character tiles, legend and Select Duplicate in a dedicated Character panel.
+- Currently shows selected character grid, width, guidance text, Reset, Clear and Save Character in a compact Character editor panel.
 - Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
 - Currently treats a character as existing only when its grid contains at least one `1` cell.
@@ -229,6 +247,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Sidebar character tile active state.
 - Select Duplicate modal open, cancel, blank and duplicate flows.
 - Editor layout source guard for ordered picker, exists/not-created/selected states, duplicate-source grid, loading fallback prevention, modal, danger zone, dimension panel and action footer.
+- Three-panel editor layout source guard for separate Font, Character and Character editor panels.
 - Font settings source guard for editable font name, font-level height and no per-character height input.
 
 ## Review Checklist

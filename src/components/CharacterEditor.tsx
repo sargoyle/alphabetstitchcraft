@@ -69,7 +69,7 @@ export function CharacterEditor({
 
       <div className="editor-divider" />
 
-      <div className="character-editor-body">
+      <div className="character-editor-layout">
         <div className="character-grid-stage">
           <CharacterGrid
             character={draft}
@@ -81,54 +81,54 @@ export function CharacterEditor({
             onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
           />
         </div>
+
+        <aside className="character-editor-controls" aria-label="Character dimensions and save controls">
+          <div className="control-panel dimension-controls">
+            <label>
+              Width
+              <input
+                type="number"
+                min={1}
+                max={24}
+                value={draft.width}
+                onChange={(event) =>
+                  setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))
+                }
+              />
+            </label>
+          </div>
+          <p className="editor-help-card">
+            <Info aria-hidden="true" size={16} />
+            Character width is edited here. Font height is set once for the whole font in the sidebar.
+          </p>
+
+          {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
+          {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
+
+          <div className="editor-footer">
+            <div className="button-row editor-actions">
+              <button className="button secondary" type="button" onClick={() => setDraft(originalCharacter)}>
+                <RotateCcw aria-hidden="true" size={17} />
+                Reset
+              </button>
+              <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
+                <Eraser aria-hidden="true" size={17} />
+                Clear
+              </button>
+            </div>
+            <button className="button primary save-character-button" type="button" disabled={cannotSave} onClick={handleSave}>
+              <Save aria-hidden="true" size={17} />
+              {saveLabel}
+            </button>
+          </div>
+
+          {saveStatus ? (
+            <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"}>
+              {saveStatus.message}
+            </p>
+          ) : null}
+        </aside>
       </div>
-
-      <aside className="dimension-editor-panel" aria-label="Character dimensions">
-        <div className="control-panel dimension-controls">
-          <label>
-            Width
-            <input
-              type="number"
-              min={1}
-              max={24}
-              value={draft.width}
-              onChange={(event) =>
-                setDraft((current) => resizeCharacter(current, Number(event.target.value), current.height))
-              }
-            />
-          </label>
-        </div>
-        <p className="editor-help-card">
-          <Info aria-hidden="true" size={16} />
-          Character width is edited here. Font height is set once for the whole font in the sidebar.
-        </p>
-      </aside>
-
-      {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
-      {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
-
-      <div className="editor-footer">
-        <div className="button-row editor-actions">
-          <button className="button secondary" type="button" onClick={() => setDraft(originalCharacter)}>
-            <RotateCcw aria-hidden="true" size={17} />
-            Reset
-          </button>
-          <button className="button secondary" type="button" onClick={() => setDraft(clearCharacter(draft))}>
-            <Eraser aria-hidden="true" size={17} />
-            Clear
-          </button>
-        </div>
-        <button className="button primary save-character-button" type="button" disabled={cannotSave} onClick={handleSave}>
-          <Save aria-hidden="true" size={17} />
-          {saveLabel}
-        </button>
-      </div>
-
-      {saveStatus ? (
-        <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"}>
-          {saveStatus.message}
-        </p>
-      ) : null}
     </div>
   );
 }
