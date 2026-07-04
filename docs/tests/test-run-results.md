@@ -2,6 +2,42 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
+## 2026-07-04
+
+### Editor Width Stack And Compact Homepage Fit Run
+
+#### Scope
+
+- Moved the Font Editor Width control directly under the editable letter grid.
+- Compactly arranged the character help/action area beside the grid stack.
+- Reduced the Home centred lettering preview zoom and tightened hero, workflow and footer spacing.
+- Added source-level coverage for homepage fit and editor width-under-grid layout.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Added `tests/homepageLayoutSource.test.ts`.
+- Updated `tests/editorUiSource.test.ts`.
+- Updated `tests/runTests.ts`.
+
+#### Findings
+
+- Automated output included `editor UI source tests passed.`, `homepage layout source tests passed.` and `All utility tests passed.`
+
 ## 2026-07-03
 
 ### Wider Font Editor Character Panel Run

@@ -70,19 +70,19 @@ export function CharacterEditor({
       <div className="editor-divider" />
 
       <div className="character-editor-layout">
-        <div className="character-grid-stage">
-          <CharacterGrid
-            character={draft}
-            label={`Editable character ${characterKey}`}
-            editable
-            showGrid
-            cellSize={28}
-            onToggle={(row, column) => setDraft((current) => toggleGridCell(current, row, column))}
-            onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
-          />
-        </div>
+        <div className="character-grid-stack">
+          <div className="character-grid-stage">
+            <CharacterGrid
+              character={draft}
+              label={`Editable character ${characterKey}`}
+              editable
+              showGrid
+              cellSize={28}
+              onToggle={(row, column) => setDraft((current) => toggleGridCell(current, row, column))}
+              onSetCell={(row, column, filled) => setDraft((current) => setGridCell(current, row, column, filled))}
+            />
+          </div>
 
-        <aside className="character-editor-controls" aria-label="Character dimensions and save controls">
           <div className="control-panel dimension-controls">
             <label>
               Width
@@ -97,6 +97,9 @@ export function CharacterEditor({
               />
             </label>
           </div>
+        </div>
+
+        <aside className="character-editor-controls" aria-label="Character save controls">
           <p className="editor-help-card">
             <Info aria-hidden="true" size={16} />
             Character width is edited here. Font height is set once for the whole font in the sidebar.

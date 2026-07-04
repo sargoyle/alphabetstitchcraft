@@ -62,7 +62,7 @@ select:focus-visible {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 12px 18px 4px;
+  padding: 10px 18px 2px;
   width: 100%;
 }
 
@@ -75,8 +75,8 @@ select:focus-visible {
   justify-content: space-between;
   gap: 20px;
   width: 100%;
-  margin: 0 0 14px;
-  padding: 10px 12px;
+  margin: 0 0 10px;
+  padding: 9px 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: rgba(4, 12, 10, 0.78);
@@ -132,7 +132,7 @@ main {
 .workspace-layout,
 .page-stack {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .hero-grid {
@@ -140,8 +140,8 @@ main {
   align-items: center;
   align-content: center;
   min-height: auto;
-  row-gap: 16px;
-  column-gap: 24px;
+  row-gap: 10px;
+  column-gap: 20px;
 }
 
 .hero-copy {
@@ -158,7 +158,7 @@ main {
 
 .hero-copy h1 {
   max-width: 760px;
-  font-size: clamp(2.25rem, 5.2vw, 4.9rem);
+  font-size: clamp(2.25rem, 4.4vw, 4.25rem);
 }
 
 .hero-copy p {
@@ -197,7 +197,7 @@ main {
 .workspace-main,
 .editor-main,
 .editor-panel {
-  padding: 14px;
+  padding: 12px;
   min-width: 0;
 }
 
@@ -216,22 +216,22 @@ main {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 0;
+  gap: 10px;
+  margin-top: -2px;
 }
 
 .quick-links h2 {
   grid-column: 1 / -1;
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.08rem;
 }
 
 .quick-links a {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 6px 12px;
+  gap: 4px 10px;
   align-items: start;
-  min-height: 96px;
+  min-height: 72px;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -242,12 +242,12 @@ main {
 .quick-links a strong {
   align-self: center;
   color: var(--text);
-  font-size: 1.05rem;
+  font-size: 0.98rem;
 }
 
 .quick-links a span {
   grid-column: 2;
-  line-height: 1.45;
+  line-height: 1.32;
 }
 
 .quick-links a .step-number {
@@ -267,7 +267,7 @@ main {
 
 .site-footer {
   width: 100%;
-  padding: 4px 4px 0;
+  padding: 0 4px;
   color: rgba(184, 197, 189, 0.76);
   font-size: 0.86rem;
   text-align: center;
@@ -894,6 +894,12 @@ textarea {
   padding: 14px 0;
 }
 
+.character-grid-stack {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
 .character-grid-stage {
   justify-self: start;
   max-width: 100%;
@@ -905,11 +911,12 @@ textarea {
   gap: 12px;
   align-content: end;
   min-height: 100%;
-  padding-top: 50px;
+  padding-top: 76px;
 }
 
 .dimension-controls {
-  grid-template-columns: minmax(180px, 260px);
+  grid-template-columns: minmax(160px, 260px);
+  width: min(100%, 320px);
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;

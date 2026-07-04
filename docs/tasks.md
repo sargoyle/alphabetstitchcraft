@@ -1490,3 +1490,24 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+### 25.8 Editor Width Stack And Compact Homepage Fit
+
+- [x] Move the character Width control directly under the editable letter grid.
+- [x] Arrange the character editor action/help area to use the remaining panel space efficiently.
+- [x] Reduce the Home centred lettering preview zoom.
+- [x] Tighten Home hero, How it works and footer spacing.
+- [x] Update Character Editor function documentation.
+- [x] Update Navigation and Routing function documentation for homepage fit.
+- [x] Add homepage layout source-level coverage.
+- [x] Update editor source-level coverage for the width-under-grid layout.
+
+Acceptance checks:
+
+- [x] Character Width appears under the selected letter grid.
+- [x] Save Character remains clear and available.
+- [x] Home centred lettering preview is smaller at 100% browser zoom.
+- [x] How it works and copyright footer sit higher on the Home page.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

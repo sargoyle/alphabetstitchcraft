@@ -89,9 +89,10 @@ assert.ok(
 
 assert.ok(
   characterEditorSource.includes("character-editor-layout") &&
+    characterEditorSource.includes("character-grid-stack") &&
     characterEditorSource.includes("character-editor-controls") &&
     characterEditorSource.includes("editor-help-card"),
-  "EDITOR-UI-005: Character editor should keep grid, width controls, help text and save actions in a compact editor layout."
+  "EDITOR-UI-005: Character editor should keep the grid and width control stacked together with help text and save actions in a compact editor layout."
 );
 
 assert.ok(

@@ -6,6 +6,7 @@ import "./fontPersistence.test";
 import "./fontRefreshSource.test";
 import "./migrationScripts.test";
 import "./editorUiSource.test";
+import "./homepageLayoutSource.test";
 import "./localStorageUtils.test";
 import "./exportUtils.test";
 

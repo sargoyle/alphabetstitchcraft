@@ -8,6 +8,7 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 
 - Layout: `src/app/layout.tsx`
 - Home page: `src/app/page.tsx`
+- Home layout styles: `src/app/globals.css`
 - Fonts page: `src/app/fonts/page.tsx`
 - Font detail page: `src/app/fonts/[id]/page.tsx`
 - Generator page: `src/app/generator/page.tsx`
@@ -35,6 +36,9 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 - Supabase auth callback state.
 - Contextual links from cards and homepage action cards.
 - Remote font loading state.
+- Home centred lettering preview zoom.
+- Home workflow card spacing.
+- Site footer spacing.
 
 ## Outputs
 
@@ -46,6 +50,7 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 - Auth callback redirect to Manage Fonts when sign-in completes.
 - Loading state before font detail not-found for remote-backed fonts.
 - Prominent contextual entry to Manage Fonts outside the primary top navigation.
+- Compact homepage layout with centred lettering preview, How it works cards and copyright footer fitting laptop viewports where practical.
 
 ## State Transitions
 
@@ -64,6 +69,8 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
 | Primary navigation should use user-goal labels. | Confirmed | Implemented | Current labels are Home, Alphabet Library, Create Pattern and Font Editor. |
+| Home centred lettering preview should be compact enough to avoid unnecessary laptop viewport scrollbars. | Confirmed | Implemented | Preview zoom is reduced and surrounding homepage spacing is tightened. |
+| Home How it works section and footer should sit high enough to remain visible on common laptop screens where practical. | Confirmed | Implemented | Workflow cards and footer spacing are compacted. |
 | Implementation-focused labels such as Fonts and Generator should not be used in primary navigation. | Confirmed | Implemented | Routes remain `/fonts` and `/generator`, but visible labels changed. |
 | Manage Fonts should remain reachable contextually. | Confirmed | Implemented | Manage Fonts is not in primary nav. |
 | Manage Fonts should have a more prominent entry after removal from primary navigation. | Confirmed | Unknown | User confirmed more prominent discoverability is needed; implementation approach needs code/design work. |
@@ -80,6 +87,7 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 - Must not expose Docs in primary navigation under current decision.
 - Must not remove Editor or Manage Fonts routes while contextual links still depend on them.
 - Must not use implementation-focused labels such as Fonts, Generator, Render custom text or Manage editable fonts in user-facing homepage/nav copy.
+- Must not let the home preview panel create avoidable horizontal or vertical scrollbars at common laptop sizes.
 - Must not make Manage Fonts difficult to discover.
 - Must not lose selected font when navigating to Generator through Use.
 - Must not show a remote font as not found while remote fonts are still loading.
@@ -91,6 +99,8 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 - Given a primary route is active, then the matching nav item has a visible active state.
 - Given a primary route is active, then the matching nav item exposes `aria-current` or equivalent semantic current-page state.
 - Given Home action cards are shown, then Alphabet Library, Create Lettering and Edit Fonts are reachable.
+- Given the Home page is viewed at 100% on a laptop screen, then the centred lettering preview is compact and does not create an avoidable oversized preview scrollbar.
+- Given the Home page is viewed at 100% on a laptop screen, then How it works and the copyright footer are moved up through compact spacing where practical.
 - Given a user needs font management, then a prominent contextual entry to Manage Fonts is available.
 - Given View Alphabet is clicked, then `/fonts/[id]` opens.
 - Given Use is clicked, then `/generator` opens and selected font id is saved.
@@ -106,6 +116,7 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 - Auth callback without session.
 - Remote font loading delay.
 - Small viewport header wrapping.
+- Laptop viewport height where homepage hero, preview, workflow and footer need compact spacing.
 - Active state for nested routes such as `/fonts/[id]`.
 - Direct URL to contextual-only routes.
 - User needs Manage Fonts after it has been removed from primary navigation.
@@ -114,6 +125,7 @@ Define how users move between the app's primary workflows: home, alphabet browsi
 
 - Currently primary nav contains Home, Alphabet Library, Create Pattern and Font Editor.
 - Currently Home action cards include Browse Alphabets, Create Lettering and Edit Fonts.
+- Currently Home uses a compact preview zoom and tightened workflow/footer spacing to reduce laptop viewport scrolling.
 - Currently `/docs` app pages are removed, while markdown docs remain in `/docs`.
 - Currently FontCard links perform route navigation.
 - Currently active nav state is not visually indicated.

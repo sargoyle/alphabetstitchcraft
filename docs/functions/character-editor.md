@@ -58,7 +58,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Editable font name and font-level height controls in the editor sidebar.
 - Font panel containing font selector, font settings and Delete Font danger zone.
 - Character panel containing character picker, legend and Select Duplicate action.
-- Character editor panel containing selected character grid, width control, guidance text, Reset, Clear and Save Character actions.
+- Character editor panel containing selected character grid, width control directly under the grid, guidance text, Reset, Clear and Save Character actions.
 
 ## State Transitions
 
@@ -105,7 +105,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
 | Duplicate selection should copy the selected source into the currently selected character. | Confirmed | Implemented | The selected character remains the destination; source selection changes the draft only. |
-| Character width controls should sit below the editable character grid. | Confirmed | Implemented | Font height is controlled in the sidebar; character width stays below the grid. |
+| Character width controls should sit directly below the editable character grid. | Confirmed | Implemented | Font height is controlled in the sidebar; character width stays in the same left stack as the grid. |
 | Font height must be set at the font level. | Confirmed | Implemented | The editor exposes font height in the sidebar and character save resizes the saved character to the font height. |
 | Every character in a font must have the same height as the font height. | Confirmed | Implemented | Saving font settings resizes all characters to the selected font height. |
 | Font height must remain selectable on the font. | Confirmed | Implemented | Font height is editable from the editor sidebar. |
@@ -156,7 +156,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given Select Duplicate is clicked, when the modal opens, then the user can choose Blank or an existing source character from a tile selector.
 - Given a duplicate source is selected, when the user confirms the modal, then the selected destination character draft uses the source grid.
 - Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width field or font settings fields.
-- Given the editor grid is visible, when character dimension controls render, then character Width appears below the character grid and Height is controlled in the sidebar.
+- Given the editor grid is visible, when character dimension controls render, then character Width appears directly below the character grid and Height is controlled in the sidebar.
 - Given the editor screen is open, when the user changes the font name and saves font settings, then the font is saved with the new name.
 - Given the editor screen is open, when the user changes font height and saves font settings, then every character in the font is resized to the selected height.
 - Given a character is edited and saved, when the character is written to the font, then its height matches the font height.
@@ -165,7 +165,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the Font panel renders, when the user reviews destructive actions, then Delete Font appears only in the Danger Zone and explains that it deletes the full font and all characters.
 - Given the Character panel renders, when many characters exist, then character scrolling stays within the character picker area.
 - Given the Font Editor renders on desktop, when the character picker shows the standard alphabet set, then the Character panel is wide enough to show seven tile columns without its own scrollbar.
-- Given the Character editor panel renders, when selected character controls are visible, then grid, width, guidance text, Reset, Clear and Save Character remain grouped in the editor panel.
+- Given the Character editor panel renders, when selected character controls are visible, then grid and Width are stacked together while guidance text, Reset, Clear and Save Character use the remaining editor-panel space.
 
 ## Edge Cases
 
@@ -204,13 +204,13 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently uses `window.confirm` for font deletion.
 - Currently shows font selection, font settings and Delete Font in a dedicated Font panel.
 - Currently shows ordered character tiles, legend and Select Duplicate in a wider dedicated Character panel with seven desktop columns and no internal desktop scrollbar.
-- Currently shows selected character grid, width, guidance text, Reset, Clear and Save Character in a compact Character editor panel.
+- Currently shows selected character grid with Width directly below it, plus guidance text, Reset, Clear and Save Character in a compact Character editor panel.
 - Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
 - Currently treats a character as existing only when its grid contains at least one `1` cell.
 - Currently avoids falling back to the first font while a requested `font` query parameter is unresolved.
 - Currently shows duplicate-source setup in a modal dialog controlled by `newCharacterOpen`.
-- Currently places character width controls below the editable grid.
+- Currently places character width controls directly below the editable grid.
 - Currently places font name and font height controls in the editor sidebar.
 - Currently resizes every character to the selected font height when font settings are saved.
 - Currently resizes saved character edits to the selected font height before saving.
