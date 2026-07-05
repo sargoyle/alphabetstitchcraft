@@ -11,7 +11,11 @@ Alphabet Stitch v1 is primarily a web-based cross-stitch lettering tool. The pro
 - File: `package.json`
   - Reviewed dependencies, scripts, and package manager expectations.
 - File: `pnpm-lock.yaml`
-  - Lock file exists. Detailed vulnerability audit was not run.
+  - Lock file exists and was refreshed during the dependency security update.
+- File: `pnpm-workspace.yaml`
+  - Reviewed pnpm overrides for patched transitive dependency versions.
+- File: `eslint.config.mjs`
+  - Reviewed ESLint 9 flat config used by the project lint script.
 - File: `next.config.ts`
   - Reviewed framework configuration and security header configuration.
 - File: `tsconfig.json`
@@ -83,7 +87,7 @@ Alphabet Stitch v1 is primarily a web-based cross-stitch lettering tool. The pro
 - Source not found: file upload logic.
 - Source not found: explicit Content Security Policy or security header configuration.
 - Source not found: `dangerouslySetInnerHTML` usage in reviewed source.
-- Evidence gap: dependency vulnerability status was not confirmed because no package audit command was run.
+- Dependency vulnerability status was confirmed with `pnpm audit --prod` on 2026-07-05; the final audit reported no known vulnerabilities.
 
 ## Security Scope
 
@@ -348,7 +352,7 @@ Confirmed public font hardening controls: validation, edit history or backups, r
 - No generated grid width or height limit was found. This is now product-confirmed for v1, but safe handling for browser stress cases is still needed.
 - Content Security Policy is now configured in `next.config.ts`.
 - Security headers are now configured in `next.config.ts`.
-- Dependency vulnerabilities have not been reviewed in this pass.
+- Production dependency vulnerabilities were reviewed on 2026-07-05 and the final `pnpm audit --prod` run reported no known vulnerabilities.
 - localStorage writes do not appear to handle quota or disabled-storage errors.
 - Corrupted localStorage data can be ignored through fallback behaviour without a clear user recovery path.
 - Invalid remote fonts are now surfaced through font sync warnings, but the final UX should still be reviewed.

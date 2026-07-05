@@ -4,6 +4,43 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-05
 
+### Dependency Security And Lint Validation
+
+#### Scope
+
+- Updated vulnerable dependencies and restored lint as a runnable project check.
+- Verified app compile, test compile, automated utility tests, production build, lint and production dependency audit.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- Lint: passed with warnings only.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
+#### Findings
+
+- `next@16.2.4` was upgraded to `16.2.10`.
+- `eslint-config-next@16.2.4` was upgraded to `16.2.10`.
+- `@supabase/supabase-js@2.104.1` was upgraded to `2.110.0`.
+- Added pnpm overrides for patched transitive dependency versions.
+- ESLint 9 now runs through `eslint.config.mjs`; the old `next lint` command is no longer used.
+- Remaining lint output is six warnings, not blocking errors.
+
 ### Pattern Centre Guide Lines Run
 
 #### Scope

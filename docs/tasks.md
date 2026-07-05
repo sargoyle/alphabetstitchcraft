@@ -1533,3 +1533,33 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+## Phase 27: Dependency Security And Lint Validation
+
+### 27.1 Patch Vulnerable Dependencies
+
+- [x] Update `next` to a patched version above the vulnerable `16.2.4` release.
+- [x] Update `eslint-config-next` to match the patched Next.js version.
+- [x] Update `@supabase/supabase-js` to the latest available version.
+- [x] Add pnpm overrides for remaining transitive audit findings.
+- [x] Refresh `pnpm-lock.yaml`.
+
+Acceptance checks:
+
+- [x] Production dependency audit reports no known vulnerabilities.
+- [x] Production build passes.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+
+### 27.2 Restore Lint As A Regular Check
+
+- [x] Replace the obsolete `next lint` script with direct ESLint.
+- [x] Add an ESLint flat config compatible with ESLint 9 and Next.js 16.
+- [x] Keep generated and dependency folders ignored by lint.
+
+Acceptance checks:
+
+- [x] `eslint .` runs successfully.
+- [x] Lint reports no blocking errors.
+- [x] Remaining lint findings are warnings only.
