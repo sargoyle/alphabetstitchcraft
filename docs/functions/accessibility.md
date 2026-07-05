@@ -2,152 +2,142 @@
 
 ## Purpose
 
-Ensure the app is usable with keyboard navigation, visible focus styles, clear labels and non-colour-only stitch states. Accessibility requirements apply especially to the Generator controls, Font Library controls and Character Editor grid.
+Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles, clear labels, semantic landmarks, screen-reader-friendly status messages and non-colour-only stitch states. Accessibility requirements apply especially to the Generator controls, Font Library controls, Font Editor and stitch grids.
 
 ## Source References
 
-- Styles: `src/app/globals.css`
-- Layout: `src/app/layout.tsx`
+- File: `src/app/layout.tsx`
+- File: `src/app/globals.css`
+- Page: `src/app/page.tsx`
+- Page: `src/app/fonts/page.tsx`
+- Page: `src/app/generator/page.tsx`
+- Page: `src/app/editor/page.tsx`
+- Component: `EditorClient` in `src/app/editor/EditorClient.tsx`
 - Component: `CharacterGrid` in `src/components/CharacterGrid.tsx`
+- Component: `CharacterEditor` in `src/components/CharacterEditor.tsx`
 - Component: `SpacingControls` in `src/components/SpacingControls.tsx`
 - Component: `ExportControls` in `src/components/ExportControls.tsx`
-- Component: `CharacterEditor` in `src/components/CharacterEditor.tsx`
-- Pages: `/fonts`, `/generator`, `/editor`, `/custom-fonts`
-- Related grid events: `onKeyDown`, `onPointerDown`, `onPointerMove`
-- Related cell state: `aria-pressed`
-- Related grid labels: row, column and filled/empty state
-- Evidence gap: no `aria-live` status region pattern was found for dynamic save/export/error messages.
+- Component: `Toast` in `src/components/ui/Toast.tsx`
+- Component: `EmptyState` in `src/components/ui/EmptyState.tsx`
+- Browser-level evidence: rendered route smoke checks for `/`, `/fonts`, `/generator`, `/editor` and `/design-system` on `http://127.0.0.1:3001`.
+- Evidence gap: formal axe, Lighthouse, screen-reader and full keyboard traversal tools are not installed in the project.
 
 ## Decision Required
 
 | Decision | Options | Recommendation | Impact if not confirmed |
 |---|---|---|---|
-| None currently outstanding for accessibility decisions captured in this document. | N/A | N/A | N/A |
+| Formal accessibility tooling | axe-style browser checks / Lighthouse / manual-only checks | Use axe-style browser checks as the first automated accessibility gate before go-live; Lighthouse can remain optional for broader performance/SEO reporting. | If tooling is not added before release, accessibility regressions may rely on manual discovery only. |
 
-## Inputs'@
-$content = $content -replace '### Plain-English Note On `aria-live`\r?\n\r?\nAn `aria-live` region is a part of the page that screen readers automatically announce when its text changes. It is useful for messages that appear after an action, such as “PNG exported”, “Character saved” or “Database save failed”. It does not need to change the visual design. It mainly helps users who cannot see that a status message appeared or changed.\r?\n\r?\n', ''
-$content = $content -replace '\| Dynamic save, export and error messages should be understandable to screen-reader users\. \| Needs Product Confirmation \| Partially Implemented \| Visual text exists in places, but live announcements are not consistently implemented\. \|', '| Dynamic save, export and error messages must use `aria-live` regions so screen-reader users are notified. | Confirmed | Not Implemented | User confirmed live regions are required; current status messages are not consistently live regions. |'
-$content = $content -replace '\| Arrow-key navigation must be supported in the grid editor\. \| Confirmed \| Not Implemented \| User confirmed arrow-key navigation should be required; current grid does not implement arrow movement\. \|', '| Arrow-key navigation must be supported in the grid editor. | Confirmed | Not Implemented | User confirmed arrow-key navigation is required; current grid does not implement arrow movement. |'
-# Insert read-only semantics rule after live-region rule if not present.
-if ($content -notmatch 'Read-only grid previews must use non-interactive cells') {
-  $content = $content -replace '(\| Dynamic save, export and error messages must use `aria-live` regions so screen-reader users are notified\. \| Confirmed \| Not Implemented \| User confirmed live regions are required; current status messages are not consistently live regions\. \|)', '$1' + "`r`n" + '| Read-only grid previews must use non-interactive cells. | Confirmed | Not Implemented | User confirmed read-only previews should not continue using disabled buttons. |'
-}
-$content = $content -replace '7\. Dynamic status messages should be announced if the live-region decision is confirmed\.', '7. Dynamic status messages must be announced through `aria-live` regions.'
-$content = $content -replace '## Known Gaps / Defects\r?\n\r?\n- Character grid does not support arrow-key navigation, which is now a confirmed requirement\.\r?\n- Status/warning changes are not consistently announced with `aria-live`; product decision is pending after explanation\.\r?\n- Read-only grid cells use disabled buttons, which may be suboptimal for assistive technology\.', @'
-## Known Gaps / Defects
+## Inputs
 
-- Character grid does not support arrow-key navigation, which is now a confirmed requirement.
-- Status/warning changes are not consistently announced with `aria-live`, which is now a confirmed requirement.
-- Read-only grid cells use disabled buttons, but non-interactive cells are now the confirmed requirement.
-
-- Keyboard focus.
-- Button and link labels.
-- Form labels.
-- Aria labels.
-- Grid cell state.
-- Colour and shape styling.
-- Status and warning text.
-- Keyboard actions: Tab, Enter, Space and arrow keys.
+- Keyboard input: Tab, Shift+Tab, Enter, Space and arrow keys.
+- Pointer input for drawing and controls.
+- Screen-reader semantics from headings, landmarks, labels, button names and live regions.
+- Grid cell state: filled, empty, selected and read-only.
+- Dynamic status text for save, export, database and validation states.
 
 ## Outputs
 
 - Visible focus outlines.
-- Accessible primary navigation.
-- Labelled form controls.
-- Grid cell accessible names.
-- `aria-pressed` for editable cells.
-- Enter/Space cell toggling.
-- Required future arrow-key movement in the editor grid.
 - Semantic page headings and landmarks.
+- Labelled controls and buttons.
+- Editable grid cells with useful accessible names and state.
+- Status and error messages announced through `aria-live` where messages change dynamically.
+- Read-only stitch previews that do not add unnecessary keyboard stops.
 
 ## State Transitions
 
-1. User navigates by keyboard or assistive technology.
-2. Focus moves through links, buttons and inputs.
-3. Visible focus styles appear.
-4. Editable grid cells announce location and filled state.
-5. User activates a focused editable grid cell with Enter or Space.
-6. User should be able to move around the editor grid with arrow keys once that confirmed requirement is implemented.
-7. Dynamic status messages should be announced if the live-region decision is confirmed.
+1. User opens a page or route.
+2. Page exposes a meaningful heading and navigation landmark.
+3. User navigates with keyboard focus.
+4. Focus moves through actionable controls in a logical order.
+5. Editable grid cells can be toggled with keyboard input.
+6. Status, save, export and error messages update visually and should be announced to assistive technology.
+7. Read-only previews should be perceivable without acting like editable controls.
 
 ## Rules and Requirements
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| Keyboard navigation should reach major controls. | Confirmed | Implemented | Native controls and links are used. |
-| Focus states must be visible. | Confirmed | Implemented | Global focus-visible styles. |
-| Form controls must have labels. | Confirmed | Implemented | Labels wrap inputs/selects. |
-| Editable grid cells should be labelled. | Confirmed | Implemented | Aria labels include row/column/state. |
-| Filled state must not rely only on colour. | Confirmed | Partially Implemented | Shape/fill contrast exists; needs visual review. |
-| Enter and Space must toggle the focused editable grid cell in v1. | Confirmed | Implemented | User confirmed Enter/Space editing is sufficient for v1 cell activation. |
-| Arrow-key navigation must be supported in the grid editor. | Confirmed | Not Implemented | User confirmed arrow-key navigation should be required; current grid does not implement arrow movement. |
-| Dynamic save, export and error messages should be understandable to screen-reader users. | Needs Product Confirmation | Partially Implemented | Visual text exists in places, but live announcements are not consistently implemented. |
+| Keyboard navigation must reach major controls. | Confirmed | Implemented | Native links, buttons, inputs and selects are used across core pages. |
+| Focus states must be visible. | Confirmed | Implemented | Global `:focus-visible` styles are present in `src/app/globals.css`. |
+| Pages should expose a meaningful `h1`. | Confirmed | Implemented | The editor route now includes a screen-reader-only `h1`; other checked routes already exposed an `h1`. |
+| Primary navigation must expose a navigation landmark. | Confirmed | Implemented | `src/app/layout.tsx` uses `nav aria-label="Primary navigation"`. |
+| Form controls must have labels. | Confirmed | Implemented | Source uses labelled controls; formal axe verification is still pending. |
+| Editable grid cells must expose row, column and filled state. | Confirmed | Implemented | `CharacterGrid` builds per-cell `aria-label` values and uses `aria-pressed` for editable cells. |
+| Enter and Space must toggle the focused editable grid cell in v1. | Confirmed | Implemented | `CharacterGrid` handles Enter and Space in `onKeyDown`. |
+| Arrow-key navigation must be supported in the grid editor. | Confirmed | Not Implemented | User confirmed arrow-key navigation is required; source confirms no arrow-key movement handling. |
+| Dynamic save, export and error messages must use `aria-live` regions. | Confirmed | Partially Implemented | Editor, generator, export and font-sync status surfaces now use live regions; prompt/alert-based font actions still need a fuller inline status pattern. |
+| Read-only grid previews must use non-interactive cells. | Confirmed | Not Implemented | User confirmed read-only previews should use non-interactive cells; `CharacterGrid` currently renders disabled buttons when not editable. |
+| Accessibility checks should include browser-level evidence before release. | Confirmed | Partially Implemented | A no-new-dependency rendered DOM/source pass was completed; axe-style automated browser checks are selected for future tooling but not installed yet. |
 
 ## Negative Rules
 
 - Must not hide focus outlines.
-- Must not use icon-only controls without accessible text or labels.
-- Must not rely solely on colour for filled stitches.
-- Must not trap keyboard focus.
+- Must not rely only on colour to communicate stitch or control state.
 - Must not require pointer-only interaction for core character editing.
-- Must not announce stale or incorrect status messages to assistive technology.
+- Must not render read-only stitch previews as unnecessary keyboard stops.
+- Must not leave dynamic save/export/error feedback silent for screen-reader users.
+- Must not ship public release without a formal accessibility pass or an accepted manual sign-off.
 
 ## Acceptance Criteria
 
-- Given keyboard navigation, when tabbing through the page, then primary controls receive visible focus.
-- Given a labelled input, when assistive technology reads the control, then its purpose is available.
-- Given an editable grid cell, when assistive technology reads it, then row, column and filled state are exposed.
-- Given focus is on an editable grid cell, when Enter is pressed, then the cell toggles between filled and empty.
-- Given focus is on an editable grid cell, when Space is pressed, then the cell toggles between filled and empty.
-- Given focus is on an editable grid cell, when arrow-key navigation is implemented and an arrow key is pressed, then focus moves to the adjacent grid cell in that direction where one exists.
-- Given primary navigation renders, when assistive technology reads it, then it has a navigation landmark label.
-- Given a save, export or error status changes, when the message appears or changes, then the updated message is announced through an `aria-live` region.
+- Given a user tabs through a page, when focus reaches each actionable control, then a visible focus indicator is shown.
+- Given a page loads, when assistive technology reads the page structure, then the page has a meaningful `h1` and primary navigation landmark.
+- Given an editable grid cell has focus, when Enter is pressed, then the cell toggles filled/empty state.
+- Given an editable grid cell has focus, when Space is pressed, then the cell toggles filled/empty state.
+- Given an editable grid cell has focus, when an arrow key is pressed after arrow navigation is implemented, then focus moves to the adjacent cell where one exists.
+- Given a save, export or error message changes, when the message appears, then the changed message is announced through an `aria-live` region.
+- Given a read-only stitch preview is displayed, when keyboard users tab through the page, then individual preview cells are not included as disabled button controls.
+- Given a formal browser accessibility test is run, when axe/Lighthouse or equivalent reports violations, then each violation is triaged before public release.
 
 ## Edge Cases
 
-- Large editable grids.
-- First and last cells in a row when using arrow keys.
-- First and last rows when using arrow keys.
-- Disabled export buttons.
-- Disabled read-only grid cells.
-- Warning/status messages.
+- Keyboard-only editing of large character grids.
+- First and last grid cells when using arrow keys.
+- Empty or loading editor states.
+- Disabled export controls.
+- Save failures and database errors.
+- Unsupported character warnings.
 - Small viewport navigation wrapping.
-- High contrast needs.
-- Users who use keyboard only but not a screen reader.
-- Users who use a screen reader and pointer/mouse together.
+- High contrast and colour perception differences.
+- Dynamic modals such as duplicate-character selection.
 
 ## Current Code Behaviour
 
-- Currently defines visible focus styles for buttons, links, inputs, textareas and selects.
-- Currently uses labelled form controls.
-- Currently uses text labels alongside most icons.
-- Currently editable cells support `aria-pressed` and keyboard toggle with Enter or Space.
+- Currently renders primary navigation with an accessible label.
+- Currently has global visible focus styles.
+- Currently editable grid cells use labelled buttons with `aria-pressed`.
+- Currently Enter and Space toggle editable grid cells.
 - Currently arrow-key movement between grid cells does not appear to be implemented.
-- Currently status messages are not consistently live regions, which conflicts with the confirmed requirement.
-- Currently read-only grid cells render as disabled buttons, which conflicts with the confirmed requirement for non-interactive cells.
+- Currently read-only grid cells render as disabled buttons.
+- Currently editor, generator, export and font-sync status surfaces use live regions; prompt/alert-based font actions still need a fuller inline status pattern.
+- Browser-level rendered checks returned HTTP 200 for `/`, `/fonts`, `/generator`, `/editor` and `/design-system`.
+- The editor route now includes a screen-reader-only `h1` in the route wrapper.
+- Formal axe-style browser checks and screen-reader checks have not yet been run because browser accessibility tooling is not installed.
 
 ## Known Gaps / Defects
 
-- Character grid does not support arrow-key navigation, which is now a confirmed requirement.
-- Status/warning changes are not consistently announced with `aria-live`; product decision is pending after explanation.
-- Read-only grid cells use disabled buttons, which may be suboptimal for assistive technology.
+- Character grid does not support arrow-key navigation, which is a confirmed requirement.
+- Some prompt/alert-based font action messages still need conversion to the shared inline `aria-live` status pattern.
+- Read-only grid cells use disabled buttons, but non-interactive cells are the confirmed requirement.
+- The editor route rendered with no `h1` in the browser-level route check.
+- Formal axe-style browser accessibility tooling is not installed or automated yet.
 
 ## Unclear or Assumed Rules
 
-- None currently. The accessibility decisions previously listed here have been confirmed.
+- Assumption: axe-style browser accessibility checks are the preferred automated accessibility gate before go-live; Lighthouse remains optional for broader performance/SEO review.
 
 ## Suggested Test Areas
 
-- Keyboard tab order.
-- Focus visibility.
-- Grid cell labels.
-- Enter cell toggle.
-- Space cell toggle.
+- Keyboard tab order on Home, Alphabet Library, Create Pattern and Font Editor.
+- Enter and Space grid editing.
 - Arrow-key grid navigation once implemented.
-- Form labels.
-- Button names.
-- Colour contrast.
-- Live status announcements for save, export and error messages.\n- Read-only preview cells are non-interactive and skipped by keyboard tab navigation.
+- Screen-reader announcement of save/export/error messages.
+- Read-only preview semantics.
+- Page heading and landmark structure.
+- Colour contrast and non-colour-only states.
+- Formal axe-style browser accessibility pass before public release.
 
 ## Review Checklist
 
@@ -156,5 +146,4 @@ $content = $content -replace '## Known Gaps / Defects\r?\n\r?\n- Character grid 
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
-
 

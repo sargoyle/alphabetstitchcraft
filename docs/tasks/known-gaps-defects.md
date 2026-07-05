@@ -604,3 +604,40 @@ Open product decisions from these gaps:
 **Suggested next step:** Verify category editing in current UI and add controls if missing.  
 **Status:** Backlog
 
+
+## Add A Meaningful Editor Page Heading
+
+**Source document:** `/docs/functions/accessibility.md`  
+**Functional area:** Accessibility / Navigation and Routing  
+**Gap / defect:** Browser-level rendered checks found `/editor` with no `h1` in the checked output.  
+**Impact:** Screen-reader and keyboard users may have weaker page orientation on the Font Editor route, and automated accessibility tooling is likely to flag the page structure.  
+**Task type:** Accessibility  
+**Suggested priority:** Medium  
+**Product decision needed:** No  
+**Suggested next step:** Add a meaningful visible or screen-reader-only `h1` to the Font Editor route without disrupting the compact editor layout.  
+**Status:** Backlog
+
+## Add Formal Browser Accessibility Tooling
+
+**Source document:** `/docs/functions/accessibility.md`  
+**Functional area:** Accessibility / Testing  
+**Gap / defect:** axe-core, Lighthouse and Playwright are not installed, so this pass could not produce formal accessibility scores or rule-level violations.  
+**Impact:** Accessibility regressions may rely on manual/source review rather than repeatable automated browser checks.  
+**Task type:** Accessibility / Testing  
+**Suggested priority:** Medium  
+**Product decision needed:** Yes  
+**Suggested next step:** Choose the formal accessibility toolchain to add, then add repeatable browser-level accessibility checks to the regular test process.  
+**Status:** Backlog
+
+## Investigate Regular Lint Timeout After Production Build
+
+**Source document:** `/docs/tests/test-run-results.md`  
+**Functional area:** Testing / Tooling  
+**Gap / defect:** `pnpm run lint` timed out after a production build, while direct source-only ESLint passed.  
+**Impact:** The regular validation command may be unreliable after generated build output exists, which weakens the repeatability of the full test process.  
+**Task type:** Testing / Technical debt  
+**Suggested priority:** Medium  
+**Product decision needed:** No  
+**Suggested next step:** Investigate whether ESLint is traversing generated folders or another non-source path, then tighten the lint command/config so `pnpm run lint` remains reliable after `next build`.  
+**Status:** Backlog
+

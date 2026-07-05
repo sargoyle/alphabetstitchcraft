@@ -71,10 +71,6 @@ function serifRows(grid) {
   });
 }
 
-function tinyRows(grid) {
-  return grid.map((row) => row.slice(0, 5));
-}
-
 function modernRows(grid) {
   const padded = padRows(grid, 1, 1, 1, 1);
   return padded.map((row, index) => {

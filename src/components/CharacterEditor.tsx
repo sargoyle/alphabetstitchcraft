@@ -105,8 +105,8 @@ export function CharacterEditor({
             Character width is edited here. Font height is set once for the whole font in the sidebar.
           </p>
 
-          {validation.errors.length ? <p className="warning">{validation.errors.join(" ")}</p> : null}
-          {saveDisabledReason ? <p className="warning">{saveDisabledReason}</p> : null}
+          {validation.errors.length ? (<p className="warning" role="alert" aria-live="assertive">{validation.errors.join(" ")}</p>) : null}
+          {saveDisabledReason ? (<p className="warning" role="alert" aria-live="assertive">{saveDisabledReason}</p>) : null}
 
           <div className="editor-footer">
             <div className="button-row editor-actions">
@@ -126,12 +126,12 @@ export function CharacterEditor({
           </div>
 
           {saveStatus ? (
-            <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"}>
-              {saveStatus.message}
-            </p>
+            <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"} role={saveStatus.type === "success" ? "status" : "alert"} aria-live={saveStatus.type === "success" ? "polite" : "assertive"}>{saveStatus.message}</p>
           ) : null}
         </aside>
       </div>
     </div>
   );
 }
+
+

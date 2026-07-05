@@ -133,10 +133,10 @@ export default function GeneratorPage() {
         </div>
 
         {pattern.unsupportedCharacters.length ? (
-          <p className="warning">Unsupported characters: {formatUnsupportedCharacters(pattern)}</p>
+          <p className="warning" role="alert" aria-live="assertive">Unsupported characters: {formatUnsupportedCharacters(pattern)}</p>
         ) : null}
         {pattern.warnings?.map((warning) => (
-          <p className="warning" key={warning}>
+          <p className="warning" key={warning} role="alert" aria-live="assertive">
             {warning}
           </p>
         ))}
@@ -152,3 +152,4 @@ export default function GeneratorPage() {
     </section>
   );
 }
+

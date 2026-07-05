@@ -68,9 +68,9 @@ export default function CustomFontsPage() {
       <div className="sync-card">
         <div>
           <span className="eyebrow">Font sync</span>
-          <p>{persistence.message}</p>
+          <p role="status" aria-live="polite">{persistence.message}</p>
           {persistence.warnings.length ? (
-            <ul className="status-list" aria-label="Font sync warnings">
+            <ul className="status-list" aria-label="Font sync warnings" role="alert" aria-live="assertive">
               {persistence.warnings.map((warning) => (
                 <li key={warning}>{warning}</li>
               ))}
@@ -161,3 +161,4 @@ export default function CustomFontsPage() {
     </section>
   );
 }
+

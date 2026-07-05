@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deleteRemoteFont,
   getRemoteFontDeleteTarget,
@@ -38,12 +38,6 @@ export function useFonts() {
     warnings: []
   });
 
-  useEffect(() => {
-    refresh();
-
-    return undefined;
-  }, []);
-
   const fonts = useMemo(() => {
     const savedById = new Map(savedFonts.map((font) => [font.id, font]));
     const mergedDefaultFonts = defaultFonts
@@ -70,7 +64,7 @@ export function useFonts() {
     };
   }
 
-  async function refreshBackups(fontsToLoad: StitchFont[]) {
+  const refreshBackups = useCallback(async (fontsToLoad: StitchFont[]) => {
     const remoteFonts = fontsToLoad.filter((font) => isUuid(font.id));
     const entries = await Promise.all(
       remoteFonts.map(async (font) => {
@@ -82,9 +76,9 @@ export function useFonts() {
       })
     );
     setFontBackups(Object.fromEntries(entries));
-  }
+  }, []);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     const localFonts = loadCustomFonts();
     const localDeletedFontIds = loadDeletedFontIds();
     setDeletedFontIds(localDeletedFontIds);
@@ -130,7 +124,13 @@ export function useFonts() {
         warnings: []
       });
     }
-  }
+  }, [refreshBackups]);
+
+  useEffect(() => {
+    refresh();
+
+    return undefined;
+  }, [refresh]);
 
   async function saveEditableFont(font: StitchFont): Promise<boolean> {
     const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });

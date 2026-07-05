@@ -34,7 +34,11 @@ export function DisplayCard({
     .join(" ");
 
   return (
-    <article className={`ds-display-card ${stateClass} ${className}`.trim()} aria-disabled={disabled} {...props}>
+    <article
+      className={`ds-display-card ${stateClass} ${className}`.trim()}
+      data-disabled={disabled ? "true" : undefined}
+      {...props}
+    >
       <div>
         {subtitle ? <Badge tone={legalMove ? "success" : illegalMove ? "error" : "neutral"}>{subtitle}</Badge> : null}
         <h3>{title}</h3>

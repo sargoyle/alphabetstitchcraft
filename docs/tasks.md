@@ -1563,3 +1563,84 @@ Acceptance checks:
 - [x] `eslint .` runs successfully.
 - [x] Lint reports no blocking errors.
 - [x] Remaining lint findings are warnings only.
+
+### 27.3 Clean Existing Lint Warnings
+
+- [x] Remove unused script helper variable from `scripts/generate-fonts.mjs`.
+- [x] Remove unused editor selected-character variable.
+- [x] Replace unsupported `aria-disabled` usage on the display card article.
+- [x] Remove unused renderer parameter.
+- [x] Fix editor selected-font effect dependency.
+- [x] Fix `useFonts` refresh effect dependency with stable callbacks.
+
+Acceptance checks:
+
+- [x] `pnpm run lint` reports no warnings or errors.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] Production build passes.
+- [x] Production dependency audit reports no known vulnerabilities.
+
+## Phase 28: Efficiency, Accessibility And Security Validation
+
+### 28.1 Full Validation Pass
+
+- [x] Run lint/static accessibility checks.
+- [x] Run app TypeScript compile.
+- [x] Run test TypeScript compile and utility tests.
+- [x] Run production build.
+- [x] Run production dependency security audit.
+- [x] Scan source for dangerous HTML/script execution patterns.
+- [x] Scan source for environment variable and external script exposure patterns.
+- [x] Smoke test Home, Generator and keep-alive routes on a temporary production server.
+
+Acceptance checks:
+
+- [x] Lint reports no warnings or errors.
+- [x] TypeScript compile passes.
+- [x] Utility tests pass.
+- [x] Production build passes.
+- [x] Production audit reports no known vulnerabilities.
+- [x] Runtime smoke checks return HTTP 200.
+
+### 28.2 Browser-Level Accessibility Pass
+
+- [x] Start a temporary production server for rendered route checks.
+- [x] Check rendered route status and basic page structure for Home, Alphabet Library, Create Pattern, Font Editor and Design System.
+- [x] Verify runtime security headers while testing the browser output.
+- [x] Inspect keyboard and screen-reader source support for focus styles, grid keyboard controls, live regions and read-only grid semantics.
+- [x] Confirm axe-core, Lighthouse and Playwright are not currently installed.
+- [x] Stop the temporary production server after checks.
+- [x] Update accessibility function documentation with browser-level findings.
+- [x] Update central known gaps for newly confirmed accessibility/tooling follow-ups.
+
+Acceptance checks:
+
+- [x] Core routes return HTTP 200 during rendered checks.
+- [x] Security headers are present in runtime responses.
+- [x] Existing known accessibility gaps are confirmed from source.
+- [x] New browser-level findings are documented.
+
+## Phase 29: Accessibility Fixes
+
+### 29.1 Editor Heading And Live Status Regions
+
+- [x] Add a meaningful screen-reader-only `h1` to the Font Editor route.
+- [x] Add a polite live loading status to the Font Editor route fallback.
+- [x] Add live-region semantics to Font Editor font settings status messages.
+- [x] Add live-region semantics to Character Editor validation, disabled-save and save result messages.
+- [x] Add live-region semantics to Generator unsupported-character and renderer warning messages.
+- [x] Add live-region semantics to ExportControls feedback messages.
+- [x] Add live-region semantics to font-sync status and warning messages.
+- [x] Add accessibility source regression tests.
+- [x] Document the accessibility tooling decision: axe-style browser checks before go-live; Lighthouse optional later.
+
+Acceptance checks:
+
+- [x] App TypeScript compile passes.
+- [x] Source/test ESLint passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] Production build passes.
+- [x] Built `/editor` route returns HTTP 200 with one `h1` and live-region markup.

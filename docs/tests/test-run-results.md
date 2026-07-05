@@ -4,6 +4,34 @@ This file records meaningful test runs for Alphabet Stitch.
 
 ## 2026-07-05
 
+### Lint Warning Cleanup
+
+#### Scope
+
+- Removed the six existing lint warnings from the codebase.
+- Revalidated lint, TypeScript, automated tests, production build and production dependency audit.
+
+#### Commands
+
+```powershell
+$env:PATH='C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin;' + $env:PATH; $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' run lint
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- Lint: passed with no warnings or errors.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
 ### Dependency Security And Lint Validation
 
 #### Scope
@@ -765,3 +793,137 @@ $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\de
 - Whitespace-only rendering, unsupported character counts and renderer numeric bounds are confirmed gaps and are not yet automated as passing tests.
 - Character grid keyboard navigation and read-only non-interactive cells require component or browser-level tests.
 - PNG preview visibility parity requires additional export tests after the export behaviour is confirmed or fixed.
+
+## 2026-07-05 - Efficiency, Accessibility And Security Validation
+
+### Scope
+
+- Ran a full validation pass for build efficiency, static accessibility checks, utility test coverage, production dependency security, security headers and risky source patterns.
+- Started a temporary production server to smoke test the Home page, Generator page and Supabase keep-alive endpoint.
+
+### Commands
+
+```powershell
+pnpm run lint
+node .\node_modules\typescript\bin\tsc --noEmit
+node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json
+node .\.test-build\tests\runTests.js
+node .\node_modules\next\dist\bin\next build
+pnpm audit --prod
+rg "dangerouslySetInnerHTML|innerHTML|eval\(|new Function\(|document\.write" src
+rg "process\.env|NEXT_PUBLIC_|SUPABASE|service_role|secret" src next.config.ts
+rg "http://|https://|<script|iframe|gtag|plausible|posthog|analytics" src next.config.ts
+```
+
+### Result
+
+- Status: passed.
+- Lint/static accessibility check: passed with no warnings or errors.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Utility tests: passed.
+- Production build: passed.
+- Production dependency audit: no known vulnerabilities.
+- Runtime smoke test: `/`, `/generator` and `/api/keep-alive` returned `200`; keep-alive returned `{ "status": "ok" }`.
+
+### Findings
+
+- No dangerous HTML/script execution patterns were found.
+- Environment variable usage is limited to `NODE_ENV` and public Supabase configuration in reviewed source.
+- Security headers are configured in `next.config.ts`, including CSP, `X-Frame-Options`, `X-Content-Type-Options` and `Referrer-Policy`.
+- Source scan still shows `window.alert()` and `console.warn()` in font persistence flows. This is not a test failure, but it remains a UX/accessibility improvement opportunity if inline status messaging is preferred everywhere.
+
+### Known Pending Coverage
+
+- This pass did not include browser-based Lighthouse, axe, screen-reader or full keyboard traversal testing.
+- Manual responsive and assistive-technology checks are still recommended before public release.
+
+## 2026-07-05 - Browser-Level Accessibility Pass
+
+### Scope
+
+- Ran a no-new-dependency browser-level accessibility pass against a temporary production server.
+- Checked rendered routes: `/`, `/fonts`, `/generator`, `/editor` and `/design-system`.
+- Checked runtime security headers while the production server was running.
+- Inspected source-backed keyboard and screen-reader support for focus styles, grid keyboard controls, live regions and read-only grid semantics.
+
+### Commands And Checks
+
+```powershell
+next start -p 3001
+Invoke-WebRequest http://127.0.0.1:3001/
+Invoke-WebRequest http://127.0.0.1:3001/fonts
+Invoke-WebRequest http://127.0.0.1:3001/generator
+Invoke-WebRequest http://127.0.0.1:3001/editor
+Invoke-WebRequest http://127.0.0.1:3001/design-system
+Invoke-WebRequest http://127.0.0.1:3001/ | check security headers
+rg 'onKeyDown|aria-live|role="status"|role="alert"|focus-visible|aria-label|aria-labelledby|aria-pressed|tabIndex|disabled' src
+```
+
+### Result
+
+- Status: completed with follow-up findings.
+- Rendered route checks: passed, all checked routes returned HTTP 200.
+- Runtime security headers: passed; CSP, `X-Frame-Options`, `X-Content-Type-Options` and `Referrer-Policy` were present.
+- Source-only ESLint check for `src`: passed with no warnings or errors.
+- In-app browser automation: attempted, but the browser webview did not attach reliably in this session.
+- axe-core, Lighthouse and Playwright: not installed in the project, so formal rule-level accessibility scores were not generated.
+
+### Findings
+
+- `/editor` rendered with no `h1` in the route output checked during this pass.
+- `CharacterGrid` supports Enter and Space toggling, but does not implement arrow-key movement between grid cells.
+- Production save/export/error flows do not consistently use `aria-live` regions.
+- Read-only stitch preview cells still render as disabled buttons instead of non-interactive cells.
+- `pnpm run lint` timed out after a production build, while direct source-only ESLint passed. This suggests the regular lint command may still need a generated-output traversal fix.
+
+### Follow-Up Classification
+
+- Missing editor heading: accessibility gap.
+- Missing arrow-key grid navigation: existing confirmed accessibility gap.
+- Missing consistent live regions: existing confirmed accessibility gap.
+- Read-only disabled grid buttons: existing confirmed accessibility gap.
+- Missing formal axe/Lighthouse tooling: testing/tooling gap requiring product/tooling decision.
+- `pnpm run lint` timeout after build: testing/tooling issue to investigate.
+
+### Notes
+
+- No production code was changed.
+- The temporary production server was stopped after the pass.
+
+## 2026-07-05 - Accessibility Fix Validation
+
+### Scope
+
+- Fixed the missing Font Editor page heading.
+- Added `aria-live`/status semantics to editor, generator, export and font-sync status surfaces.
+- Added source-level accessibility regression coverage.
+- Documented the accessibility tooling decision: axe-style browser checks before go-live, with Lighthouse optional for broader reporting.
+
+### Commands
+
+```powershell
+node .\node_modules\typescript\bin\tsc --noEmit
+node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0
+node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json
+node .\.test-build\tests\runTests.js
+node .\node_modules\next\dist\bin\next build
+next start -p 3001
+Invoke-WebRequest http://127.0.0.1:3001/editor
+```
+
+### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Source/test ESLint: passed with no warnings or errors.
+- Test TypeScript compile: passed.
+- Utility tests: passed, including `accessibility source tests passed.`
+- Production build: passed.
+- Runtime `/editor` check: `200`, `h1Count=1`, `hasFontEditorHeading=True`, `liveRegionCount=3`.
+
+### Findings
+
+- Confirmed fixed: `/editor` now renders a meaningful page heading in the built route output.
+- Confirmed improved: editor loading/status surfaces now expose live-region markup.
+- Remaining accessibility backlog: arrow-key grid navigation, read-only preview cells as non-interactive cells, replacing prompt/alert-based font actions with inline live status messaging, and adding formal axe-style browser tooling before go-live.

@@ -25,6 +25,9 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-05: Recorded a browser-level accessibility pass and cleaned the Accessibility functional requirements document after confirming rendered-route, header, keyboard, live-region and tooling findings. Files affected: `docs/functions/accessibility.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.
+- 2026-07-05: Recorded a full efficiency, accessibility and security validation pass, including lint, TypeScript, utility tests, production build, dependency audit, source security scans and runtime smoke checks. Files affected: `docs/tasks.md`, `docs/tests/test-run-results.md`.
+- 2026-07-05: Cleaned the remaining lint warnings by removing unused code, replacing unsupported `aria-disabled` usage, and stabilising hook dependencies. Files affected: `scripts/generate-fonts.mjs`, `src/app/editor/EditorClient.tsx`, `src/components/layout/DisplayCard.tsx`, `src/lib/renderTextToGrid.ts`, `src/lib/useFonts.ts`, `docs/tasks.md`, `docs/tests/test-run-results.md`.
 - 2026-07-05: Updated dependency security baseline by moving Next.js and `eslint-config-next` to `16.2.10`, updating Supabase to `2.110.0`, adding pnpm security overrides, and replacing obsolete `next lint` with ESLint 9 flat config. Files affected: `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `eslint.config.mjs`, `docs/tasks.md`, `docs/functions/security.md`, `docs/tests/test-run-results.md`.
 - 2026-07-05: Added visible centre guide lines to generated pattern previews and PNG exports so stitchers can identify the exact pattern midpoint. Files affected: `src/components/TextPatternPreview.tsx`, `src/lib/exportUtils.ts`, `src/app/globals.css`, `tests/renderVisibility.test.ts`, `tests/exportUtils.test.ts`, `docs/functions/grid-rendering.md`, `docs/functions/export-png.md`, `docs/tasks.md`, `docs/tests/test-run-results.md`.
 - 2026-07-04: Moved the Font Editor Width control directly under the selected letter grid and compacted the Home page preview, workflow cards and footer spacing for laptop viewports. Files affected: `src/components/CharacterEditor.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `tests/homepageLayoutSource.test.ts`, `tests/runTests.ts`, `docs/functions/character-editor.md`, `docs/functions/navigation-and-routing.md`, `docs/tasks.md`, `docs/tests/test-run-results.md`.
@@ -71,6 +74,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
+- 2026-07-05: Fixed initial accessibility gaps by adding a Font Editor route heading, live-region semantics for editor/generator/export/font-sync status messages, source regression tests, and an axe-style tooling decision for go-live. Files affected: `src/app/editor/page.tsx`, `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/generator/page.tsx`, `src/components/ExportControls.tsx`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `tests/accessibilitySource.test.ts`, `tests/runTests.ts`, `docs/functions/accessibility.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.
 - 2026-07-01: Improved duplicate font-name errors so they identify whether the conflict is in `default_fonts` or `custom_fonts`. Files affected: `src/lib/fontPersistence.ts`, `docs/tasks.md`.
 - 2026-07-01: Added inline font save confirmation after successful database saves and local editor failure status when saves fail. Files affected: `src/lib/useFonts.ts`, `src/components/CharacterEditor.tsx`, `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `docs/functions/character-editor.md`, `docs/rules.md`, `docs/tasks.md`.
 - 2026-07-01: Fixed slug-versus-UUID font operations so default font slugs are not passed to UUID fields, custom font deletes target UUID records, and default/shared slug deletes are blocked with a clear message. Files affected: `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `tests/fontPersistence.test.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/rules.md`, `docs/tasks.md`.
@@ -97,6 +101,9 @@ All notable changes to this project will be documented in this file.
 - Add a new entry after every completed task or group of related tasks
 - Include the date, a short description, and files affected
 - This is a historical log — never edit or delete past entries
+
+
+
 
 
 

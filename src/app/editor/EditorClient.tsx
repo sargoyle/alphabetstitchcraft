@@ -52,7 +52,6 @@ export function EditorClient() {
   );
   const activeKey = characterKey;
   const selectedCharacter = activeKey ? selectedFont?.characters[activeKey] : undefined;
-  const selectedCharacterExists = hasFilledStitches(selectedCharacter);
   const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
   const destinationExists = hasFilledStitches(destinationKey ? selectedFont?.characters[destinationKey] : undefined);
   const sourceCharacter = sourceCharacterKey ? selectedFont?.characters[sourceCharacterKey] : null;
@@ -77,7 +76,7 @@ export function EditorClient() {
     setFontNameDraft(selectedFont.name);
     setFontHeightDraft(selectedFont.defaultHeight);
     setFontSettingsStatus(null);
-  }, [selectedFont?.id, selectedFont?.name, selectedFont?.defaultHeight]);
+  }, [selectedFont]);
 
   async function saveFontSettings() {
     if (!selectedFont) return;
@@ -146,6 +145,7 @@ export function EditorClient() {
 
   return (
     <section className="editor-workspace">
+      <h1 className="sr-only">Font Editor</h1>
       <aside className="editor-sidebar editor-font-panel" aria-label="Font settings and font actions">
         <label>
           Font
@@ -200,9 +200,7 @@ export function EditorClient() {
             Save font settings
           </button>
           {fontSettingsStatus ? (
-            <p className={fontSettingsStatus.type === "success" ? "success-message compact-status" : "warning compact-status"}>
-              {fontSettingsStatus.message}
-            </p>
+            <p className={fontSettingsStatus.type === "success" ? "success-message compact-status" : "warning compact-status"} role={fontSettingsStatus.type === "success" ? "status" : "alert"} aria-live={fontSettingsStatus.type === "success" ? "polite" : "assertive"}>{fontSettingsStatus.message}</p>
           ) : null}
         </div>
 
@@ -379,3 +377,7 @@ export function EditorClient() {
     </section>
   );
 }
+
+
+
+

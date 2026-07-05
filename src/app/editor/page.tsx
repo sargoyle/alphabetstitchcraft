@@ -3,8 +3,11 @@ import { EditorClient } from "./EditorClient";
 
 export default function EditorPage() {
   return (
-    <Suspense fallback={<div className="empty-preview">Loading editor...</div>}>
-      <EditorClient />
-    </Suspense>
+    <>
+      <h1 className="sr-only">Font Editor</h1>
+      <Suspense fallback={<div className="empty-preview" role="status" aria-live="polite">Loading editor...</div>}>
+        <EditorClient />
+      </Suspense>
+    </>
   );
 }

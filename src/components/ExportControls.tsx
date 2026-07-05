@@ -61,7 +61,8 @@ export function ExportControls({ pattern, showGrid, showFilled }: ExportControls
         <FileJson aria-hidden="true" size={17} />
         Export JSON
       </button>
-      {message ? <p className="status-text">{message}</p> : null}
+      {message ? <p className="status-text" role="status" aria-live="polite">{message}</p> : null}
     </div>
   );
 }
+

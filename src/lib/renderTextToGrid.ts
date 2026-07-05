@@ -48,7 +48,7 @@ function placeholder(height: number): StitchCharacter {
   return { width, height: safeHeight, grid: rows };
 }
 
-function appendCharacter(rows: string[], character: StitchCharacter, lineHeight: number): string[] {
+function appendCharacter(rows: string[], character: StitchCharacter): string[] {
   return rows.map((row, index) => row + (character.grid[index] ?? blank(character.width)));
 }
 
@@ -74,7 +74,7 @@ function renderLine(line: string, font: StitchFont, options: TextRenderOptions, 
     const rendered = character ?? placeholder(lineHeight);
 
     if (!character) unsupported.set(char, (unsupported.get(char) ?? 0) + 1);
-    rows = appendCharacter(rows, rendered, lineHeight);
+    rows = appendCharacter(rows, rendered);
     renderedAny = true;
 
     const next = chars[index + 1];
