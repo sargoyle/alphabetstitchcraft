@@ -154,6 +154,19 @@ assert.equal(
   4,
   "PARITY-001: Canvas export should draw one grid square for every provided grid cell."
 );
+assert.ok(
+  drawCalls.some((call) => call.type === "fillRect" && call.x === 19 && call.y === 10 && call.width === 2 && call.height === 20) &&
+    drawCalls.some((call) => call.type === "fillRect" && call.x === 10 && call.y === 19 && call.width === 20 && call.height === 2),
+  "EXPORT-005: Canvas export should draw centre guide lines through the exact middle of the pattern."
+);
+
+drawCalls.length = 0;
+patternToCanvas(pattern, { cellSize: 10, showGrid: true, showFilled: true, showCenterGuide: false });
+assert.equal(
+  drawCalls.some((call) => call.type === "fillRect" && call.width === 2 && call.height === 20),
+  false,
+  "EXPORT-005: Canvas centre guides should be controlled by the centre-guide option."
+);
 
 exportPatternPng(pattern, "letters.png", { showGrid: false, showFilled: true });
 assert.deepEqual(clicks.at(-1), { download: "letters.png", href: "data:image/png;base64,test" });

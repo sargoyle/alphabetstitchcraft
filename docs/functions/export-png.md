@@ -15,6 +15,7 @@ Allow users to download the generated lettering pattern as a PNG image for use o
 - Related setting: grid visibility
 - Related setting: filled stitch visibility
 - Related setting: preview zoom
+- Related visual guide: centre-point horizontal and vertical guide lines
 - Evidence: `ExportControls` now passes preview grid and filled-stitch visibility settings into `exportPatternPng()`.
 
 ## Decision Required
@@ -34,6 +35,7 @@ Allow users to download the generated lettering pattern as a PNG image for use o
 - Canvas margin.
 - Preview grid visibility setting.
 - Preview filled stitch visibility setting.
+- Centre guide line drawing.
 - Browser download support.
 
 ## Outputs
@@ -43,6 +45,7 @@ Allow users to download the generated lettering pattern as a PNG image for use o
 - Status message in export controls.
 - Error message if canvas is unavailable or export fails.
 - Image export that honours preview visibility settings.
+- Image export that includes centre guide lines at the exact middle of the pattern.
 - No title, dimensions, font name or print metadata in v1.
 
 ## Worked Examples
@@ -77,6 +80,19 @@ Input:
 Expected output:
 - PNG contains only the rendered pattern image, not title text, font name or printed dimensions.
 
+### Centre guide lines
+
+Input:
+- Pattern width: `2`
+- Pattern height: `2`
+- Cell size: `10`
+- Margin: `10`
+
+Expected output:
+- Vertical guide line is drawn at `x = 20`.
+- Horizontal guide line is drawn at `y = 20`.
+- Guide lines use a distinct blue colour.
+
 ## State Transitions
 
 1. User generates a non-empty pattern.
@@ -84,10 +100,11 @@ Expected output:
 3. User chooses preview visibility settings.
 4. User clicks Export PNG.
 5. Pattern is rendered to a canvas using the confirmed export style and visibility settings.
-6. Canvas data URL is assigned to a temporary link.
-7. Browser download is triggered.
-8. Status message updates.
-9. The generated pattern and preview state remain unchanged.
+6. Centre guide lines are drawn over the rendered pattern.
+7. Canvas data URL is assigned to a temporary link.
+8. Browser download is triggered.
+9. Status message updates.
+10. The generated pattern and preview state remain unchanged.
 
 ## Rules and Requirements
 
@@ -100,6 +117,8 @@ Expected output:
 | Export must honour preview visibility settings. | Confirmed | Implemented | `ExportControls` passes `showGrid` and `showFilled` to PNG export. |
 | Fixed export cell size is acceptable for v1. | Confirmed | Implemented | User confirmed fixed export cell size is acceptable. |
 | Preview zoom does not need to control PNG cell size. | Confirmed | Implemented | User confirmed fixed export cell size takes precedence over preview zoom in v1. |
+| Exported PNG must include horizontal and vertical centre guide lines at the exact middle of the pattern. | Confirmed | Implemented | `EXPORT-005` verifies canvas centre-guide drawing. |
+| Centre guide lines must be visually distinct from normal grid lines. | Confirmed | Implemented | Canvas uses blue guide lines instead of the paper grid colour. |
 | Exported PNG must not include title, dimensions or font name metadata for now. | Confirmed | Implemented | User confirmed additional print values are future-feature decisions. |
 | Export must not change the generated pattern. | Assumed | Implemented | Reads pattern only. |
 | Additional print values may be considered as a future feature. | Confirmed | Implemented | Not part of v1. |
@@ -114,6 +133,8 @@ Expected output:
 - Must not add stitch dimensions to PNG in v1.
 - Must not add font name to PNG in v1.
 - Must not ignore preview visibility settings.
+- Must not omit centre guide lines from the PNG export.
+- Must not mutate pattern grid rows to add centre guide lines.
 - Must not treat future print metadata as part of the current export requirement.
 
 ## Acceptance Criteria
@@ -126,6 +147,8 @@ Expected output:
 - Given grid visibility is enabled in the preview, when PNG export is clicked, then grid rectangles are drawn for each pattern cell.
 - Given grid visibility is disabled in the preview, when PNG export is clicked, then the PNG does not draw grid lines.
 - Given a valid generated pattern, when PNG export is clicked, then the image uses the fixed v1 export cell size.
+- Given a valid generated pattern, when PNG export is clicked, then the image includes vertical and horizontal centre guide lines at the exact pattern midpoint.
+- Given grid visibility is disabled, when PNG export is clicked, then centre guide lines remain visible.
 - Given a valid generated pattern, when PNG export is clicked, then the PNG does not include title, dimensions or font name text.
 
 ## Edge Cases
@@ -139,12 +162,16 @@ Expected output:
 - Grid visibility off.
 - Filled stitch visibility off.
 - Preview zoom differs from fixed export cell size.
+- Odd pattern width or height.
+- Even pattern width or height.
+- Centre guide line with grid visibility off.
 - User expects print metadata that is not part of v1.
 
 ## Current Code Behaviour
 
 - Currently uses fixed cell size `18` and margin equal to one cell.
 - Currently fills paper background, filled cells when `showFilled` is enabled and grid strokes when `showGrid` is enabled.
+- Currently draws blue centre guide lines after cells and grid are drawn.
 - Currently receives preview grid and filled-stitch visibility settings from `ExportControls`.
 - Currently does not use current preview zoom, which matches the fixed export cell-size decision.
 - Currently does not add title, dimensions or font name metadata to the PNG.
@@ -159,6 +186,7 @@ Expected output:
 - `EXPORT-001` verifies that `patternToCanvas()` honours `showGrid: false` at utility level by avoiding grid stroke drawing while still drawing filled cells.
 - `EXPORT-002` verifies that `patternToCanvas()` honours `showFilled: false` at utility level.
 - `EXPORT-003` verifies empty patterns produce a safe margin-only canvas.
+- `EXPORT-005` verifies canvas export draws centre guide lines through the exact middle of the pattern and can disable them at utility level.
 - `PARITY-001` verifies canvas export uses the provided grid by matching filled-cell and grid-cell draw counts.
 - Source review confirms `ExportControls` passes preview visibility settings to `exportPatternPng()`.
 
@@ -185,6 +213,8 @@ Expected output:
 - Export error handling.
 - Preview/export visibility consistency.
 - Confirm no title, dimensions or font name are drawn.
+- Centre guide placement for odd and even pattern dimensions.
+- Centre guide visibility when grid visibility is off.
 
 ## Review Checklist
 

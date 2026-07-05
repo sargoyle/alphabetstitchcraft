@@ -21,7 +21,7 @@ export function TextPatternPreview({ pattern, showGrid, showFilled, zoom }: Text
   return (
     <div className="pattern-scroll" aria-label="Generated stitch pattern preview">
       <div
-        className="pattern-grid"
+        className="pattern-grid has-center-guide"
         style={{
           gridTemplateColumns: `repeat(${Math.max(1, pattern.width)}, ${cellSize}px)`,
           ["--cell-size" as string]: `${cellSize}px`
@@ -41,4 +41,3 @@ export function TextPatternPreview({ pattern, showGrid, showFilled, zoom }: Text
     </div>
   );
 }
-

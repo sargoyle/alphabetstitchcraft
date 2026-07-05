@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import fontsData from "../src/data/fonts.json";
 import type { GeneratedPattern, StitchFont } from "../src/lib/fontTypes";
 import { renderTextToGrid } from "../src/lib/renderTextToGrid";
@@ -6,6 +7,8 @@ import { renderTextToGrid } from "../src/lib/renderTextToGrid";
 const fonts = fontsData as StitchFont[];
 const blockFont = fonts.find((font) => font.id === "block-needle-5x7");
 assert.ok(blockFont, "Block Needle test font should exist.");
+const textPatternPreviewSource = readFileSync("src/components/TextPatternPreview.tsx", "utf8");
+const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 
 const options = {
   letterSpacing: 1,
@@ -116,5 +119,13 @@ assert.equal(
   "GRID-003: alignment should preserve stitched content for the shorter line."
 );
 assertRowWidthConsistency(rightAligned, "GRID-003");
+
+assert.ok(
+  textPatternPreviewSource.includes("has-center-guide") &&
+    globalCssSource.includes(".pattern-grid.has-center-guide::before") &&
+    globalCssSource.includes(".pattern-grid.has-center-guide::after") &&
+    globalCssSource.includes("background: rgba(43, 157, 255, 0.82);"),
+  "GRID-004: Pattern preview should show visible vertical and horizontal centre guide lines."
+);
 
 console.log("renderVisibility tests passed.");

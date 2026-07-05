@@ -2,6 +2,40 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
+## 2026-07-05
+
+### Pattern Centre Guide Lines Run
+
+#### Scope
+
+- Added vertical and horizontal centre guide lines to generated pattern previews.
+- Added matching centre guide line drawing to PNG canvas export.
+- Added source-level preview coverage and canvas utility coverage for centre guide behaviour.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated tests: passed.
+
+#### Tests Added Or Updated
+
+- Updated `tests/renderVisibility.test.ts`.
+- Updated `tests/exportUtils.test.ts`.
+
+#### Findings
+
+- Automated output included `renderVisibility tests passed.`, `exportUtils tests passed.` and `All utility tests passed.`
+
 ## 2026-07-04
 
 ### Editor Width Stack And Compact Homepage Fit Run

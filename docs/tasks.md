@@ -1511,3 +1511,25 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility test runner passes.
+
+## Phase 26: Pattern Stitching Aids
+
+### 26.1 Pattern Centre Guide Lines
+
+- [x] Show a vertical centre guide line on generated pattern previews.
+- [x] Show a horizontal centre guide line on generated pattern previews.
+- [x] Use a guide colour that is visibly different from normal grid lines.
+- [x] Draw matching centre guide lines in PNG export.
+- [x] Keep centre guide drawing separate from pattern grid data.
+- [x] Update Grid Rendering function documentation.
+- [x] Update Export PNG function documentation.
+- [x] Add automated coverage for preview and PNG centre guide behaviour.
+
+Acceptance checks:
+
+- [x] Pattern preview shows the exact middle with horizontal and vertical guide lines.
+- [x] PNG export includes the same centre guide lines.
+- [x] Centre guide lines remain visible even when normal grid lines are visually different.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.

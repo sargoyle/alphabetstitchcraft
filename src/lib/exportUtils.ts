@@ -4,6 +4,7 @@ type PatternCanvasOptions = {
   cellSize?: number;
   showGrid?: boolean;
   showFilled?: boolean;
+  showCenterGuide?: boolean;
 };
 
 function downloadJson(data: unknown, filename: string) {
@@ -31,6 +32,7 @@ export function patternToCanvas(
   const cellSize = options.cellSize ?? 18;
   const showGrid = options.showGrid ?? true;
   const showFilled = options.showFilled ?? true;
+  const showCenterGuide = options.showCenterGuide ?? true;
   const margin = cellSize;
   const canvas = document.createElement("canvas");
   canvas.width = pattern.width * cellSize + margin * 2;
@@ -56,6 +58,18 @@ export function patternToCanvas(
       }
     });
   });
+
+  if (showCenterGuide && pattern.width > 0 && pattern.height > 0) {
+    const guideWidth = Math.max(2, Math.round(cellSize * 0.12));
+    const patternWidth = pattern.width * cellSize;
+    const patternHeight = pattern.height * cellSize;
+    const centerX = margin + patternWidth / 2 - guideWidth / 2;
+    const centerY = margin + patternHeight / 2 - guideWidth / 2;
+
+    ctx.fillStyle = "rgba(43, 157, 255, 0.82)";
+    ctx.fillRect(centerX, margin, guideWidth, patternHeight);
+    ctx.fillRect(margin, centerY, patternWidth, guideWidth);
+  }
 
   return canvas;
 }

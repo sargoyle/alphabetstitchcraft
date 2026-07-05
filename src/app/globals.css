@@ -1029,6 +1029,36 @@ textarea {
   width: max-content;
 }
 
+.pattern-grid {
+  position: relative;
+}
+
+.pattern-grid.has-center-guide::before,
+.pattern-grid.has-center-guide::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  background: rgba(43, 157, 255, 0.82);
+  box-shadow: 0 0 0 1px rgba(245, 247, 239, 0.45);
+}
+
+.pattern-grid.has-center-guide::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: max(2px, calc(var(--cell-size) * 0.12));
+  transform: translateX(-50%);
+}
+
+.pattern-grid.has-center-guide::after {
+  right: 0;
+  bottom: 50%;
+  left: 0;
+  height: max(2px, calc(var(--cell-size) * 0.12));
+  transform: translateY(50%);
+}
+
 .pattern-cell,
 .stitch-cell {
   width: var(--cell-size);
