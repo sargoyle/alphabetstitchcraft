@@ -81,8 +81,8 @@ Open product decisions from these gaps:
 **Task type:** Accessibility  
 **Suggested priority:** High  
 **Product decision needed:** No  
-**Suggested next step:** Design grid focus movement rules for arrow keys, then implement and test keyboard navigation in editable grids.  
-**Status:** Backlog
+**Suggested next step:** Keep source and browser regression coverage for arrow-key grid movement.  
+**Status:** Fixed
 
 ## Replace Read-Only Disabled Grid Buttons With Non-Interactive Cells
 
@@ -93,8 +93,8 @@ Open product decisions from these gaps:
 **Task type:** Accessibility  
 **Suggested priority:** High  
 **Product decision needed:** No  
-**Suggested next step:** Update read-only grid rendering to use non-button cells while preserving labels or image-level descriptions.  
-**Status:** Backlog
+**Suggested next step:** Keep source and browser regression coverage for read-only preview semantics.  
+**Status:** Fixed
 
 ## Add `aria-live` Status And Warning Announcements
 
@@ -105,8 +105,8 @@ Open product decisions from these gaps:
 **Task type:** Accessibility  
 **Suggested priority:** High  
 **Product decision needed:** No  
-**Suggested next step:** Define a shared inline status component with `aria-live` behaviour and replace alerts/silent updates where appropriate.  
-**Status:** Backlog
+**Suggested next step:** Keep source coverage for live font action statuses and consider extracting a shared status component later if duplication grows.  
+**Status:** Fixed for current font action alerts
 
 ## Correct Centre Alignment Odd Padding
 
@@ -614,8 +614,8 @@ Open product decisions from these gaps:
 **Task type:** Accessibility  
 **Suggested priority:** Medium  
 **Product decision needed:** No  
-**Suggested next step:** Add a meaningful visible or screen-reader-only `h1` to the Font Editor route without disrupting the compact editor layout.  
-**Status:** Backlog
+**Suggested next step:** Keep route heading regression coverage.  
+**Status:** Fixed
 
 ## Add Formal Browser Accessibility Tooling
 

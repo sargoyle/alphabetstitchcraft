@@ -66,9 +66,9 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 | Form controls must have labels. | Confirmed | Implemented | Source uses labelled controls; formal axe verification is still pending. |
 | Editable grid cells must expose row, column and filled state. | Confirmed | Implemented | `CharacterGrid` builds per-cell `aria-label` values and uses `aria-pressed` for editable cells. |
 | Enter and Space must toggle the focused editable grid cell in v1. | Confirmed | Implemented | `CharacterGrid` handles Enter and Space in `onKeyDown`. |
-| Arrow-key navigation must be supported in the grid editor. | Confirmed | Not Implemented | User confirmed arrow-key navigation is required; source confirms no arrow-key movement handling. |
-| Dynamic save, export and error messages must use `aria-live` regions. | Confirmed | Partially Implemented | Editor, generator, export and font-sync status surfaces now use live regions; prompt/alert-based font actions still need a fuller inline status pattern. |
-| Read-only grid previews must use non-interactive cells. | Confirmed | Not Implemented | User confirmed read-only previews should use non-interactive cells; `CharacterGrid` currently renders disabled buttons when not editable. |
+| Arrow-key navigation must be supported in the grid editor. | Confirmed | Implemented | `CharacterGrid` now handles ArrowUp, ArrowDown, ArrowLeft and ArrowRight, clamped to grid bounds. |
+| Dynamic save, export and error messages must use `aria-live` regions. | Confirmed | Implemented | Editor, generator, export, font sync and font action outcomes now use inline live status or alert regions. Browser prompt/confirm remains only for collecting input or explicit destructive confirmation. |
+| Read-only grid previews must use non-interactive cells. | Confirmed | Implemented | `CharacterGrid` now renders read-only cells as `span` elements inside an image-labelled grid container. |
 | Accessibility checks should include browser-level evidence before release. | Confirmed | Partially Implemented | A no-new-dependency rendered DOM/source pass was completed; axe-style automated browser checks are selected for future tooling but not installed yet. |
 
 ## Negative Rules
@@ -86,7 +86,7 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 - Given a page loads, when assistive technology reads the page structure, then the page has a meaningful `h1` and primary navigation landmark.
 - Given an editable grid cell has focus, when Enter is pressed, then the cell toggles filled/empty state.
 - Given an editable grid cell has focus, when Space is pressed, then the cell toggles filled/empty state.
-- Given an editable grid cell has focus, when an arrow key is pressed after arrow navigation is implemented, then focus moves to the adjacent cell where one exists.
+- Given an editable grid cell has focus, when an arrow key is pressed, then focus moves to the adjacent cell where one exists and remains clamped at the grid edge.
 - Given a save, export or error message changes, when the message appears, then the changed message is announced through an `aria-live` region.
 - Given a read-only stitch preview is displayed, when keyboard users tab through the page, then individual preview cells are not included as disabled button controls.
 - Given a formal browser accessibility test is run, when axe/Lighthouse or equivalent reports violations, then each violation is triaged before public release.
@@ -109,19 +109,15 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 - Currently has global visible focus styles.
 - Currently editable grid cells use labelled buttons with `aria-pressed`.
 - Currently Enter and Space toggle editable grid cells.
-- Currently arrow-key movement between grid cells does not appear to be implemented.
-- Currently read-only grid cells render as disabled buttons.
-- Currently editor, generator, export and font-sync status surfaces use live regions; prompt/alert-based font actions still need a fuller inline status pattern.
+- Currently arrow-key movement between editable grid cells is implemented for the four arrow keys and clamps focus at the grid edges.
+- Currently read-only grid cells render as non-interactive `span` elements with the parent grid exposed as an image-like labelled preview.
+- Currently editor, generator, export, font sync and font action outcome messages use live regions. Browser prompts/confirms remain for text entry and destructive confirmation, not for status feedback.
 - Browser-level rendered checks returned HTTP 200 for `/`, `/fonts`, `/generator`, `/editor` and `/design-system`.
 - The editor route now includes a screen-reader-only `h1` in the route wrapper.
 - Formal axe-style browser checks and screen-reader checks have not yet been run because browser accessibility tooling is not installed.
 
 ## Known Gaps / Defects
 
-- Character grid does not support arrow-key navigation, which is a confirmed requirement.
-- Some prompt/alert-based font action messages still need conversion to the shared inline `aria-live` status pattern.
-- Read-only grid cells use disabled buttons, but non-interactive cells are the confirmed requirement.
-- The editor route rendered with no `h1` in the browser-level route check.
 - Formal axe-style browser accessibility tooling is not installed or automated yet.
 
 ## Unclear or Assumed Rules
@@ -132,9 +128,9 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 
 - Keyboard tab order on Home, Alphabet Library, Create Pattern and Font Editor.
 - Enter and Space grid editing.
-- Arrow-key grid navigation once implemented.
+- Arrow-key grid navigation regression coverage.
 - Screen-reader announcement of save/export/error messages.
-- Read-only preview semantics.
+- Read-only preview semantics regression coverage.
 - Page heading and landmark structure.
 - Colour contrast and non-colour-only states.
 - Formal axe-style browser accessibility pass before public release.

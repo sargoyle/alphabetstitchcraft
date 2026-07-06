@@ -927,3 +927,41 @@ Invoke-WebRequest http://127.0.0.1:3001/editor
 - Confirmed fixed: `/editor` now renders a meaningful page heading in the built route output.
 - Confirmed improved: editor loading/status surfaces now expose live-region markup.
 - Remaining accessibility backlog: arrow-key grid navigation, read-only preview cells as non-interactive cells, replacing prompt/alert-based font actions with inline live status messaging, and adding formal axe-style browser tooling before go-live.
+
+## 2026-07-06 - Remaining Accessibility Backlog Fix Validation
+
+### Scope
+
+- Added arrow-key focus movement for editable stitch grids.
+- Changed read-only stitch previews to render non-interactive cells.
+- Replaced remaining `window.alert()` font action status messages with inline live status messages.
+- Added source regression coverage for the accessibility fixes.
+
+### Commands
+
+```powershell
+node .\node_modules\typescript\bin\tsc --noEmit
+node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0
+node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json
+node .\.test-build\tests\runTests.js
+node .\node_modules\next\dist\bin\next build
+rg "window\.alert|alert\(" src
+```
+
+### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Source/test ESLint: passed with no warnings or errors after rerun with a longer timeout.
+- Test TypeScript compile: passed.
+- Utility tests: passed, including `accessibility source tests passed.`.
+- Production build: passed.
+- Source alert scan: passed; no `window.alert()` calls were found under `src`.
+
+### Findings
+
+- Confirmed fixed: editable character grids now support ArrowUp, ArrowDown, ArrowLeft and ArrowRight focus movement.
+- Confirmed fixed: read-only stitch previews now render non-interactive cells instead of disabled buttons.
+- Confirmed fixed: font action save/create/delete/restore outcomes now use inline live status messages instead of `window.alert()`.
+- Remaining accessibility follow-up: formal axe-style browser accessibility tooling is still not installed and remains a go-live testing task.
+

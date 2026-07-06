@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Download, FileJson, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { FontGridPreview } from "@/components/FontGridPreview";
@@ -9,46 +10,71 @@ import { useFonts } from "@/lib/useFonts";
 
 export default function CustomFontsPage() {
   const { fonts, deletedFonts, deleteFont, fontBackups, restoreFont, restoreFontBackup, saveFont, persistence } = useFonts();
+  const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  function renameFont(fontId: string) {
+  async function renameFont(fontId: string) {
+    setActionStatus(null);
     const font = fonts.find((item) => item.id === fontId);
     if (!font) return;
     const name = window.prompt("Rename font", font.name);
     if (!name?.trim()) return;
     if (fonts.some((item) => item.id !== font.id && item.name.trim().toLowerCase() === name.trim().toLowerCase())) {
-      window.alert("A font with this name already exists.");
+      setActionStatus({ type: "error", message: "A font with this name already exists." });
       return;
     }
-    saveFont({ ...font, name: name.trim() });
+    const saved = await saveFont({ ...font, name: name.trim() });
+    setActionStatus(
+      saved
+        ? { type: "success", message: "Font changes saved successfully." }
+        : { type: "error", message: persistence.message || "Font was not saved." }
+    );
   }
 
-  function removeFont(fontId: string) {
+  async function removeFont(fontId: string) {
+    setActionStatus(null);
     const font = fonts.find((item) => item.id === fontId);
     if (!window.confirm(`Delete ${font?.name ?? "this font"}?`)) return;
-    deleteFont(fontId);
+    const deleted = await deleteFont(fontId);
+    setActionStatus(
+      deleted
+        ? { type: "success", message: "Font deleted successfully." }
+        : { type: "error", message: persistence.message || "Font was not deleted." }
+    );
   }
 
-  function restoreBackup(backupId: string, fontName: string, createdAt: string) {
+  async function restoreBackup(backupId: string, fontName: string, createdAt: string) {
+    setActionStatus(null);
     if (!window.confirm(`Restore ${fontName} from ${createdAt.slice(0, 10)}? This will replace the current saved font.`)) {
       return;
     }
-    restoreFontBackup(backupId);
+    const restored = await restoreFontBackup(backupId);
+    setActionStatus(
+      restored
+        ? { type: "success", message: "Font backup restored successfully." }
+        : { type: "error", message: persistence.message || "Font backup was not restored." }
+    );
   }
 
-  function createFont() {
+  async function createFont() {
+    setActionStatus(null);
     if (!persistence.canWrite) {
-      window.alert(persistence.message);
+      setActionStatus({ type: "error", message: persistence.message });
       return;
     }
 
     const name = window.prompt("Name your new font", "New stitch alphabet");
     if (!name?.trim()) return;
     if (fonts.some((font) => font.name.trim().toLowerCase() === name.trim().toLowerCase())) {
-      window.alert("A font with this name already exists.");
+      setActionStatus({ type: "error", message: "A font with this name already exists." });
       return;
     }
     const font = createBlankFont(name.trim());
-    saveFont(font);
+    const saved = await saveFont(font);
+    setActionStatus(
+      saved
+        ? { type: "success", message: "Font changes saved successfully." }
+        : { type: "error", message: persistence.message || "Font was not saved." }
+    );
   }
 
   return (
@@ -59,10 +85,21 @@ export default function CustomFontsPage() {
           <h1>Editable lettering alphabets</h1>
           <p>Create shared public fonts that everyone can browse, use, edit, rename or delete.</p>
         </div>
-        <button className="button primary" type="button" onClick={createFont} disabled={!persistence.canWrite}>
-          <Plus aria-hidden="true" size={18} />
-          Create new font
-        </button>
+        <div className="page-action-stack">
+          <button className="button primary" type="button" onClick={createFont} disabled={!persistence.canWrite}>
+            <Plus aria-hidden="true" size={18} />
+            Create new font
+          </button>
+          {actionStatus ? (
+            <p
+              className={actionStatus.type === "success" ? "success-message compact-status" : "warning compact-status"}
+              role={actionStatus.type === "success" ? "status" : "alert"}
+              aria-live={actionStatus.type === "success" ? "polite" : "assertive"}
+            >
+              {actionStatus.message}
+            </p>
+          ) : null}
+        </div>
       </div>
 
       <div className="sync-card">
@@ -150,7 +187,20 @@ export default function CustomFontsPage() {
           </div>
           <div className="button-row">
             {deletedFonts.map((font) => (
-              <button className="button secondary" type="button" key={font.id} onClick={() => restoreFont(font.id)}>
+              <button
+                className="button secondary"
+                type="button"
+                key={font.id}
+                onClick={async () => {
+                  setActionStatus(null);
+                  const restored = await restoreFont(font.id);
+                  setActionStatus(
+                    restored
+                      ? { type: "success", message: "Font restored successfully." }
+                      : { type: "error", message: persistence.message || "Font was not restored." }
+                  );
+                }}
+              >
                 <RotateCcw aria-hidden="true" size={17} />
                 Restore {font.name}
               </button>
@@ -161,4 +211,3 @@ export default function CustomFontsPage() {
     </section>
   );
 }
-

@@ -7,6 +7,9 @@ const characterEditorSource = readFileSync("src/components/CharacterEditor.tsx",
 const generatorSource = readFileSync("src/app/generator/page.tsx", "utf8");
 const exportControlsSource = readFileSync("src/components/ExportControls.tsx", "utf8");
 const customFontsSource = readFileSync("src/app/custom-fonts/page.tsx", "utf8");
+const fontsPageSource = readFileSync("src/app/fonts/page.tsx", "utf8");
+const characterGridSource = readFileSync("src/components/CharacterGrid.tsx", "utf8");
+const useFontsSource = readFileSync("src/lib/useFonts.ts", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 
 assert.ok(
@@ -47,6 +50,39 @@ assert.ok(
   customFontsSource.includes('role="status" aria-live="polite"') &&
     customFontsSource.includes('role="alert" aria-live="assertive"'),
   "A11Y-007: Font sync status and warnings should use live regions."
+);
+
+assert.ok(
+  characterGridSource.includes("function handleArrowKey") &&
+    characterGridSource.includes("ArrowUp") &&
+    characterGridSource.includes("ArrowDown") &&
+    characterGridSource.includes("ArrowLeft") &&
+    characterGridSource.includes("ArrowRight") &&
+    characterGridSource.includes("focusCell(nextRow, nextColumn)") &&
+    characterGridSource.includes('data-grid-cell="true"'),
+  "A11Y-008: Editable character grids should support arrow-key focus movement."
+);
+
+assert.ok(
+  characterGridSource.includes("return <span") &&
+    characterGridSource.includes('aria-hidden="true"') &&
+    !characterGridSource.includes("disabled={!editable}"),
+  "A11Y-009: Read-only character previews should use non-interactive cells instead of disabled buttons."
+);
+
+assert.ok(
+  !fontsPageSource.includes("window.alert") &&
+    !customFontsSource.includes("window.alert") &&
+    !useFontsSource.includes("window.alert"),
+  "A11Y-010: Font actions should not use window.alert for status feedback."
+);
+
+assert.ok(
+  fontsPageSource.includes("setActionStatus") &&
+    customFontsSource.includes("setActionStatus") &&
+    fontsPageSource.includes('aria-live={actionStatus.type === "success" ? "polite" : "assertive"}') &&
+    customFontsSource.includes('aria-live={actionStatus.type === "success" ? "polite" : "assertive"}'),
+  "A11Y-011: Font action outcomes should use inline live status messages."
 );
 
 console.log("accessibility source tests passed.");

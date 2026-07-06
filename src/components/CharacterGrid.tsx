@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { StitchCharacter } from "@/lib/fontTypes";
 
 type CharacterGridProps = {
@@ -73,6 +73,31 @@ export function CharacterGrid({
     onToggle?.(row, column);
   }
 
+  function focusCell(row: number, column: number) {
+    const nextCell = document.querySelector<HTMLButtonElement>(
+      `[data-grid-cell='true'][data-row='${row}'][data-column='${column}']`
+    );
+    nextCell?.focus();
+  }
+
+  function handleArrowKey(event: KeyboardEvent<HTMLButtonElement>, row: number, column: number) {
+    if (!editable) return;
+
+    const movement: Record<string, [number, number]> = {
+      ArrowUp: [-1, 0],
+      ArrowDown: [1, 0],
+      ArrowLeft: [0, -1],
+      ArrowRight: [0, 1]
+    };
+    const delta = movement[event.key];
+    if (!delta) return;
+
+    event.preventDefault();
+    const nextRow = Math.max(0, Math.min(character.height - 1, row + delta[0]));
+    const nextColumn = Math.max(0, Math.min(character.width - 1, column + delta[1]));
+    focusCell(nextRow, nextColumn);
+  }
+
   return (
     <div
       className="stitch-grid"
@@ -87,6 +112,11 @@ export function CharacterGrid({
       {character.grid.map((row, rowIndex) =>
         Array.from(row).map((cell, columnIndex) => {
           const filled = cell === "1";
+          const className = `stitch-cell ${filled ? "is-filled" : ""} ${showGrid ? "has-grid" : ""}`;
+          if (!editable) {
+            return <span key={`${rowIndex}-${columnIndex}`} className={className} aria-hidden="true" />;
+          }
+
           return (
             <button
               key={`${rowIndex}-${columnIndex}`}
@@ -94,20 +124,22 @@ export function CharacterGrid({
               data-grid-cell="true"
               data-row={rowIndex}
               data-column={columnIndex}
-              className={`stitch-cell ${filled ? "is-filled" : ""} ${showGrid ? "has-grid" : ""}`}
+              className={className}
               aria-label={`${label}, row ${rowIndex + 1}, column ${columnIndex + 1}, ${
                 filled ? "filled" : "empty"
               }`}
-              aria-pressed={editable ? filled : undefined}
-              disabled={!editable}
+              aria-pressed={filled}
               onPointerDown={(event) => {
                 event.preventDefault();
                 startDrag(rowIndex, columnIndex, filled);
               }}
               onKeyDown={(event) => {
-                if (event.key !== "Enter" && event.key !== " ") return;
-                event.preventDefault();
-                handleKeyboardToggle(rowIndex, columnIndex);
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleKeyboardToggle(rowIndex, columnIndex);
+                  return;
+                }
+                handleArrowKey(event, rowIndex, columnIndex);
               }}
             />
           );

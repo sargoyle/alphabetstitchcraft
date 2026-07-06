@@ -140,13 +140,11 @@ export function useFonts() {
       if (!savedRemotely) {
         const message = "Add Supabase environment values before saving fonts to the database.";
         setPersistence((current) => ({ ...current, message, canWrite: false }));
-        window.alert(message);
         return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
-      window.alert(message);
       return false;
     }
 
@@ -164,15 +162,14 @@ export function useFonts() {
     return true;
   }
 
-  async function deleteEditableFont(fontId: string) {
+  async function deleteEditableFont(fontId: string): Promise<boolean> {
     const deleteTarget = getRemoteFontDeleteTarget(fontId);
 
     if (!deleteTarget.allowed) {
       const message = `Default/shared font "${fontId}" uses a slug ID and cannot be deleted from the app. Create or edit custom fonts instead.`;
       console.warn(`[useFonts] ${message}`);
       setPersistence((current) => ({ ...current, message }));
-      window.alert(message);
-      return;
+      return false;
     }
 
     try {
@@ -180,46 +177,60 @@ export function useFonts() {
       if (!deletedRemotely) {
         const message = "Only database-saved custom fonts can be deleted here.";
         setPersistence((current) => ({ ...current, message }));
-        window.alert(message);
-        return;
+        return false;
       }
     } catch {
       const message = "Database delete failed. Font was not deleted.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
-      window.alert(message);
-      return;
+      return false;
     }
 
-    refresh();
+    await refresh();
+    setPersistence((current) => ({
+      ...current,
+      mode: "remote",
+      message: "Font deleted successfully.",
+      canWrite: true
+    }));
+    return true;
   }
 
-  async function restoreFontBackup(backupId: string) {
+  async function restoreFontBackup(backupId: string): Promise<boolean> {
     try {
       const restored = await restoreRemoteFontBackup(backupId);
       if (!restored) {
         const message = "Database restore failed. The backup was not restored.";
         setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
-        window.alert(message);
-        return;
+        return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database restore failed. The backup was not restored.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
-      window.alert(message);
-      return;
+      return false;
     }
 
-    refresh();
+    await refresh();
+    setPersistence((current) => ({
+      ...current,
+      mode: "remote",
+      message: "Font backup restored successfully.",
+      canWrite: true
+    }));
+    return true;
   }
 
-  function restoreEditableFont(fontId: string) {
+  async function restoreEditableFont(fontId: string): Promise<boolean> {
     restoreFont(fontId);
-    refresh();
+    await refresh();
+    setPersistence((current) => ({ ...current, message: "Font restored successfully." }));
+    return true;
   }
 
-  function resetEditableFont(fontId: string) {
+  async function resetEditableFont(fontId: string): Promise<boolean> {
     resetFontEdits(fontId);
-    refresh();
+    await refresh();
+    setPersistence((current) => ({ ...current, message: "Font reset successfully." }));
+    return true;
   }
 
   return {
@@ -237,3 +248,4 @@ export function useFonts() {
     resetFontEdits: resetEditableFont
   };
 }
+

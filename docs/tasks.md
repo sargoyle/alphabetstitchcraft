@@ -1644,3 +1644,25 @@ Acceptance checks:
 - [x] Utility test runner passes.
 - [x] Production build passes.
 - [x] Built `/editor` route returns HTTP 200 with one `h1` and live-region markup.
+
+### 29.2 Remaining Accessibility Backlog
+
+- [x] Add arrow-key focus movement for editable stitch grids.
+- [x] Render read-only stitch preview cells as non-interactive cells.
+- [x] Replace remaining `window.alert()` font action status messages with inline live status messages.
+- [x] Add accessibility source regression tests for arrow navigation, read-only preview semantics and font action status messages.
+- [x] Update accessibility functional requirements and known-gaps documentation.
+
+Acceptance checks:
+
+- [x] Editable grid cells respond to ArrowUp, ArrowDown, ArrowLeft and ArrowRight.
+- [x] Arrow-key focus movement is clamped at grid edges.
+- [x] Read-only grid previews do not render individual cells as disabled buttons.
+- [x] Font create, rename, delete, restore and backup restore outcomes use inline status/alert regions.
+- [x] Source no longer contains `window.alert()` font action status calls.
+- [x] App TypeScript compile passes.
+- [x] Source/test ESLint passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] Production build passes.
+

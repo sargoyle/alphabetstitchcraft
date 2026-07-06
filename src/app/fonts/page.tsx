@@ -12,6 +12,7 @@ export default function FontsPage() {
   const [category, setCategory] = useState("All");
   const [height, setHeight] = useState("All");
   const [search, setSearch] = useState("");
+  const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const categories = useMemo(() => ["All", ...Array.from(new Set(fonts.map((font) => font.category)))], [fonts]);
   const heights = useMemo(
     () => ["All", ...Array.from(new Set(fonts.map((font) => font.defaultHeight))).sort((a, b) => a - b).map(String)],
@@ -26,19 +27,25 @@ export default function FontsPage() {
     return matchesCategory && matchesHeight && matchesSearch;
   });
 
-  function createFont() {
+  async function createFont() {
+    setActionStatus(null);
     if (!persistence.canWrite) {
-      window.alert(persistence.message);
+      setActionStatus({ type: "error", message: persistence.message });
       return;
     }
 
     const name = window.prompt("Name your new font", "New stitch alphabet");
     if (!name?.trim()) return;
     if (fonts.some((font) => font.name.trim().toLowerCase() === name.trim().toLowerCase())) {
-      window.alert("A font with this name already exists.");
+      setActionStatus({ type: "error", message: "A font with this name already exists." });
       return;
     }
-    saveFont(createBlankFont(name.trim()));
+    const saved = await saveFont(createBlankFont(name.trim()));
+    setActionStatus(
+      saved
+        ? { type: "success", message: "Font changes saved successfully." }
+        : { type: "error", message: persistence.message || "Font was not saved." }
+    );
   }
 
   return (
@@ -49,10 +56,21 @@ export default function FontsPage() {
           <h1>Browse stitch alphabets</h1>
           <p>Filter stitch alphabets, inspect samples and choose a lettering style for your next grid.</p>
         </div>
-        <button className="button primary nowrap-button" type="button" onClick={createFont} disabled={!persistence.canWrite}>
-          <Plus aria-hidden="true" size={18} />
-          Create new font
-        </button>
+        <div className="page-action-stack">
+          <button className="button primary nowrap-button" type="button" onClick={createFont} disabled={!persistence.canWrite}>
+            <Plus aria-hidden="true" size={18} />
+            Create new font
+          </button>
+          {actionStatus ? (
+            <p
+              className={actionStatus.type === "success" ? "success-message compact-status" : "warning compact-status"}
+              role={actionStatus.type === "success" ? "status" : "alert"}
+              aria-live={actionStatus.type === "success" ? "polite" : "assertive"}
+            >
+              {actionStatus.message}
+            </p>
+          ) : null}
+        </div>
       </div>
 
       <div className="toolbar">
@@ -94,7 +112,6 @@ export default function FontsPage() {
       ) : (
         <div className="empty-preview">No fonts match this filter.</div>
       )}
-
     </section>
   );
 }
