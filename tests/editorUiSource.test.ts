@@ -82,6 +82,12 @@ assert.ok(
   "EDITOR-UI-009: Duplicate selection should use a tile picker rather than a dropdown."
 );
 
+assert.equal(
+  (editorClientSource.match(/setCreatingCharacter\(true\)/g) ?? []).length,
+  1,
+  "EDITOR-UI-017: Duplicate source tile selection should not enter creating mode until the user confirms the duplicate."
+);
+
 assert.ok(
   editorClientSource.includes("danger-zone") &&
     editorClientSource.includes("Delete Font...") &&
@@ -93,13 +99,14 @@ assert.ok(
   characterEditorSource.includes("character-editor-layout") &&
     characterEditorSource.includes("character-grid-stack") &&
     characterEditorSource.includes("character-editor-controls") &&
-    characterEditorSource.includes("editor-help-card"),
-  "EDITOR-UI-005: Character editor should keep the grid and width control stacked together with help text and save actions in a compact editor layout."
+    !characterEditorSource.includes("editor-help-card") &&
+    !characterEditorSource.includes("Character width is edited here"),
+  "EDITOR-UI-005: Character editor should keep the grid and width control stacked together without the old character-width help panel."
 );
 
 assert.ok(
-  !characterEditorSource.includes("Height\n            <input") &&
-    characterEditorSource.includes("Font height is set once for the whole font"),
+  !characterEditorSource.includes("Height\n              <input") &&
+    characterEditorSource.includes("Width\n              <input"),
   "EDITOR-UI-013: Character editor should not expose per-character height editing."
 );
 
@@ -108,12 +115,43 @@ assert.ok(
   "EDITOR-UI-006: Character editor should use a footer action row with a dedicated save button."
 );
 
+assert.ok(
+  editorClientSource.includes("pendingExit") &&
+    editorClientSource.includes("Save &amp; Continue") &&
+    editorClientSource.includes("Discard Changes") &&
+    editorClientSource.includes("You have unsaved changes to this character."),
+  "EDITOR-UI-018: Unsaved character changes should use a three-action confirmation dialog."
+);
+
+assert.ok(
+  editorClientSource.includes("beforeunload") &&
+    editorClientSource.includes('document.addEventListener("click", handleDocumentClick, true)') &&
+    editorClientSource.includes("requestCharacterExit"),
+  "EDITOR-UI-019: Unsaved character changes should guard font changes, character changes and page navigation."
+);
+
+assert.ok(
+  characterEditorSource.includes("onDirtyChange") &&
+    characterEditorSource.includes("onEditorActionsChange") &&
+    characterEditorSource.includes("serialiseCharacter") &&
+    characterEditorSource.includes("discardDraft"),
+  "EDITOR-UI-020: CharacterEditor should expose dirty state plus save/discard actions to the editor shell."
+);
+
+assert.ok(
+  characterEditorSource.includes("editor-floating-status") &&
+    characterEditorSource.includes("window.setTimeout") &&
+    globalCssSource.includes(".editor-floating-status") &&
+    globalCssSource.includes("position: absolute"),
+  "EDITOR-UI-021: Character save status should use a floating auto-dismiss notification that does not move layout."
+);
+
 console.log("editor UI source tests passed.");
 
 assert.ok(
   characterSetSource.includes("punctuationCharacters") &&
     characterSetSource.includes('"@"') &&
     characterSetSource.includes('"~"') &&
-    characterSetSource.includes('"\\"'),
+    characterSetSource.includes('"\\\\"'),
   "EDITOR-UI-016: Shared character set should include the required printable punctuation characters."
 );

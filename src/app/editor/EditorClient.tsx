@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
@@ -472,3 +472,4 @@ export function EditorClient() {
     </section>
   );
 }
+

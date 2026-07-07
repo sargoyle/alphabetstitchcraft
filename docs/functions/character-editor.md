@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Allow users to edit an individual character grid, resize it, clear it, reset it, save it, or create a new mapped character from a blank grid or duplicated source character.
+Allow users to edit an individual character grid, resize it, clear it, reset it, save it, create a new mapped character from a blank grid or duplicated source character, and avoid losing unsaved character work accidentally.
 
 ## Source References
 
@@ -14,7 +14,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
-- Inline status message: `Font changes saved successfully.`
+- Floating status message: `Font changes saved successfully.`
 - UI pattern: Three-panel Font Editor layout with Font panel, Character panel and Character editor panel; ordered character tile picker; exists/not-created/selected legend; compact duplicate-source dialog; loading state for requested fonts; danger zone delete panel; compact character editor action area.
 
 
@@ -48,7 +48,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Saved character changes to selected font.
 - New mapped character when creation mode is active.
 - Save-disabled warning where applicable.
-- Inline save success or failure status.
+- Floating save success or failure status.
 - Font delete request.
 - Sidebar character picker with active selected state.
 - Sidebar character picker with A-Z, a-z, 0-9, common punctuation, then other mapped characters.
@@ -58,7 +58,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Editable font name and font-level height controls in the editor sidebar.
 - Font panel containing font selector, font settings and Delete Font danger zone.
 - Character panel containing character picker, legend and Select Duplicate action.
-- Character editor panel containing selected character grid, width control directly under the grid, guidance text, Reset, Clear and Save Character actions.
+- Character editor panel containing selected character grid, width control directly under the grid, Reset, Clear and Save Character actions.
 
 ## State Transitions
 
@@ -199,12 +199,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently creates blank new characters at a size based on selected font default height, clamped to 1-24.
 - Currently clones the selected font before writing edited characters.
 - Currently waits for `saveFont()` to return success before resetting editor state.
-- Currently shows `Font changes saved successfully.` inline after a successful save.
+- Currently shows `Font changes saved successfully.` as a floating auto-dismiss notification after a successful save.
 - Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.
 - Currently shows font selection, font settings and Delete Font in a dedicated Font panel.
 - Currently shows ordered character tiles, legend and Select Duplicate in a wider dedicated Character panel with seven desktop columns and no internal desktop scrollbar.
-- Currently shows selected character grid with Width directly below it, plus guidance text, Reset, Clear and Save Character in a compact Character editor panel.
+- Currently shows selected character grid with Width directly below it, plus Reset, Clear and Save Character in a compact Character editor panel.
 - Currently includes A-Z, a-z, 0-9 and common punctuation in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
 - Currently treats a character as existing only when its grid contains at least one `1` cell.
@@ -215,6 +215,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently resizes every character to the selected font height when font settings are saved.
 - Currently resizes saved character edits to the selected font height before saving.
 - Currently places Reset and Clear in the editor footer, with Save Character aligned as the primary action.
+- Currently removes the previous character-width information panel from the editor controls.
+- Currently shows an unsaved-change confirmation dialog before character changes, font changes, internal navigation or duplicate setup when the current character draft is dirty.
+- Currently waits for duplicate modal confirmation before applying the duplicated source to the editor draft.
 
 ## Known Gaps / Defects
 
@@ -251,6 +254,46 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Editor layout source guard for ordered picker, exists/not-created/selected states, duplicate-source grid, loading fallback prevention, modal, danger zone, dimension panel and action footer.
 - Three-panel editor layout source guard for separate Font, Character and Character editor panels.
 - Font settings source guard for editable font name, font-level height and no per-character height input.
+
+
+## 2026-07-07 UX Update: Unsaved Changes And Notifications
+
+### Added Requirements
+
+| Rule | Product Status | Implementation Status | Notes |
+|---|---|---|---|
+| The editor must not allow accidental navigation away from unsaved character changes. | Confirmed | Implemented | Character changes, font changes, internal navigation and duplicate setup use the unsaved-change confirmation flow. |
+| Save & Continue must save before continuing the pending action. | Confirmed | Implemented | The editor exposes the current draft save action to the parent confirmation dialog. |
+| Discard Changes must discard the draft before continuing the pending action. | Confirmed | Implemented | The editor exposes a discard action that restores the draft baseline. |
+| Cancel must keep the user on the current character with edits intact. | Confirmed | Implemented | The pending action is cleared without changing the draft. |
+| The character-width information panel must not appear. | Confirmed | Implemented | The previous guidance panel was removed to recover editor space. |
+| Character save success must use a floating auto-dismiss notification that does not move layout. | Confirmed | Implemented | The notification uses an absolutely positioned editor status surface. |
+| Duplicate-source selection must not apply the duplicated character until the user confirms. | Confirmed | Implemented | Source tiles choose a source only; creating mode starts from the modal confirmation button. |
+
+### Added Negative Rules
+
+- Must not let the user leave a dirty character draft without choosing Save & Continue, Discard Changes or Cancel.
+- Must not show the character-width information panel.
+- Must not let success status messages push editor controls around.
+- Must not enter duplicate/create mode while the user is only selecting a duplicate source.
+
+### Added Acceptance Criteria
+
+- Given a character has unsaved edits, when the user selects another character, then the unsaved-change confirmation dialog appears.
+- Given the unsaved-change dialog is open, when Save & Continue is clicked and save succeeds, then the pending character, font or navigation action continues.
+- Given the unsaved-change dialog is open, when Discard Changes is clicked, then the draft is discarded and the pending action continues.
+- Given the unsaved-change dialog is open, when Cancel is clicked, then the dialog closes and the current character edits remain intact.
+- Given the editor renders, when the character controls are visible, then the old character-width information panel is not displayed.
+- Given a character save succeeds, when the success notification appears, then surrounding controls do not move and the notification automatically dismisses.
+- Given Select Duplicate is open, when a duplicate source tile is selected, then the editor does not show the duplicated draft or existing-character warning until the user confirms the duplicate.
+
+### Added Test Areas
+
+- Unsaved-change confirmation for character selection, font selection and internal navigation.
+- Save & Continue, Discard Changes and Cancel flows.
+- Removed information panel.
+- Floating auto-dismiss save notification.
+- Duplicate-source selection before modal confirmation.
 
 ## Review Checklist
 

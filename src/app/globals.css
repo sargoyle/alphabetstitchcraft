@@ -884,6 +884,7 @@ textarea {
 }
 
 .character-editor-shell {
+  position: relative;
   gap: 0;
   max-width: 860px;
 }
@@ -923,7 +924,7 @@ textarea {
   gap: 12px;
   align-content: end;
   min-height: 100%;
-  padding-top: 76px;
+  padding-top: 0;
 }
 
 .dimension-controls {
@@ -933,25 +934,6 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
-}
-
-.editor-help-card {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin: 0;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 8px;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.045);
-  font-size: 0.84rem;
-  line-height: 1.4;
-}
-
-.editor-help-card svg {
-  flex: 0 0 auto;
-  margin-top: 2px;
 }
 
 .editor-footer {
@@ -971,6 +953,24 @@ textarea {
 
 .editor-status-row {
   margin: 10px 0 0;
+}
+
+.editor-floating-status {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 4;
+  max-width: min(360px, calc(100% - 28px));
+  margin: 0;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34);
+}
+
+.unsaved-change-dialog {
+  width: min(520px, 100%);
+}
+
+.unsaved-change-actions {
+  justify-content: flex-end;
 }
 
 .editor-panel > .stitch-grid {
@@ -1560,5 +1560,7 @@ button.stitch-cell:hover {
   }
 
 }
+
+
 
 

@@ -42,3 +42,13 @@ This index maps confirmed functional requirements to current automated tests, pe
 3. Add API tests for keep-alive once endpoint implementation is confirmed.
 4. Add Supabase mocking or test fixtures for remote font persistence and invalid font reporting.
 5. Add visual/browser checks for `/design-system`, Fonts and Generator pages.
+
+## Font Editor UX Coverage
+
+- `EDITOR-UI-017`: Duplicate source tiles do not apply a duplicated draft until confirmed.
+- `EDITOR-UI-018`: Unsaved character edits expose a Save & Continue, Discard Changes and Cancel dialog.
+- `EDITOR-UI-019`: Character selection, font selection and internal navigation are guarded when the current character has unsaved edits.
+- `EDITOR-UI-020`: CharacterEditor exposes dirty state plus save/discard actions to the editor shell.
+- `EDITOR-UI-021`: Character save feedback uses a floating auto-dismiss notification that does not move layout.
+
+Related plan: `docs/tests/editor-ui.test-plan.md`.

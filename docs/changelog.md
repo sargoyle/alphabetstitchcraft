@@ -126,3 +126,13 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## 2026-07-07 - Font Editor UX Improvements
+
+### Added
+- Added an unsaved-character confirmation dialog for Font Editor character changes, font changes, duplicate setup and internal navigation. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`.
+- Added Font Editor UX source coverage and test planning. Files affected: `tests/editorUiSource.test.ts`, `docs/tests/editor-ui.test-plan.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`.
+
+### Changed
+- Removed the character-width information panel from the Font Editor and moved character save feedback into a floating auto-dismiss notification. Files affected: `src/components/CharacterEditor.tsx`, `src/app/globals.css`.
+- Deferred duplicate-source draft application until the user confirms the duplicate selection. File affected: `src/app/editor/EditorClient.tsx`.

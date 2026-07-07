@@ -1697,3 +1697,30 @@ Acceptance checks:
 - [x] Utility test runner passes.
 - [x] Production build passes.
 
+
+## Phase 31: Font Editor UX Improvements
+
+### 31.1 Unsaved Character Guard, Duplicate Flow And Stable Notifications
+
+- [x] Add an unsaved-character confirmation dialog with Save & Continue, Discard Changes and Cancel.
+- [x] Guard character selection when the current character has unsaved edits.
+- [x] Guard font selection when the current character has unsaved edits.
+- [x] Guard internal page navigation when the current character has unsaved edits.
+- [x] Guard duplicate setup when the current character has unsaved edits.
+- [x] Remove the character-width information panel from the Font Editor.
+- [x] Move character save success feedback to a floating auto-dismiss notification.
+- [x] Prevent duplicate-source selection from applying a draft before the user confirms it.
+- [x] Update Character Editor function documentation.
+- [x] Add Font Editor test documentation and automated source coverage.
+
+Acceptance checks:
+
+- [x] Unsaved character edits prompt before leaving the current character.
+- [x] Save & Continue saves before continuing the requested action.
+- [x] Discard Changes discards before continuing the requested action.
+- [x] Cancel keeps the user on the current character.
+- [x] The character-width information panel no longer appears.
+- [x] Character save success feedback does not move the editor layout.
+- [x] Duplicate source selection does not show the duplicated draft or existing-character warning until confirmed.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.

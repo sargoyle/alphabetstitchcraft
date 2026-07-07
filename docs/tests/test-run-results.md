@@ -1001,3 +1001,30 @@ node .\node_modules\next\dist\bin\next build
 - Confirmed changed: unsupported characters are counted and skipped instead of rendered as placeholder graphics.
 - Database follow-up: run `supabase/migrations/202607070001_add_default_punctuation_characters.sql` in Supabase to patch existing seeded default-font rows.
 
+
+## 2026-07-07 - Font Editor UX Improvements
+
+**Scope:** Unsaved character guard, removed character-width information panel, duplicate-source workflow smoothing, and floating save notification.
+
+**Commands run:**
+
+- `node .\node_modules\typescript\bin\tsc --noEmit` using bundled Node path.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json` using bundled Node path.
+- `node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0` using bundled Node path.
+- `node .\.test-build\tests\runTests.js` using bundled Node path.
+- `node .\node_modules\next\dist\bin\next build` using bundled Node path.
+
+**Result:** Passed.
+
+**Tests added or updated:**
+
+- `EDITOR-UI-017`: Duplicate source selection does not enter creating mode until confirmed.
+- `EDITOR-UI-018`: Unsaved character edits expose Save & Continue, Discard Changes and Cancel.
+- `EDITOR-UI-019`: Character selection, font selection and internal navigation use the unsaved-change guard.
+- `EDITOR-UI-020`: CharacterEditor exposes dirty state and save/discard actions.
+- `EDITOR-UI-021`: Save feedback uses a floating auto-dismiss notification.
+
+**Findings:**
+
+- No automated failures remain.
+- Browser-level click-path coverage is still recommended later because current tests are source/utility-level.
