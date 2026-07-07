@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- 2026-07-07: Added browser favicon assets from the supplied needle-and-thread artwork and registered app icon metadata. Files affected: `src/app/favicon.ico`, `src/app/favicon-16x16.png`, `src/app/favicon-32x32.png`, `src/app/icon.png`, `src/app/apple-icon.png`, `src/app/layout.tsx`, `docs/tasks.md`.
 - 2026-07-01: Added a follow-up Supabase cleanup migration for `Block Needle 5x7` display-name variants such as `Block Needle 5 x 7`, including self-contained backup-table creation when needed. Files affected: `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql`, `tests/migrationScripts.test.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added a repeatable Supabase cleanup migration for duplicate `Block Needle 5x7` shared font records, including backup snapshots for accidental custom duplicates before deletion. Files affected: `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql`, `tests/migrationScripts.test.ts`, `tests/runTests.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added a Supabase migration that allows the current public editing model to update existing default font rows. Files affected: `supabase/migrations/202607010002_public_default_fonts_update.sql`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.

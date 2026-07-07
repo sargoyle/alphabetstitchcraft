@@ -4,7 +4,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Stitch Lettering Library",
-  description: "Browse, create, edit and export stitch-based lettering patterns."
+  description: "Browse, create, edit and export stitch-based lettering patterns.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" }
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }]
+  }
 };
 
 const navItems = [

@@ -1764,3 +1764,16 @@ Acceptance checks:
 - [x] Blank/uncreated characters are skipped from the rendered pattern.
 - [x] Supported characters in the same text still render.
 - [x] Renderer tests cover blank punctuation grids.
+
+## Phase 34: Browser Favicon
+
+### 34.1 Needle And Thread Favicon
+
+- [x] Create favicon assets from the supplied needle-and-thread artwork.
+- [x] Add browser tab icon metadata for favicon and Apple touch icon support.
+- [x] Verify generated favicon dimensions.
+
+Acceptance checks:
+
+- [x] Browser tab can use the supplied favicon artwork.
+- [x] Favicon assets include ICO, 512px app icon and 180px Apple touch icon.
