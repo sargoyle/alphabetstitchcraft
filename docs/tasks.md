@@ -1777,3 +1777,19 @@ Acceptance checks:
 
 - [x] Browser tab can use the supplied favicon artwork.
 - [x] Favicon assets include ICO, 512px app icon and 180px Apple touch icon.
+
+## Phase 35: Alphabet Library Preview Efficiency
+
+### 35.1 Adaptive Font Card Samples
+
+- [x] Build font-card preview samples from drawable characters in each alphabet.
+- [x] Use a fuller uppercase sample so short previews make better use of card space.
+- [x] Include lowercase and numbers only when the selected font can draw them.
+- [x] Shrink-wrap mini preview paper to short samples while preserving scrolling for wider samples.
+- [x] Update Font Browser function documentation and source tests.
+
+Acceptance checks:
+
+- [x] Alphabet Library previews avoid unsupported sample characters.
+- [x] Alphabet Library previews include more sample lettering than `ABC 123` where supported.
+- [x] Short previews no longer leave a large blank paper area across the card.

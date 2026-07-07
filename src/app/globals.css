@@ -521,6 +521,8 @@ textarea {
 
 .font-card .mini-preview,
 .tool-card .mini-preview {
+  width: fit-content;
+  max-width: 100%;
   margin: 14px 0;
   padding: 12px;
   overflow: auto;
@@ -595,6 +597,8 @@ textarea {
 }
 
 .mini-preview .pattern-scroll {
+  width: fit-content;
+  max-width: 100%;
   min-height: auto;
   max-height: 92px;
   margin: 0;

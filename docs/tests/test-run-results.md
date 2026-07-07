@@ -1075,3 +1075,30 @@ node .\node_modules\next\dist\bin\next build
 **Finding:**
 
 - Existing blank character records are now treated as unavailable patterns for generation, matching the Font Editor `Not created` concept.
+
+## 2026-07-08 - Alphabet Library Preview Efficiency
+
+**Scope:** Adaptive supported samples and compact mini-preview layout for Alphabet Library font cards.
+
+**Commands run:**
+
+- `node .\node_modules\typescript\bin\tsc --noEmit` using bundled Node path.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json` using bundled Node path.
+- `node .\.test-build\tests\runTests.js` using bundled Node path.
+- `node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0` using bundled Node path.
+- `node .\node_modules\next\dist\bin\next build` using bundled Node path.
+
+**Result:** Passed.
+
+**Tests added or updated:**
+
+- `FONT-BROWSER-001`: Card preview uses a fuller uppercase sample.
+- `FONT-BROWSER-002`: Card preview includes numbers when supported.
+- `FONT-BROWSER-003`: Card preview avoids unsupported lowercase and number characters.
+- `FONT-BROWSER-004`: FontGridPreview uses supported sample generation.
+- `FONT-BROWSER-005`: Mini preview paper shrink-wraps short samples while respecting card width.
+
+**Findings:**
+
+- No automated failures remain.
+- Manual browser review is recommended to confirm the visual spacing feels right across real database fonts.

@@ -8,13 +8,14 @@ Allow users to scan stitch alphabet options quickly by showing readable metadata
 
 - Component: `FontCard` in `src/components/FontCard.tsx`
 - Component: `FontGridPreview` in `src/components/FontGridPreview.tsx`
+- Utility: `buildFontPreviewSample()` in `src/lib/fontPreviewSample.ts`
 - Component: `TextPatternPreview` in `src/components/TextPatternPreview.tsx`
 - Function: `renderTextToGrid()` in `src/lib/renderTextToGrid.ts`
 - Page: `src/app/fonts/page.tsx`
 - Type: `StitchFont` in `src/lib/fontTypes.ts`
 - Related sample text: `ABC 123`
 - Related optional sample text: lowercase characters when available
-- Evidence gap: unsupported sample character behaviour still needs product confirmation.
+- Reviewed behaviour: card previews now build supported samples from drawable font characters.
 
 ## Decision Required
 
@@ -29,14 +30,14 @@ Allow users to scan stitch alphabet options quickly by showing readable metadata
 - `onUse(fontId)` callback.
 - Font metadata.
 - Font character data for sample preview.
-- Standard sample text: `ABC 123`.
+- Standard sample baseline: uppercase stitch text, expanded to `ABC DEF GHI` for card previews to use preview space more efficiently.
 - Lowercase sample characters when the font supports lowercase.
 - User clicks on View Alphabet, Use or Edit.
 
 ## Outputs
 
 - A font card with category, height, name, description, preview and actions.
-- A compact sample preview using standard sample text and supported lowercase where available.
+- A compact sample preview using a fuller supported sample that starts with uppercase letters and adds lowercase/numbers when drawable.
 - Navigation link to `/fonts/[id]`.
 - Navigation link to `/generator` plus selected font persistence.
 - Optional navigation link to `/editor?font=[id]`.
@@ -77,7 +78,7 @@ Confirmed behaviour:
 2. `FontCard` renders metadata and preview.
 3. `FontGridPreview` renders sample text into a mini generated pattern.
 4. If lowercase is supported, the browser should include lowercase sample characters.
-5. If the sample includes unsupported characters, the configured unsupported-character display rule is applied.
+5. The sample builder filters unsupported or blank/uncreated characters before rendering the card preview.
 6. User selects an action.
 7. App navigates or saves selected font id depending on action.
 
@@ -89,9 +90,9 @@ Confirmed behaviour:
 | Font cards should show stitch height. | Confirmed | Implemented | Topline shows height. |
 | Font cards should show a sample preview. | Confirmed | Implemented | `FontGridPreview` is used. |
 | `ABC 123` remains the standard sample text. | Confirmed | Implemented | User confirmed this standard sample. |
-| Sample text should include lowercase when the font supports lowercase. | Confirmed | Not Implemented | User confirmed lowercase should be included when available; current code appears to use default `ABC 123`. |
+| Sample text should include lowercase when the font supports lowercase. | Confirmed | Implemented | `buildFontPreviewSample()` adds lowercase sample characters when they are available and drawable. |
 | Unsupported sample characters must not crash card previews. | Confirmed | Implemented | Existing renderer handles unsupported characters. |
-| Unsupported sample characters should be avoided by choosing sample text that each font supports. | Confirmed | Not Implemented | User confirmed unsupported sample characters should be avoided in card previews. |
+| Unsupported sample characters should be avoided by choosing sample text that each font supports. | Confirmed | Implemented | The preview sample is filtered to characters with filled stitch cells. |
 | Font cards must provide a way to inspect the alphabet. | Confirmed | Implemented | View Alphabet link. |
 | Font cards must provide a way to use the font. | Confirmed | Implemented | Use link saves font id. |
 | Font cards may provide editing when requested by page context. | Assumed | Implemented | `showEdit` controls Edit link. |
@@ -111,7 +112,7 @@ Confirmed behaviour:
 - Given a font supports `ABC 123`, when rendered, then a mini grid preview for `ABC 123` appears.
 - Given a font supports lowercase characters, when rendered, then the card sample includes lowercase characters.
 - Given a font does not support lowercase characters, when rendered, then the card does not crash or show broken output.
-- Given a standard sample contains characters unsupported by a font, when the card preview is built, then unsupported characters are avoided by choosing supported sample text for that font.
+- Given a candidate sample contains characters unsupported by a font, when the card preview is built, then unsupported characters are filtered before rendering.
 - Given Use is clicked, when navigation occurs, then selected font id is saved.
 - Given `showEdit` is false, when rendered, then Edit is not shown.
 - Given `showEdit` is true, when rendered, then Edit links to the editor with that font id.
@@ -159,7 +160,7 @@ Confirmed behaviour:
 - Standard `ABC 123` preview rendering.
 - Lowercase sample rendering when supported.
 - Uppercase-only sample rendering.
-- Unsupported sample handling after product decision.
+- Adaptive supported sample generation.
 - Use action.
 - View action.
 - Optional Edit action.
