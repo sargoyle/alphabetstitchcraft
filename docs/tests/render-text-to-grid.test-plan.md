@@ -36,3 +36,8 @@ Document automated and pending tests for `renderTextToGrid()` using `/docs/funct
 ## Product Decisions Blocking Further Tests
 
 - None currently. The blocked items are implementation gaps, not open product decisions.
+
+## Blank Character Warning Coverage
+
+- Added renderer coverage for a punctuation character that exists in the font map but has a blank grid.
+- Expected behaviour: the blank character is skipped and appears in `unsupportedCharacters`, while supported neighbouring characters still render.

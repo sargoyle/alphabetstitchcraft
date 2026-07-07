@@ -1053,3 +1053,25 @@ node .\node_modules\next\dist\bin\next build
 **Findings:**
 
 - The 24-stitch maximum is currently an implementation safety clamp in `gridUtils.ts`, not a confirmed product/domain rule. Product decision remains open on whether to raise or configure it.
+
+## 2026-07-07 - Generator Missing Pattern Warning Fix
+
+**Scope:** Restore warning when typed characters exist as font keys but have blank/uncreated grids.
+
+**Commands run:**
+
+- `node .\node_modules\typescript\bin\tsc --noEmit` using bundled Node path.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json` using bundled Node path.
+- `node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0` using bundled Node path.
+- `node .\.test-build\tests\runTests.js` using bundled Node path.
+- `node .\node_modules\next\dist\bin\next build` using bundled Node path.
+
+**Result:** Passed.
+
+**Tests added or updated:**
+
+- Renderer coverage for a blank punctuation grid that should be skipped and reported in `unsupportedCharacters`.
+
+**Finding:**
+
+- Existing blank character records are now treated as unavailable patterns for generation, matching the Font Editor `Not created` concept.

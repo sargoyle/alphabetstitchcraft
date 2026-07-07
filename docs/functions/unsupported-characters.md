@@ -174,6 +174,14 @@ Expected output:
 - Spaces and line breaks.
 - Unsupported characters across multiple lines.
 
+
+## 2026-07-07 Blank Character Warning Fix
+
+- Blank character grids are treated as unavailable patterns during text generation.
+- If a character key exists but has no filled stitches, the renderer skips it and reports it in `unsupportedCharacters`.
+- Lowercase characters with blank lowercase grids may still fall back to uppercase when the uppercase grid has stitches.
+- This keeps Font Editor `Not created` state consistent with Create Pattern warnings.
+
 ## Review Checklist
 
 - [ ] Product behaviour is confirmed.

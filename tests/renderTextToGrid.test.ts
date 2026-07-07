@@ -94,4 +94,25 @@ const supportedPunctuation = renderTextToGrid("@#~", blockFont, {
 assert.deepEqual(supportedPunctuation.unsupportedCharacters, []);
 assert.ok(supportedPunctuation.grid.some((row) => row.includes("1")), "Supported punctuation should render stitches.");
 
+const fontWithBlankPunctuation: StitchFont = {
+  ...blockFont,
+  characters: {
+    ...blockFont.characters,
+    "@": {
+      width: 5,
+      height: blockFont.defaultHeight,
+      grid: Array.from({ length: blockFont.defaultHeight }, () => "00000")
+    }
+  }
+};
+const blankPunctuation = renderTextToGrid("A@", fontWithBlankPunctuation, {
+  letterSpacing: 1,
+  wordSpacing: 3,
+  lineSpacing: 2,
+  alignment: "left"
+});
+assert.deepEqual(blankPunctuation.unsupportedCharacters, [{ character: "@", count: 1 }]);
+assert.equal(blankPunctuation.width, 5);
+assertGridShape(blankPunctuation.grid, 5, 7);
+
 console.log("renderTextToGrid tests passed.");

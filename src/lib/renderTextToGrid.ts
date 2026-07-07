@@ -38,6 +38,23 @@ function unsupportedCounts(unsupported: Map<string, number>) {
   return Array.from(unsupported.entries()).map(([character, count]) => ({ character, count }));
 }
 
+function hasStitches(character: StitchCharacter | undefined) {
+  return Boolean(character?.grid.some((row) => row.includes("1")));
+}
+
+function resolveRenderableCharacter(char: string, font: StitchFont) {
+  const exact = font.characters[char];
+  if (hasStitches(exact)) return exact;
+
+  const fallback = char.toUpperCase();
+  if (fallback !== char) {
+    const uppercase = font.characters[fallback];
+    if (hasStitches(uppercase)) return uppercase;
+  }
+
+  return undefined;
+}
+
 function appendCharacter(rows: string[], character: StitchCharacter): string[] {
   return rows.map((row, index) => row + (character.grid[index] ?? blank(character.width)));
 }
@@ -60,7 +77,7 @@ function renderLine(line: string, font: StitchFont, options: TextRenderOptions, 
       return;
     }
 
-    const character = font.characters[char] ?? font.characters[char.toUpperCase()];
+    const character = resolveRenderableCharacter(char, font);
 
     if (!character) {
       unsupported.set(char, (unsupported.get(char) ?? 0) + 1);
@@ -70,7 +87,9 @@ function renderLine(line: string, font: StitchFont, options: TextRenderOptions, 
     rows = appendCharacter(rows, character);
     renderedAny = true;
 
-    const hasRenderableNext = chars.slice(index + 1).some((nextChar) => nextChar === " " || Boolean(font.characters[nextChar] ?? font.characters[nextChar.toUpperCase()]));
+    const hasRenderableNext = chars.slice(index + 1).some(
+      (nextChar) => nextChar === " " || Boolean(resolveRenderableCharacter(nextChar, font))
+    );
     const next = chars[index + 1];
     if (hasRenderableNext && next && next !== " ") rows = appendBlank(rows, options.letterSpacing);
   });

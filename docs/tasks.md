@@ -1747,3 +1747,20 @@ Acceptance checks:
 - [x] Save success feedback does not cover the Save Character button.
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
+
+## Phase 33: Generator Missing Pattern Warning Fix
+
+### 33.1 Blank Character Grids Warn As Unavailable
+
+- [x] Treat blank/uncreated character grids as unavailable during pattern generation.
+- [x] Keep lowercase-to-uppercase fallback when the lowercase grid is blank but uppercase has stitches.
+- [x] Restore the Generator warning when a typed character has no stitch pattern.
+- [x] Add renderer regression coverage for blank punctuation characters.
+- [x] Update function documentation and test documentation.
+
+Acceptance checks:
+
+- [x] Typing a character whose grid exists but has no filled stitches shows the missing-character warning.
+- [x] Blank/uncreated characters are skipped from the rendered pattern.
+- [x] Supported characters in the same text still render.
+- [x] Renderer tests cover blank punctuation grids.

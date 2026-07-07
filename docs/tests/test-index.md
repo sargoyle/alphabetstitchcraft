@@ -59,3 +59,7 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 - `EDITOR-UI-023`: Font settings saves preserve the current character and route through the unsaved-change guard.
 - `EDITOR-UI-017`: Duplicate source selection applies the chosen source directly to the current draft.
 - `EDITOR-UI-021`: Floating save notification is positioned away from the Save Character button.
+
+## Generator Missing Pattern Warning Coverage
+
+- Blank/uncreated character grids are now covered as unsupported pattern input in `tests/renderTextToGrid.test.ts`.

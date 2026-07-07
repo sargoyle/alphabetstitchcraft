@@ -144,3 +144,8 @@ All notable changes to this project will be documented in this file.
 - Fixed font settings saves so they route through the unsaved-character guard and preserve the active character instead of returning to `A`. Files affected: `src/app/editor/EditorClient.tsx`.
 - Restored duplicate source selection so the selected source is applied directly to the current character draft. Files affected: `src/app/editor/EditorClient.tsx`.
 - Moved the floating character save notification away from the Save Character button. Files affected: `src/app/globals.css`.
+
+## 2026-07-07 - Generator Missing Pattern Warning Fix
+
+### Fixed
+- Fixed Create Pattern warnings for characters whose key exists in the font but whose grid has no filled stitches. These blank/uncreated characters are now skipped and reported as unavailable. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
