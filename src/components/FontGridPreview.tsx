@@ -10,6 +10,6 @@ export function FontGridPreview({ font, sample = "ABC 123" }: { font: StitchFont
     alignment: "left"
   });
 
-  return <TextPatternPreview pattern={pattern} showGrid={true} showFilled={true} zoom={6} />;
+  return <TextPatternPreview pattern={pattern} showGrid={true} showFilled={true} zoom={6} showCenterGuide={false} />;
 }
 

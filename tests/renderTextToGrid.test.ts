@@ -64,15 +64,15 @@ assert.equal(rightAligned.width, 29);
 assert.ok(rightAligned.grid[0].startsWith("0".repeat(18)), "Short right-aligned line should receive left padding.");
 assertGridShape(rightAligned.grid, 29, 16);
 
-const unsupported = renderTextToGrid("A~", blockFont, {
+const unsupported = renderTextToGrid("A€", blockFont, {
   letterSpacing: 1,
   wordSpacing: 3,
   lineSpacing: 2,
   alignment: "left"
 });
-assert.deepEqual(unsupported.unsupportedCharacters, [{ character: "~", count: 1 }]);
-assert.equal(unsupported.width, 13);
-assertGridShape(unsupported.grid, 13, 7);
+assert.deepEqual(unsupported.unsupportedCharacters, [{ character: "€", count: 1 }]);
+assert.equal(unsupported.width, 5);
+assertGridShape(unsupported.grid, 5, 7);
 
 const empty = renderTextToGrid("", blockFont, {
   letterSpacing: 1,
@@ -84,5 +84,14 @@ assert.equal(empty.width, 0);
 assert.equal(empty.height, 0);
 assert.deepEqual(empty.grid, []);
 assert.deepEqual(empty.unsupportedCharacters, []);
+
+const supportedPunctuation = renderTextToGrid("@#~", blockFont, {
+  letterSpacing: 1,
+  wordSpacing: 3,
+  lineSpacing: 2,
+  alignment: "left"
+});
+assert.deepEqual(supportedPunctuation.unsupportedCharacters, []);
+assert.ok(supportedPunctuation.grid.some((row) => row.includes("1")), "Supported punctuation should render stitches.");
 
 console.log("renderTextToGrid tests passed.");

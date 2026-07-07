@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import fontsData from "../src/data/fonts.json";
 import type { StitchFont } from "../src/lib/fontTypes";
-import { createBlankCharacter, createBlankFont, blankFontCharacterKeys } from "../src/lib/fontFactory";
+import { defaultEditableCharacterKeys, punctuationCharacters } from "../src/lib/characterSets";
+import { createBlankCharacter, createBlankFont } from "../src/lib/fontFactory";
 import { resizeFontCharactersHeight, validateCharacter, validateFont, validateUniqueFontIds } from "../src/lib/gridUtils";
 
 const fonts = fontsData as StitchFont[];
@@ -12,6 +13,10 @@ assert.equal(validateUniqueFontIds(fonts).valid, true, "Default font ids should 
 for (const font of fonts) {
   const result = validateFont(font);
   assert.equal(result.valid, true, `${font.id} should be valid: ${result.errors.join("; ")}`);
+
+  for (const key of punctuationCharacters) {
+    assert.ok(font.characters[key], `${font.id}:${key} should include the complete punctuation set.`);
+  }
 
   for (const key of Object.keys(font.characters)) {
     assert.equal(Array.from(key).length, 1, `${font.id}:${key} should use a single-character key.`);
@@ -34,9 +39,12 @@ assert.equal(customFont.defaultHeight, 10);
 assert.equal(validateFont(customFont).valid, true);
 assert.deepEqual(
   new Set(Object.keys(customFont.characters)),
-  new Set(blankFontCharacterKeys),
+  new Set(defaultEditableCharacterKeys),
   "Blank fonts should include the expected starter character mappings."
 );
+for (const key of punctuationCharacters) {
+  assert.ok(customFont.characters[key], `Blank font should include editable punctuation character ${key}.`);
+}
 
 const resizedFont = resizeFontCharactersHeight(customFont, 12);
 assert.equal(resizedFont.defaultHeight, 12);

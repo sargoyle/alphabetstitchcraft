@@ -266,3 +266,10 @@ Or paste the migration SQL into the Supabase SQL editor for the target project.
 - Public default font data has read-only client access.
 - No policy allows a user to read another user's private generated patterns, settings or exports.
 - Public custom fonts are intentionally readable and mutable by all users for the no-login shared-library workflow.
+
+
+## 2026-07-07 Default Punctuation Patch
+
+Migration: `supabase/migrations/202607070001_add_default_punctuation_characters.sql`
+
+Purpose: adds common printable punctuation character mappings to existing seeded `default_fonts` rows without overwriting any character mappings that already exist.

@@ -45,6 +45,11 @@ function formatUnsupportedCharacters(pattern: GeneratedPattern) {
     .join(", ");
 }
 
+function unsupportedWarning(pattern: GeneratedPattern) {
+  const characters = formatUnsupportedCharacters(pattern);
+  return `Some characters in your text aren't available in this alphabet and have been skipped. Please edit the font or choose a different alphabet.${characters ? ` Missing: ${characters}` : ""}`;
+}
+
 export default function GeneratorPage() {
   const { fonts } = useFonts();
   const [settings, setSettings] = useState<GeneratorSettings>(initialSettings);
@@ -133,7 +138,7 @@ export default function GeneratorPage() {
         </div>
 
         {pattern.unsupportedCharacters.length ? (
-          <p className="warning" role="alert" aria-live="assertive">Unsupported characters: {formatUnsupportedCharacters(pattern)}</p>
+          <p className="warning" role="alert" aria-live="assertive">{unsupportedWarning(pattern)}</p>
         ) : null}
         {pattern.warnings?.map((warning) => (
           <p className="warning" key={warning} role="alert" aria-live="assertive">

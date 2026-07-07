@@ -1,59 +1,105 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Eraser, Info, RotateCcw, Save } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Eraser, RotateCcw, Save } from "lucide-react";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { clearCharacter, resizeCharacter, setGridCell, toggleGridCell, validateCharacter } from "@/lib/gridUtils";
 import { CharacterGrid } from "./CharacterGrid";
+
+type EditorDraftActions = {
+  save: () => Promise<boolean>;
+  discard: () => void;
+};
 
 type CharacterEditorProps = {
   characterKey: string;
   character: StitchCharacter;
   originalCharacter: StitchCharacter;
   onSave: (character: StitchCharacter) => void | Promise<boolean | void>;
+  onDirtyChange?: (dirty: boolean) => void;
+  onEditorActionsChange?: (actions: EditorDraftActions | null) => void;
   saveDisabled?: boolean;
   saveDisabledReason?: string;
   saveLabel?: string;
   headingLabel?: string;
 };
 
+function serialiseCharacter(character: StitchCharacter) {
+  return `${character.width}x${character.height}:${character.grid.join("|")}`;
+}
+
 export function CharacterEditor({
   characterKey,
   character,
   originalCharacter,
   onSave,
+  onDirtyChange,
+  onEditorActionsChange,
   saveDisabled = false,
   saveDisabledReason,
   saveLabel = "Save character",
   headingLabel = "Selected character"
 }: CharacterEditorProps) {
   const [draft, setDraft] = useState(character);
+  const [baseline, setBaseline] = useState(character);
   const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const validation = useMemo(() => validateCharacter(draft, characterKey), [draft, characterKey]);
   const cannotSave = saveDisabled || !validation.valid;
+  const dirty = serialiseCharacter(draft) !== serialiseCharacter(baseline);
 
   useEffect(() => {
     setDraft(character);
+    setBaseline(character);
     setSaveStatus(null);
   }, [character, characterKey]);
 
-  async function handleSave() {
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
+
+  useEffect(() => {
+    if (saveStatus?.type !== "success") return;
+    const timer = window.setTimeout(() => setSaveStatus(null), 3200);
+    return () => window.clearTimeout(timer);
+  }, [saveStatus]);
+
+  const handleSave = useCallback(async () => {
     setSaveStatus(null);
+
+    if (cannotSave) {
+      setSaveStatus({ type: "error", message: saveDisabledReason ?? validation.errors.join(" ") });
+      return false;
+    }
 
     try {
       const saved = await onSave(draft);
       if (saved === false) {
         setSaveStatus({ type: "error", message: "Database save failed. Font changes were not saved." });
-        return;
+        return false;
       }
+      setBaseline(draft);
+      onDirtyChange?.(false);
       setSaveStatus({ type: "success", message: "Font changes saved successfully." });
+      return true;
     } catch (error) {
       setSaveStatus({
         type: "error",
         message: error instanceof Error ? error.message : "Database save failed. Font changes were not saved."
       });
+      return false;
     }
-  }
+  }, [cannotSave, draft, onDirtyChange, onSave, saveDisabledReason, validation.errors]);
+
+  const discardDraft = useCallback(() => {
+    setDraft(baseline);
+    setSaveStatus(null);
+    onDirtyChange?.(false);
+  }, [baseline, onDirtyChange]);
+
+  useEffect(() => {
+    onEditorActionsChange?.({ save: handleSave, discard: discardDraft });
+    return () => onEditorActionsChange?.(null);
+  }, [discardDraft, handleSave, onEditorActionsChange]);
 
   return (
     <div className="editor-panel character-editor-shell">
@@ -100,11 +146,6 @@ export function CharacterEditor({
         </div>
 
         <aside className="character-editor-controls" aria-label="Character save controls">
-          <p className="editor-help-card">
-            <Info aria-hidden="true" size={16} />
-            Character width is edited here. Font height is set once for the whole font in the sidebar.
-          </p>
-
           {validation.errors.length ? (<p className="warning" role="alert" aria-live="assertive">{validation.errors.join(" ")}</p>) : null}
           {saveDisabledReason ? (<p className="warning" role="alert" aria-live="assertive">{saveDisabledReason}</p>) : null}
 
@@ -124,14 +165,12 @@ export function CharacterEditor({
               {saveLabel}
             </button>
           </div>
-
-          {saveStatus ? (
-            <p className={saveStatus.type === "success" ? "success-message editor-status-row" : "warning editor-status-row"} role={saveStatus.type === "success" ? "status" : "alert"} aria-live={saveStatus.type === "success" ? "polite" : "assertive"}>{saveStatus.message}</p>
-          ) : null}
         </aside>
       </div>
+
+      {saveStatus ? (
+        <p className={saveStatus.type === "success" ? "success-message editor-floating-status" : "warning editor-floating-status"} role={saveStatus.type === "success" ? "status" : "alert"} aria-live={saveStatus.type === "success" ? "polite" : "assertive"}>{saveStatus.message}</p>
+      ) : null}
     </div>
   );
 }
-
-

@@ -6,6 +6,7 @@ const variantCleanupSql = readFileSync(
   "supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql",
   "utf8"
 );
+const punctuationSql = readFileSync("supabase/migrations/202607070001_add_default_punctuation_characters.sql", "utf8");
 
 assert.match(
   cleanupSql,
@@ -59,6 +60,24 @@ assert.match(
   variantCleanupSql,
   /insert into public\.custom_font_backups[\s\S]*font_snapshot/,
   "Block Needle variant cleanup should back up accidental custom duplicates before deleting them."
+);
+
+assert.match(
+  punctuationSql,
+  /update public.default_fonts/,
+  "Punctuation migration should patch existing default font records."
+);
+
+assert.match(
+  punctuationSql,
+  /"@"/,
+  "Punctuation migration should include the required @ character."
+);
+
+assert.match(
+  punctuationSql,
+  /"~"/,
+  "Punctuation migration should include the required tilde character."
 );
 
 console.log("migration script tests passed.");

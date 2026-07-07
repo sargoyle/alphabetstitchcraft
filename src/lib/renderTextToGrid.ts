@@ -5,7 +5,7 @@ const DEFAULT_OPTIONS: TextRenderOptions = {
   wordSpacing: 3,
   lineSpacing: 2,
   alignment: "left",
-  placeholderUnsupported: true
+  placeholderUnsupported: false
 };
 
 const OPTION_BOUNDS = {
@@ -38,16 +38,6 @@ function unsupportedCounts(unsupported: Map<string, number>) {
   return Array.from(unsupported.entries()).map(([character, count]) => ({ character, count }));
 }
 
-function placeholder(height: number): StitchCharacter {
-  const safeHeight = Math.max(5, height);
-  const width = Math.max(3, Math.min(7, height));
-  const rows = Array.from({ length: safeHeight }, (_, index) => {
-    if (index === 0 || index === safeHeight - 1) return "1".repeat(width);
-    return `1${"0".repeat(width - 2)}1`;
-  });
-  return { width, height: safeHeight, grid: rows };
-}
-
 function appendCharacter(rows: string[], character: StitchCharacter): string[] {
   return rows.map((row, index) => row + (character.grid[index] ?? blank(character.width)));
 }
@@ -71,14 +61,18 @@ function renderLine(line: string, font: StitchFont, options: TextRenderOptions, 
     }
 
     const character = font.characters[char] ?? font.characters[char.toUpperCase()];
-    const rendered = character ?? placeholder(lineHeight);
 
-    if (!character) unsupported.set(char, (unsupported.get(char) ?? 0) + 1);
-    rows = appendCharacter(rows, rendered);
+    if (!character) {
+      unsupported.set(char, (unsupported.get(char) ?? 0) + 1);
+      return;
+    }
+
+    rows = appendCharacter(rows, character);
     renderedAny = true;
 
+    const hasRenderableNext = chars.slice(index + 1).some((nextChar) => nextChar === " " || Boolean(font.characters[nextChar] ?? font.characters[nextChar.toUpperCase()]));
     const next = chars[index + 1];
-    if (next && next !== " ") rows = appendBlank(rows, options.letterSpacing);
+    if (hasRenderableNext && next && next !== " ") rows = appendBlank(rows, options.letterSpacing);
   });
 
   if (!renderedAny) rows = Array.from({ length: lineHeight }, () => "");

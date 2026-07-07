@@ -11,6 +11,8 @@ Document automated and pending tests for generated grid dimensions, row width co
 | GRID-001 | Final generated rows must all match generated pattern width. | `tests/renderVisibility.test.ts` | Passing | Covers multiline rendered output. |
 | GRID-002 | Inserted line spacing rows must match pattern width and contain blank cells. | `tests/renderVisibility.test.ts` | Passing | Covers confirmed line spacing behaviour. |
 | GRID-003 | Alignment must preserve stitched content. | `tests/renderVisibility.test.ts` | Passing | Compares filled-cell count for aligned shorter line. |
+| GRID-004 | Create Pattern preview keeps centre guide lines. | `tests/renderVisibility.test.ts` | Passing | Source guard confirms default centre guide path remains enabled. |
+| GRID-005 | Stitch Library previews opt out of centre guide lines. | `tests/renderVisibility.test.ts` | Passing | Source guard confirms `FontGridPreview` disables centre guides. |
 | EXPORT-001 | Canvas export must honour grid visibility at utility level. | `tests/exportUtils.test.ts` | Passing | Asserts `showGrid: false` avoids grid stroke drawing while still drawing filled cells. |
 | EXPORT-002 | Canvas export must honour filled-stitch visibility at utility level. | `tests/exportUtils.test.ts` | Passing | Asserts `showFilled: false` avoids filled-stitch rectangles while retaining grid lines. |
 | PARITY-001 | Canvas export uses the supplied grid. | `tests/exportUtils.test.ts` | Passing | Filled and stroked cell counts match the provided pattern grid. |

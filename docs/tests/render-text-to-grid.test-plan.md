@@ -10,7 +10,7 @@ Document automated and pending tests for `renderTextToGrid()` using `/docs/funct
 |---|---|---|---|---|
 | RENDER-001 | Whitespace-only text should be treated as empty. | `tests/renderVisibility.test.ts` | Passing | Spaces, tabs and line breaks produce width `0`, height `0` and an empty grid. |
 | RENDER-002 | Very long text should not create inconsistent rows and should produce a safety warning. | `tests/renderVisibility.test.ts` | Passing | Row consistency and large-pattern warning are asserted. |
-| UNSUPPORTED-001 | Mixed supported and unsupported characters should render safely. | `tests/renderVisibility.test.ts` | Passing | Asserts supported stitches render and unsupported character is reported. |
+| UNSUPPORTED-001 | Mixed supported and unsupported characters should render safely. | `tests/renderVisibility.test.ts` | Passing | Asserts supported stitches render, unsupported character is reported, and skipped rather than replaced. |
 | UNSUPPORTED-002 | Repeated unsupported characters should be counted. | `tests/renderVisibility.test.ts` | Passing | Counted `{ character, count }` entries are asserted. |
 | UNSUPPORTED-003 | Tabs should be treated as unsupported characters. | `tests/renderVisibility.test.ts` | Passing | Asserts tab is reported unsupported and rows remain consistent. |
 | SPACING-001 | Negative spacing values should be rejected or safely handled by the renderer. | `tests/renderVisibility.test.ts` | Passing | Negative letter spacing throws a `RangeError`. |
@@ -27,10 +27,10 @@ Document automated and pending tests for `renderTextToGrid()` using `/docs/funct
 ## Current Evidence
 
 - Renderer keeps row widths consistent for tested multiline, unsupported, very long and large-spacing inputs.
-- Renderer safely reports tabs as unsupported.
+- Renderer safely reports tabs as unsupported and skips them from the grid.
 - Renderer now treats whitespace-only text as empty.
 - Renderer now rejects invalid spacing values according to confirmed ranges.
-- Renderer now reports unsupported characters as counted entries.
+- Renderer now reports unsupported characters as counted entries and skips them instead of inserting placeholders.
 - Renderer now returns a large-pattern warning for very long generated output.
 
 ## Product Decisions Blocking Further Tests

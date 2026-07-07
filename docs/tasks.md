@@ -1666,3 +1666,34 @@ Acceptance checks:
 - [x] Utility test runner passes.
 - [x] Production build passes.
 
+## Phase 30: Stitch Library And Unsupported Character Improvements
+
+### 30.1 Library Preview, Punctuation And Unsupported Character Handling
+
+- [x] Remove centre guide overlays from Stitch Library font card previews.
+- [x] Keep centre guide overlays on Create Pattern previews.
+- [x] Add the remaining common printable punctuation characters to the shared editable character set.
+- [x] Add punctuation mappings to bundled default font data.
+- [x] Add a repeatable Supabase migration to patch punctuation into seeded default font rows.
+- [x] Update blank font creation so new fonts include the complete punctuation set.
+- [x] Update Font Editor character ordering to show A-Z, a-z, 0-9, punctuation, then other mapped characters.
+- [x] Skip unsupported characters during pattern rendering instead of inserting placeholder graphics.
+- [x] Show a single immediate Generator warning that lists skipped unsupported characters where practical.
+- [x] Update function documentation and test documentation.
+- [x] Add automated regression coverage for preview centre guides, punctuation coverage and unsupported character skipping.
+
+Acceptance checks:
+
+- [x] Stitch Library previews render without centre guide overlays.
+- [x] Create Pattern preview keeps centre guide overlays.
+- [x] Required punctuation exists in bundled fonts and blank fonts.
+- [x] Required punctuation appears in the Font Editor character picker.
+- [x] Supported punctuation renders as stitch data.
+- [x] Unsupported characters are counted, warned about and skipped rather than replaced.
+- [x] Multiple unsupported characters produce one warning surface in the Generator.
+- [x] App TypeScript compile passes.
+- [x] Source/test ESLint passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] Production build passes.
+

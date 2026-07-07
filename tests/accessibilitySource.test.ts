@@ -5,6 +5,7 @@ const editorPageSource = readFileSync("src/app/editor/page.tsx", "utf8");
 const editorClientSource = readFileSync("src/app/editor/EditorClient.tsx", "utf8");
 const characterEditorSource = readFileSync("src/components/CharacterEditor.tsx", "utf8");
 const generatorSource = readFileSync("src/app/generator/page.tsx", "utf8");
+const rendererSource = readFileSync("src/lib/renderTextToGrid.ts", "utf8");
 const exportControlsSource = readFileSync("src/components/ExportControls.tsx", "utf8");
 const customFontsSource = readFileSync("src/app/custom-fonts/page.tsx", "utf8");
 const fontsPageSource = readFileSync("src/app/fonts/page.tsx", "utf8");
@@ -37,8 +38,10 @@ assert.ok(
 
 assert.ok(
   generatorSource.includes('role="alert" aria-live="assertive"') &&
-    generatorSource.includes("Unsupported characters"),
-  "A11Y-005: Generator warnings should be announced assertively."
+    generatorSource.includes("Some characters in your text aren\'t available in this alphabet") &&
+    rendererSource.includes("unsupported.set") &&
+    !rendererSource.includes("function placeholder"),
+  "A11Y-005: Generator unsupported-character warnings should be announced assertively and skipped by the renderer."
 );
 
 assert.ok(

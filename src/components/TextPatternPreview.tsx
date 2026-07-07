@@ -5,9 +5,10 @@ type TextPatternPreviewProps = {
   showGrid: boolean;
   showFilled: boolean;
   zoom: number;
+  showCenterGuide?: boolean;
 };
 
-export function TextPatternPreview({ pattern, showGrid, showFilled, zoom }: TextPatternPreviewProps) {
+export function TextPatternPreview({ pattern, showGrid, showFilled, zoom, showCenterGuide = true }: TextPatternPreviewProps) {
   const cellSize = Math.max(8, Math.min(34, zoom));
 
   if (!pattern.text.trim()) {
@@ -21,7 +22,7 @@ export function TextPatternPreview({ pattern, showGrid, showFilled, zoom }: Text
   return (
     <div className="pattern-scroll" aria-label="Generated stitch pattern preview">
       <div
-        className="pattern-grid has-center-guide"
+        className={`pattern-grid ${showCenterGuide ? "has-center-guide" : ""}`}
         style={{
           gridTemplateColumns: `repeat(${Math.max(1, pattern.width)}, ${cellSize}px)`,
           ["--cell-size" as string]: `${cellSize}px`

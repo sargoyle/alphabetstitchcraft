@@ -11,7 +11,6 @@ Convert typed lettering text into a generated cross-stitch pattern grid using a 
 - Function: `renderLine()`
 - Function: `appendCharacter()`
 - Function: `appendBlank()`
-- Function: `placeholder()`
 - Function: `alignLine()`
 - Type: `GeneratedPattern` in `src/lib/fontTypes.ts`
 - Type: `TextRenderOptions` in `src/lib/fontTypes.ts`
@@ -36,7 +35,7 @@ Convert typed lettering text into a generated cross-stitch pattern grid using a 
 - Word spacing.
 - Line spacing.
 - Alignment.
-- Optional unsupported-character placeholder setting.
+- Unsupported-character skip handling.
 - Font `defaultHeight`.
 - Individual character widths, heights and grids.
 - Renderer-level numeric bounds for spacing options.
@@ -81,7 +80,7 @@ Input:
 Expected output:
 - `@` is reported with count `2`.
 - `#` is reported with count `1`.
-- Visible placeholders are inserted into the generated grid.
+- Unsupported characters are skipped from the generated grid.
 
 ### Trailing spaces
 
@@ -109,7 +108,7 @@ Expected output:
 5. Empty text and whitespace-only text return an empty pattern.
 6. Non-empty text is split into lines.
 7. Each line is rendered from font character grids, using uppercase fallback when lowercase is unsupported.
-8. Unsupported characters become visible placeholders and counted warnings.
+8. Unsupported characters are skipped from the grid and counted for one warning message.
 9. Maximum width is calculated, including confirmed trailing-space width.
 10. Alignment is applied to each line.
 11. Line spacing rows are inserted.
@@ -125,7 +124,7 @@ Expected output:
 | Trailing spaces must contribute to final width. | Confirmed | Implemented | Covered by renderer tests. |
 | Line breaks must be preserved. | Confirmed | Implemented | Text is split on CRLF/LF and line spacing rows are inserted. |
 | Lowercase should fall back to uppercase when lowercase is unsupported. | Confirmed | Implemented | User confirmed this; code tries exact key then `char.toUpperCase()`. |
-| Unsupported characters should render as visible placeholders rather than blank space. | Confirmed | Implemented | User confirmed visible placeholders. |
+| Unsupported characters must be skipped rather than rendered as placeholders. | Confirmed | Implemented | User requested this in the 2026-07-07 update. |
 | Repeated unsupported characters should be reported with counts. | Confirmed | Implemented | `UNSUPPORTED-002` verifies repeated unsupported characters are counted. |
 | Final pattern must include width and height. | Confirmed | Implemented | Returned as `width` and `height`. |
 | Renderer must not mutate font data. | Assumed | Implemented | Code reads character grids and builds new strings. |
@@ -135,7 +134,7 @@ Expected output:
 
 - Must not mutate source font character grids.
 - Must not silently crash on unsupported characters.
-- Must not render unsupported characters as invisible blank space.
+- Must not insert placeholder or junk graphics for unsupported characters.
 - Must not collapse repeated unsupported characters into a unique-only list once counted reporting is implemented.
 - Must not produce rows with inconsistent widths for non-empty valid input.
 - Must not remove intentional line breaks.
@@ -152,7 +151,7 @@ Expected output:
 - Given text ends with a trailing space, when rendered, then that trailing space contributes to final width.
 - Given multiline text, when rendered, then line spacing rows appear between rendered lines.
 - Given a selected right alignment, when rendered, then shorter lines are padded before stitch content.
-- Given an unsupported character, when rendered, then a visible placeholder appears and the character is listed in `unsupportedCharacters`.
+- Given an unsupported character, when rendered, then the character is skipped and listed in `unsupportedCharacters`.
 - Given repeated unsupported characters occur, when rendered, then each unsupported character is reported with its count.
 - Given empty text, when rendered, then width and height are `0` and grid is empty.
 - Given whitespace-only text, when rendered, then width and height are `0` and grid is empty.
@@ -185,14 +184,14 @@ Expected output:
 - Currently inserts letter spacing only when the next character exists and is not a space.
 - Currently aligns each rendered line after maximum width is known.
 - Currently falls back from lowercase to uppercase when uppercase data exists.
-- Currently unsupported characters render as placeholders.
+- Currently unsupported characters are skipped from the rendered grid.
 - Currently returns unsupported characters as `{ character, count }` entries.
 - Currently rejects invalid numeric spacing values inside the renderer.
 - Currently returns a warning for very large generated patterns instead of enforcing a hard size limit.
 
 ## Known Gaps / Defects
 
-- `placeholderUnsupported` exists in the type/defaults but does not appear to change behaviour.
+- `placeholderUnsupported` remains in the type for compatibility but current product behaviour skips unsupported characters.
 - No remaining confirmed renderer gap for whitespace-only text, unsupported counts or spacing numeric bounds after the 2026-06-05 renderer fix pass.
 
 ## Automated Test Evidence
@@ -213,7 +212,7 @@ Expected output:
 ## Confirmed Product Decisions
 
 - Lowercase should fall back to uppercase when lowercase is unsupported.
-- Unsupported characters should use a visible placeholder rather than blank space.
+- Unsupported characters should be skipped from the grid and shown in a warning.
 - Repeated unsupported characters should be listed with counts.
 - Trailing spaces should contribute to final width.
 - Renderer should enforce numeric bounds independently of the UI.
@@ -226,7 +225,7 @@ Expected output:
 - Trailing spaces.
 - Multiline rendering.
 - Alignment integration.
-- Unsupported placeholders.
+- Unsupported character skip behaviour.
 - Unsupported character counts.
 - Empty and whitespace-only input.
 - Lowercase-to-uppercase fallback.

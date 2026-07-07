@@ -965,3 +965,39 @@ rg "window\.alert|alert\(" src
 - Confirmed fixed: font action save/create/delete/restore outcomes now use inline live status messages instead of `window.alert()`.
 - Remaining accessibility follow-up: formal axe-style browser accessibility tooling is still not installed and remains a go-live testing task.
 
+## 2026-07-07 - Stitch Library And Unsupported Character Validation
+
+### Scope
+
+- Removed centre guide overlays from Stitch Library preview cards while keeping Create Pattern centre guides.
+- Added common printable punctuation to bundled default fonts, blank font creation and Supabase default-font patch migration.
+- Changed unsupported-character rendering to skip missing glyphs and warn once instead of inserting placeholder graphics.
+- Added automated regression coverage for preview centre-guide behaviour, punctuation coverage and unsupported-character skipping.
+
+### Commands
+
+```powershell
+node .\node_modules\typescript\bin\tsc --noEmit
+node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0
+node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json
+node .\.test-build\tests\runTests.js
+node .\node_modules\next\dist\bin\next build
+```
+
+### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Source/test ESLint: passed with no warnings or errors.
+- Test TypeScript compile: passed after the final test-source edit.
+- Utility tests: passed after recompiling tests.
+- Production build: passed.
+
+### Findings
+
+- Confirmed fixed: Stitch Library font card previews opt out of centre guide overlays.
+- Confirmed preserved: Create Pattern preview still uses centre guide overlays.
+- Confirmed added: bundled and blank editable fonts include the required common printable punctuation set.
+- Confirmed changed: unsupported characters are counted and skipped instead of rendered as placeholder graphics.
+- Database follow-up: run `supabase/migrations/202607070001_add_default_punctuation_characters.sql` in Supabase to patch existing seeded default-font rows.
+

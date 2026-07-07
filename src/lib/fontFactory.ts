@@ -1,17 +1,7 @@
+import { defaultEditableCharacterKeys } from "./characterSets";
 import type { FontCategory, StitchCharacter, StitchFont } from "./fontTypes";
 
-export const blankFontCharacterKeys = [
-  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  ..."abcdefghijklmnopqrstuvwxyz",
-  ..."0123456789",
-  ".",
-  ",",
-  "!",
-  "?",
-  "'",
-  "-",
-  "&"
-];
+export const blankFontCharacterKeys = defaultEditableCharacterKeys;
 
 export function createBlankCharacter(width = 8, height = 10): StitchCharacter {
   return {

@@ -51,7 +51,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Inline save success or failure status.
 - Font delete request.
 - Sidebar character picker with active selected state.
-- Sidebar character picker with A-Z, a-z, 0-9, then other mapped characters.
+- Sidebar character picker with A-Z, a-z, 0-9, common punctuation, then other mapped characters.
 - Exists, not-created and selected tile states.
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
 - Compact dimension controls below the editable grid.
@@ -100,7 +100,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Desktop Character panel should be wide enough to avoid an internal character-picker scrollbar where practical. | Confirmed | Implemented | Desktop uses a wider middle panel and seven character columns. |
 | Character editing and save actions must live in the Character editor panel. | Confirmed | Implemented | Selected character grid, width, Reset, Clear and Save Character are grouped in the right panel. |
 | Delete Font copy must clarify that it deletes the full font and all characters. | Confirmed | Implemented | Danger Zone text says `Deletes the full font and all characters permanently.` |
-| Character selection must show A-Z first, then a-z, then 0-9, then other mapped characters. | Confirmed | Implemented | User requested this ordering for the sidebar section. |
+| Character selection must show A-Z first, then a-z, then 0-9, then common punctuation, then other mapped characters. | Confirmed | Implemented | User requested punctuation completion; shared character set now drives the picker. |
 | Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Existing means the character has at least one filled stitch, not merely that a blank starter grid exists. |
 | Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
@@ -122,7 +122,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not lose the selected font after save.
 - Must not leave the full new-character form permanently expanded on the editor screen.
 - Must not let editor action buttons overlap character width or font-height controls.
-- Must not hide not-created standard letters or numbers from the picker.
+- Must not hide not-created standard letters, numbers or punctuation from the picker.
 - Must not use a dropdown for duplicate-source selection.
 - Must not change the selected destination character when choosing a duplicate source.
 - Must not use the filled tile style for existing unselected characters.
@@ -147,7 +147,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given a database save fails, when the save attempt finishes, then a local editor status message explains that the save failed.
 - Given Delete font is clicked, when the user confirms deletion, then the selected font is deleted according to the active persistence model.
 - Given the Font Editor screen loads, when characters exist for the selected font, then character choices are shown as compact tiles with the active character highlighted.
-- Given the Font Editor screen loads, when the character picker renders, then A-Z appears before a-z, a-z appears before 0-9, and other mapped characters appear last.
+- Given the Font Editor screen loads, when the character picker renders, then A-Z appears before a-z, a-z appears before 0-9, punctuation follows numbers, and other mapped characters appear last.
 - Given a standard character has not been created, when the picker renders, then the character appears with the not-created border state.
 - Given a brand-new font contains blank starter grids, when the picker renders, then blank characters appear as not-created unless their grid contains at least one filled stitch.
 - Given a character exists and is not selected, when the picker renders, then the character uses a solid outline and not the filled selected style.
@@ -184,7 +184,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Mobile layout where dimension controls stack below the grid.
 - Tablet layout where the three panels stack into a usable single column.
 - Narrow desktop layout where the wider character panel must still leave enough room for the editor panel.
-- Selecting an unmapped uppercase, lowercase or numeric character.
+- Selecting an unmapped uppercase, lowercase, numeric or punctuation character.
 - Fonts with no lowercase mappings.
 - Source duplicate selection into an existing character.
 - Font height changed after multiple characters already contain stitches.
@@ -205,7 +205,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently shows font selection, font settings and Delete Font in a dedicated Font panel.
 - Currently shows ordered character tiles, legend and Select Duplicate in a wider dedicated Character panel with seven desktop columns and no internal desktop scrollbar.
 - Currently shows selected character grid with Width directly below it, plus guidance text, Reset, Clear and Save Character in a compact Character editor panel.
-- Currently includes A-Z, a-z and 0-9 in the character picker even when some characters are not yet mapped.
+- Currently includes A-Z, a-z, 0-9 and common punctuation in the character picker even when some characters are not yet mapped.
 - Currently shows selected as the filled tile state, exists as a solid outline, and not-created as a different-colour dashed outline.
 - Currently treats a character as existing only when its grid contains at least one `1` cell.
 - Currently avoids falling back to the first font while a requested `font` query parameter is unresolved.

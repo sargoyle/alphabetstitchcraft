@@ -66,7 +66,7 @@ User understands the selected font's style, dimensions, supported characters, an
 
 - No fonts found for filter: show empty state and clear-filter action.
 - Font ID missing or invalid: show not-found state and link back to Font Library.
-- Font contains unsupported sample text: preview skips or placeholders unsupported characters safely.
+- Font contains unsupported sample text: preview skips unsupported characters safely and shows a warning where relevant.
 
 ## Journey 2: Generate Text
 
@@ -97,7 +97,7 @@ User has a visible stitch lettering pattern with accurate dimensions and can exp
 ### Edge Cases
 
 - Empty text: show empty preview state and dimensions of 0 by 0.
-- Unsupported characters: render placeholders and show a warning listing characters.
+- Unsupported characters: skip unsupported characters and show one warning listing the skipped characters where practical.
 - Very long line: preview scrolls horizontally without breaking layout.
 - Very tall multiline text: preview scrolls vertically or page remains usable.
 - Missing selected font: fall back to first valid font.
@@ -347,9 +347,9 @@ States:
 
 Show:
 
-- Placeholder in preview.
-- Warning with unsupported characters listed.
-- Message should be practical, such as `Unsupported characters: @, #`.
+- Unsupported characters are skipped in the preview.
+- One warning is shown with unsupported characters listed where practical.
+- Message should explain that unavailable characters were skipped and suggest editing the font or choosing another alphabet.
 
 ### Invalid Font Data
 
@@ -415,4 +415,6 @@ The app flow is complete when the user can complete all primary journeys:
 - Export a PNG.
 
 All flows must work without backend services or user accounts.
+
+
 

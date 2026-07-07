@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const editorClientSource = readFileSync("src/app/editor/EditorClient.tsx", "utf8");
 const characterEditorSource = readFileSync("src/components/CharacterEditor.tsx", "utf8");
+const characterSetSource = readFileSync("src/lib/characterSets.ts", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 
 assert.ok(
@@ -41,8 +42,9 @@ assert.ok(
   editorClientSource.includes("uppercaseCharacters") &&
     editorClientSource.includes("lowercaseCharacters") &&
     editorClientSource.includes("numberCharacters") &&
+    editorClientSource.includes("punctuationCharacters") &&
     editorClientSource.includes("displayedCharacterKeys"),
-  "EDITOR-UI-007: Character picker should order A-Z first, then a-z, then 0-9, then other mapped characters."
+  "EDITOR-UI-007: Character picker should order A-Z first, then a-z, then 0-9, then punctuation, then other mapped characters."
 );
 
 assert.ok(
@@ -107,3 +109,11 @@ assert.ok(
 );
 
 console.log("editor UI source tests passed.");
+
+assert.ok(
+  characterSetSource.includes("punctuationCharacters") &&
+    characterSetSource.includes('"@"') &&
+    characterSetSource.includes('"~"') &&
+    characterSetSource.includes('"\\"'),
+  "EDITOR-UI-016: Shared character set should include the required printable punctuation characters."
+);

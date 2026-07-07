@@ -51,6 +51,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Generated pattern settings.
 - Font metadata fields: id, name, description, category, default height, recommended use and licence.
 - Character keys, which are confirmed as single characters for v1.
+- Shared default editable character set from `src/lib/characterSets.ts`.
 
 ## Outputs
 
@@ -62,6 +63,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Supabase backup snapshots for remote font restore.
 - User-visible error/status reporting for invalid remote fonts that need attention.
 - User-visible error reporting when a custom font references a missing seeded default font.
+- Complete common printable punctuation mappings for default and blank editable fonts.
 - Save target decisions for default font updates and custom font upserts.
 - Safe cleanup of duplicate `Block Needle 5x7` or `Block Needle 5 x 7` shared font rows while retaining the canonical `block-needle-5x7` default record and backing up accidental custom duplicates before deletion.
 
@@ -135,7 +137,7 @@ Expected output:
 | A character grid must contain rows of `0` and `1` values. | Confirmed | Implemented | Product scope and `validateCharacter()` support this. |
 | Character row count must equal character height. | Confirmed | Implemented | Validation checks this. |
 | Every row length must equal character width. | Confirmed | Implemented | Validation checks this. |
-| Character keys must be single characters in v1. | Confirmed | Unknown | User confirmed this product rule; implementation validation is not clearly confirmed from this doc review. |
+| Character keys must be single characters in v1. | Confirmed | Implemented | Font data tests assert single-character keys for bundled fonts. |
 | `defaultHeight` is the font-level character height. | Confirmed | Implemented | User confirmed every character in a font must have this height. |
 | Every character in a font must have the same height as `defaultHeight`. | Confirmed | Implemented | `validateFont()` reports mismatched character heights and editor font settings resize all characters. |
 | Font height must remain user-selectable at the font level. | Confirmed | Implemented | Font Editor exposes a font-height input and saves it through the font save path. |
@@ -144,6 +146,7 @@ Expected output:
 | Successful font saves should keep the just-saved font in local state while the remote refresh completes. | Confirmed | Implemented | Prevents a brief return to the pre-save version after editing. |
 | Font IDs must be unique. | Confirmed | Partially Implemented | Utility exists; runtime uniqueness enforcement depends on data source. |
 | Fonts must include metadata and character data. | Confirmed | Implemented | Types require these fields. |
+| Default and blank editable fonts must include common printable punctuation. | Confirmed | Implemented | `punctuationCharacters` covers the newly required printable punctuation set and tests assert bundled/blank font coverage. |
 | Font categories should be user-editable. | Confirmed | Unknown | User confirmed categories are editable; current implementation status should be checked before implementation/test work. |
 | Remote fonts must be validated before use. | Assumed | Implemented | `toStitchFont()` returns null for invalid mapped fonts. |
 | Invalid remote fonts must be shown as errors needing attention, not silently skipped. | Confirmed | Implemented | `loadRemoteFontResult()` returns invalid font warnings and `useFonts()` surfaces them in font sync status. |
@@ -165,6 +168,7 @@ Expected output:
 - Must not treat non-rectangular character data as valid.
 - Must not silently change a character key during mapping.
 - Must not allow multi-character glyph keys in v1 unless a future feature explicitly changes this.
+- Must not omit required common printable punctuation from blank or seeded default fonts.
 - Must not allow mixed character heights inside one font.
 - Must not treat font height as a per-character setting.
 - Must not mutate default font JSON when editing user data.
@@ -185,6 +189,7 @@ Expected output:
 - Given a row with a non-`0`/`1` value, when validated, then validation fails.
 - Given a character key contains more than one character, when font data is validated for v1, then validation fails or the font is reported as invalid.
 - Given valid default font data, when loaded, then it produces `StitchFont` objects.
+- Given bundled or blank editable font data, when inspected, then every required punctuation key is present and editable.
 - Given valid remote font and character rows, when mapped, then a valid `StitchFont` is produced.
 - Given a font has a character with height different from `defaultHeight`, when validated, then validation fails.
 - Given a font height is changed in the editor, when font settings are saved, then every character height and grid row count is updated to the new font height.
@@ -211,6 +216,7 @@ Expected output:
 - Missing metadata.
 - Remote grid field not an array of strings.
 - Character key longer than one visible character.
+- Required punctuation characters such as `@`, `#`, `\` and `~`.
 - Existing data with mixed character heights from older versions.
 - Category value missing or not part of the known category set.
 - User changes category before saving a new font.
@@ -252,7 +258,6 @@ Expected output:
 - Invalid remote font warnings are implemented, but the final warning UX should still be reviewed in browser.
 - Database type definitions now reflect the current public no-login persistence model for nullable custom font owners and the backup table.
 - Default font validation exists but is not automatically enforced at every app startup path.
-- Character key single-character enforcement is confirmed as a product rule, but implementation enforcement is not clearly confirmed from the current documentation pass.
 - User-editable font category support is confirmed as a product rule, but implementation status needs code verification.
 - Live Supabase duplicate records cannot be inspected from the local test runner; both cleanup migrations must be run and verified in the target Supabase project.
 
@@ -280,6 +285,7 @@ Expected output:
 
 - Character validation.
 - Single-character key validation.
+- Required punctuation coverage in bundled, seeded and blank fonts.
 - Font validation.
 - Duplicate font ID detection.
 - Remote row mapping.

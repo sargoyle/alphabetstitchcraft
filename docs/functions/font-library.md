@@ -9,6 +9,7 @@ Provide the primary browsing and management surface for stitch alphabets, includ
 - Page: `src/app/fonts/page.tsx`
 - Component: `FontCard` in `src/components/FontCard.tsx`
 - Component: `FontGridPreview` in `src/components/FontGridPreview.tsx`
+- Component: `TextPatternPreview` in `src/components/TextPatternPreview.tsx`
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
 - Function: `createBlankFont()` in `src/lib/fontFactory.ts`
 - Function: `saveSelectedFontId()` in `src/lib/localStorageUtils.ts`
@@ -106,6 +107,7 @@ Expected output:
 | Create New Font should allow category and height selection before creation. | Confirmed | Not Implemented | User confirmed this; current code previously used prompt-based name entry. |
 | Create must not proceed when persistence cannot write. | Assumed | Implemented | Disabled button and alert guard. |
 | Font cards should show a preview. | Confirmed | Implemented | `FontGridPreview` is used. |
+| Font card previews must not show pattern centre guide lines. | Confirmed | Implemented | Centre guides remain on Create Pattern but `FontGridPreview` passes `showCenterGuide={false}`. |
 | Future admin login should control who can create/edit/rename/delete fonts. | Confirmed | Not Implemented | Added to outstanding tasks as a future feature. |
 | Non-admin/general users should still be able to use other site features once admin permissions are added. | Confirmed | Not Implemented | Future permission model should preserve browse/use/generator access. |
 
@@ -118,10 +120,11 @@ Expected output:
 - Must not require admin login for browse/use/generator behaviour until a future permission model is implemented.
 - Must not create a new font without allowing category and height selection once the confirmed creation flow is implemented.
 - Must not silently fail rename/delete actions.
+- Must not show centre guide overlays in Stitch Library card previews.
 
 ## Acceptance Criteria
 
-- Given fonts are loaded, when the Fonts page opens, then font cards are displayed.
+- Given fonts are loaded, when the Fonts page opens, then font cards are displayed without centre guide overlays.
 - Given a category filter is selected, when fonts are shown, then only matching category fonts appear.
 - Given a height filter is selected, when fonts are shown, then only matching default-height fonts appear.
 - Given search text matches a font name, when entered, then that font remains visible.
@@ -149,6 +152,7 @@ Expected output:
 - Delete failure.
 - Search with uppercase/lowercase differences.
 - Font with unsupported sample preview characters.
+- Font card preview for different font heights and sizes.
 - Future user lacks admin permission.
 
 ## Current Code Behaviour

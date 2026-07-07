@@ -2,18 +2,17 @@
 
 ## Purpose
 
-Ensure characters missing from the selected stitch font are visible to the user, represented safely in the generated pattern and reported clearly. V1 uses visible placeholder boxes for unsupported characters, falls back from lowercase to uppercase where possible, counts repeated unsupported characters, and treats tabs as unsupported characters rather than spacing.
+Ensure characters missing from the selected stitch font are visible to the user, represented safely in the generated pattern and reported clearly. V1 skips unsupported characters from the rendered grid, falls back from lowercase to uppercase where possible, counts repeated unsupported characters, and treats tabs as unsupported characters rather than spacing. The user sees one immediate warning message listing the skipped characters where practical.
 
 ## Source References
 
 - File: `src/lib/renderTextToGrid.ts`
 - Function: `renderLine()`
-- Function: `placeholder()`
 - Function: `renderTextToGrid()`
 - Page: `src/app/generator/page.tsx`
 - Type: `GeneratedPattern.unsupportedCharacters`
 - Component: `TextPatternPreview`
-- Related product decision: placeholder box is preferred v1 behaviour.
+- Related product decision: unsupported characters are skipped rather than rendered as placeholders.
 - Related product decision: uppercase fallback is desirable.
 - Related product decision: unsupported duplicates should be counted.
 - Related product decision: tabs should be treated as unsupported characters.
@@ -31,16 +30,16 @@ Ensure characters missing from the selected stitch font are visible to the user,
 - Exact character key lookup.
 - Uppercase fallback lookup.
 - Font line height.
-- Unsupported-character placeholder setting.
+- Unsupported-character skip behaviour.
 - Repeated unsupported character occurrences.
 - Tab characters in pasted or typed text.
 
 ## Outputs
 
-- Placeholder stitch grid for missing characters.
+- Unsupported characters omitted from the generated stitch grid.
 - `unsupportedCharacters` data as `{ character, count }` entries.
 - Warning text on the Generator page.
-- Visible placeholder in preview/export grid.
+- Single warning message in the Generator page for skipped unsupported characters.
 - Tab characters reported as unsupported, not converted to spaces.
 
 ## Worked Examples
@@ -73,7 +72,7 @@ Input:
 
 Expected output:
 - Tab is treated as an unsupported character, not as spacing.
-- A placeholder appears where the tab occurs.
+- No placeholder is rendered for the tab.
 - The tab is included in unsupported reporting.
 
 ### Missing character
@@ -83,7 +82,7 @@ Input:
 - Font supports `A` but not `@`
 
 Expected output:
-- Renders `A` followed by a placeholder.
+- Renders `A` and skips `@`.
 - Lists `@` in unsupported characters with count `1`.
 
 ## State Transitions
@@ -91,7 +90,7 @@ Expected output:
 1. User enters text.
 2. Renderer checks each character against the selected font.
 3. If exact key is missing, uppercase fallback is checked.
-4. If no character exists, placeholder is inserted.
+4. If no character exists, the character is skipped from the grid.
 5. Unsupported character occurrence is counted.
 6. Tabs are treated as unsupported characters, not converted to spaces.
 7. Final generated pattern includes unsupported character counts.
@@ -102,8 +101,8 @@ Expected output:
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
 | Unsupported characters must not crash rendering. | Confirmed | Implemented | Placeholder is used. |
-| Placeholder box is the preferred v1 behaviour. | Confirmed | Implemented | User confirmed placeholder box behaviour. |
-| Unsupported characters should be visible. | Confirmed | Implemented | Placeholder box appears. |
+| Unsupported characters must be skipped rather than replaced with placeholder graphics. | Confirmed | Implemented | User requested skipped unsupported characters in the 2026-07-07 update. |
+| Unsupported characters should be visible in the warning, not the grid. | Confirmed | Implemented | Generator warning lists skipped characters. |
 | Unsupported characters must be reported. | Confirmed | Implemented | Generator warning lists them. |
 | Unsupported duplicates should be counted. | Confirmed | Implemented | `UNSUPPORTED-002` verifies counted output. |
 | Normal spaces should not be unsupported. | Confirmed | Implemented | Spaces use word spacing. |
@@ -119,11 +118,11 @@ Expected output:
 - Must not list normal spaces as unsupported.
 - Must not treat tabs as spaces.
 - Must not collapse unsupported duplicate counts once count reporting is implemented.
-- Must not render unsupported characters as blank space in v1.
+- Must not insert placeholder or junk graphics for unsupported characters.
 
 ## Acceptance Criteria
 
-- Given unsupported input, when rendered, then a placeholder appears in the grid.
+- Given unsupported input, when rendered, then the unsupported character is skipped from the grid.
 - Given unsupported input, when rendered, then the unsupported character appears in the warning list.
 - Given repeated unsupported input, then the warning reports the unsupported character with a count.
 - Given lowercase input and uppercase exists, then uppercase fallback is used and no warning appears for that character.
@@ -145,14 +144,12 @@ Expected output:
 ## Current Code Behaviour
 
 - Currently reports unsupported characters as counted entries.
-- Currently builds placeholder height from line height and width from height with min/max constraints.
-- Currently ignores `placeholderUnsupported` as a behavioural switch.
+- Currently skips unsupported characters rather than inserting placeholder grids.
 - Currently displays unsupported characters in a comma-separated warning.
 - Current tab handling reports tab characters as unsupported at renderer utility level.
 
 ## Known Gaps / Defects
 
-- `placeholderUnsupported` does not appear to disable placeholder rendering, which is acceptable for v1 because placeholders are confirmed preferred behaviour.
 - Warning does not explain how to add or edit missing characters.
 
 ## Unclear or Assumed Rules
@@ -161,14 +158,14 @@ Expected output:
 
 ## Confirmed Product Decisions
 
-- Placeholder box is the preferred v1 behaviour.
+- Unsupported characters are skipped rather than rendered as placeholders.
 - Uppercase fallback is desirable.
 - Unsupported duplicates should be counted.
 - Tabs should be treated as unsupported characters.
 
 ## Suggested Test Areas
 
-- Placeholder rendering.
+- Unsupported character skip behaviour.
 - Warning list.
 - Uppercase fallback.
 - Emoji/accented input.

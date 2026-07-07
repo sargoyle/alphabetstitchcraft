@@ -15,7 +15,7 @@ Render stitch data as readable square graph-paper grids for generated text patte
 - Type: `StitchCharacter`
 - Related setting: grid visibility
 - Related setting: filled stitch visibility
-- Related visual guide: centre-point horizontal and vertical lines
+- Related visual guide: centre-point horizontal and vertical lines on generated patterns only
 - Related export: PNG canvas rendering
 
 ## Decision Required
@@ -37,7 +37,7 @@ Render stitch data as readable square graph-paper grids for generated text patte
 - Editable flag for character grid.
 - Export grid visibility setting.
 - Export stitch visibility setting.
-- Centre guide visibility for generated pattern previews and PNG exports.
+- Centre guide visibility for generated pattern previews and PNG exports; font card previews opt out.
 
 ## Outputs
 
@@ -108,7 +108,8 @@ Expected output:
 6. Mini previews may use smaller cell sizes than generated pattern previews.
 7. Export uses generated grid data and visibility settings to draw canvas cells.
 8. Generated pattern preview overlays centre guide lines at the exact midpoint of the pattern.
-9. PNG export draws matching centre guide lines after grid and filled-cell drawing.
+9. Font Library card previews render without centre guide overlays.
+10. PNG export draws matching centre guide lines after grid and filled-cell drawing.
 
 ## Rules and Requirements
 
@@ -122,9 +123,10 @@ Expected output:
 | Export should use the generated grid. | Confirmed | Implemented | Canvas iterates pattern grid. |
 | Export must honour grid visibility. | Confirmed | Implemented | `EXPORT-001` verifies hidden grid drawing at utility level. |
 | Export must honour filled stitch visibility. | Confirmed | Implemented | `EXPORT-002` verifies hidden filled-cell drawing at utility level. |
-| Generated pattern preview must show the exact centre point with horizontal and vertical guide lines. | Confirmed | Implemented | Preview overlays blue centre guide lines at 50% width and height. |
+| Generated pattern preview must show the exact centre point with horizontal and vertical guide lines. | Confirmed | Implemented | Create Pattern preview overlays blue centre guide lines at 50% width and height. |
 | PNG export must show the exact centre point with horizontal and vertical guide lines. | Confirmed | Implemented | Canvas export draws centre guide lines after cells are drawn. |
 | Centre guide lines must use a different colour from normal grid lines. | Confirmed | Implemented | Preview and export use blue guide lines rather than paper-coloured grid lines. |
+| Stitch Library font card previews must not show centre guide lines. | Confirmed | Implemented | `FontGridPreview` opts out of centre guides while Create Pattern keeps the default guide behaviour. |
 | Mini previews may allow cell sizes below the generated preview clamp. | Confirmed | Not Implemented | Current `FontGridPreview` passes zoom `6`, but `TextPatternPreview` clamps to `8`. |
 | Visibility toggles must not alter underlying grid data. | Assumed | Implemented | Display settings affect styling, not grid rows. |
 
@@ -137,6 +139,7 @@ Expected output:
 - Must not draw grid lines in export when grid visibility is off.
 - Must not hide centre guide lines inside normal grid-line styling.
 - Must not alter pattern grid data to add centre guides.
+- Must not show centre guide lines in Stitch Library font card previews.
 - Must not require mini previews to use the same minimum cell size as generated previews.
 - Must not introduce X-shaped stitch display in v1 unless a future feature changes the rendering mode.
 
@@ -151,7 +154,8 @@ Expected output:
 - Given a font card mini preview requests a cell size below the generated preview clamp, when the mini preview renders, then it may use the smaller cell size.
 - Given a large pattern, then the preview area scrolls instead of breaking the page.
 - Given export is triggered, then canvas dimensions reflect pattern width and height.
-- Given a generated pattern preview is shown, then horizontal and vertical centre guide lines appear at the exact middle of the pattern.
+- Given a Create Pattern generated preview is shown, then horizontal and vertical centre guide lines appear at the exact middle of the pattern.
+- Given a Stitch Library font card preview is shown, then centre guide lines are not displayed.
 - Given PNG export is triggered, then horizontal and vertical centre guide lines appear at the exact middle of the exported pattern image.
 - Given normal grid lines are visible, then centre guide lines remain visually distinct.
 
@@ -178,7 +182,8 @@ Expected output:
 - Currently clamps generated preview cell size between 8 and 34.
 - Currently `FontGridPreview` passes zoom `6`, but `TextPatternPreview` clamps it up to 8.
 - Currently pattern previews are scrollable.
-- Currently generated pattern previews overlay blue centre guide lines at 50% width and height.
+- Currently Create Pattern previews overlay blue centre guide lines at 50% width and height.
+- Currently Font Library card previews opt out of centre guide overlays.
 - Currently editable character grids use button cells.
 - Currently PNG export uses a separate canvas renderer with fixed colours and cell size.
 - Currently PNG export receives preview grid and stitch visibility settings from Export Controls.
@@ -212,6 +217,7 @@ Expected output:
 - Canvas export dimensions.
 - CSS preview and PNG visual consistency.
 - Centre guide placement for odd and even pattern dimensions.
+- Stitch Library preview cards without centre guide overlays.
 - Centre guide visibility when grid visibility is off.
 
 ## Review Checklist

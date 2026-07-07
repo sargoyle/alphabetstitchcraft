@@ -8,6 +8,8 @@ const fonts = fontsData as StitchFont[];
 const blockFont = fonts.find((font) => font.id === "block-needle-5x7");
 assert.ok(blockFont, "Block Needle test font should exist.");
 const textPatternPreviewSource = readFileSync("src/components/TextPatternPreview.tsx", "utf8");
+const fontGridPreviewSource = readFileSync("src/components/FontGridPreview.tsx", "utf8");
+const generatorSource = readFileSync("src/app/generator/page.tsx", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 
 const options = {
@@ -39,23 +41,24 @@ assert.equal(whitespaceLines.height, 0, "RENDER-001: whitespace-only lines shoul
 assert.deepEqual(whitespaceLines.grid, [], "RENDER-001: whitespace-only lines should have an empty grid.");
 
 // UNSUPPORTED-001: mixed supported and unsupported input should render safely and report unsupported characters.
-const mixedUnsupported = renderTextToGrid("A@A", blockFont, options);
+const mixedUnsupported = renderTextToGrid("A€A", blockFont, options);
 assert.ok(mixedUnsupported.width > 0, "UNSUPPORTED-001: supported characters should still render.");
 assert.ok(mixedUnsupported.grid.some((row) => row.includes("1")), "UNSUPPORTED-001: rendered grid should include stitches.");
 assert.deepEqual(
   mixedUnsupported.unsupportedCharacters,
-  [{ character: "@", count: 1 }],
+  [{ character: "€", count: 1 }],
   "UNSUPPORTED-001: unsupported character should be reported."
 );
 assertRowWidthConsistency(mixedUnsupported, "UNSUPPORTED-001");
+assert.equal(mixedUnsupported.width, renderTextToGrid("AA", blockFont, options).width, "UNSUPPORTED-001: unsupported characters should be skipped, not replaced.");
 
 // UNSUPPORTED-002: confirmed requirement says duplicate unsupported characters should be counted.
-const repeatedUnsupported = renderTextToGrid("A@@#", blockFont, options);
+const repeatedUnsupported = renderTextToGrid("A€€😀", blockFont, options);
 assert.deepEqual(
   repeatedUnsupported.unsupportedCharacters,
   [
-    { character: "@", count: 2 },
-    { character: "#", count: 1 }
+    { character: "€", count: 2 },
+    { character: "😀", count: 1 }
   ],
   "UNSUPPORTED-002: repeated unsupported characters should be counted."
 );
@@ -121,11 +124,19 @@ assert.equal(
 assertRowWidthConsistency(rightAligned, "GRID-003");
 
 assert.ok(
-  textPatternPreviewSource.includes("has-center-guide") &&
+  textPatternPreviewSource.includes("showCenterGuide = true") &&
+    textPatternPreviewSource.includes('showCenterGuide ? "has-center-guide" : ""') &&
+    generatorSource.includes("<TextPatternPreview") &&
+    !generatorSource.includes("showCenterGuide={false}") &&
     globalCssSource.includes(".pattern-grid.has-center-guide::before") &&
     globalCssSource.includes(".pattern-grid.has-center-guide::after") &&
     globalCssSource.includes("background: rgba(43, 157, 255, 0.82);"),
-  "GRID-004: Pattern preview should show visible vertical and horizontal centre guide lines."
+  "GRID-004: Create Pattern preview should keep visible vertical and horizontal centre guide lines."
+);
+
+assert.ok(
+  fontGridPreviewSource.includes("showCenterGuide={false}"),
+  "GRID-005: Stitch Library font card previews should opt out of centre guide lines."
 );
 
 console.log("renderVisibility tests passed.");

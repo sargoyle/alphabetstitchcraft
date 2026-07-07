@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
+import { defaultEditableCharacterKeys, lowercaseCharacters, numberCharacters, punctuationCharacters, uppercaseCharacters } from "@/lib/characterSets";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
 import { useFonts } from "@/lib/useFonts";
+
+type EditorDraftActions = {
+  save: () => Promise<boolean>;
+  discard: () => void;
+};
 
 function blankCharacter(width = 8, height = 10): StitchCharacter {
   return {
@@ -24,21 +30,16 @@ function hasFilledStitches(character: StitchCharacter | undefined) {
   return Boolean(character?.grid.some((row) => row.includes("1")));
 }
 
-const uppercaseCharacters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-const lowercaseCharacters = Array.from("abcdefghijklmnopqrstuvwxyz");
-const numberCharacters = Array.from("0123456789");
-const orderedBaseCharacters = new Set([...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters]);
+const orderedBaseCharacters = new Set(defaultEditableCharacterKeys);
 
 export function EditorClient() {
   const params = useSearchParams();
   const { fonts, saveFont, deleteFont, persistence } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const selectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
-  const characterKeys = useMemo(() => Object.keys(selectedFont?.characters ?? {}).sort(), [selectedFont]);
-  const displayedCharacterKeys = useMemo(() => {
-    const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
-    return [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...otherCharacters];
-  }, [characterKeys]);
+  const characterKeys = Object.keys(selectedFont?.characters ?? {}).sort();
+  const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
+  const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
   const [characterKey, setCharacterKey] = useState("A");
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [sourceCharacterKey, setSourceCharacterKey] = useState("");
@@ -50,6 +51,9 @@ export function EditorClient() {
   const [fontSettingsStatus, setFontSettingsStatus] = useState<{ type: "success" | "error"; message: string } | null>(
     null
   );
+  const [hasUnsavedCharacterChanges, setHasUnsavedCharacterChanges] = useState(false);
+  const [pendingExit, setPendingExit] = useState<{ action: () => void } | null>(null);
+  const editorDraftActions = useRef<EditorDraftActions | null>(null);
   const activeKey = characterKey;
   const selectedCharacter = activeKey ? selectedFont?.characters[activeKey] : undefined;
   const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
@@ -71,12 +75,52 @@ export function EditorClient() {
         : undefined
     : undefined;
 
+  const requestCharacterExit = useCallback(
+    (action: () => void) => {
+      if (!hasUnsavedCharacterChanges) {
+        action();
+        return;
+      }
+      setPendingExit({ action });
+    },
+    [hasUnsavedCharacterChanges]
+  );
+
   useEffect(() => {
     if (!selectedFont) return;
     setFontNameDraft(selectedFont.name);
     setFontHeightDraft(selectedFont.defaultHeight);
     setFontSettingsStatus(null);
   }, [selectedFont]);
+
+  useEffect(() => {
+    if (!hasUnsavedCharacterChanges) return;
+
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedCharacterChanges]);
+
+  useEffect(() => {
+    function handleDocumentClick(event: globalThis.MouseEvent) {
+      if (!hasUnsavedCharacterChanges || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(target instanceof HTMLAnchorElement) || target.target || target.hasAttribute("download")) return;
+      const href = target.href;
+      if (!href || href === window.location.href) return;
+      event.preventDefault();
+      requestCharacterExit(() => {
+        window.location.href = href;
+      });
+    }
+
+    document.addEventListener("click", handleDocumentClick, true);
+    return () => document.removeEventListener("click", handleDocumentClick, true);
+  }, [hasUnsavedCharacterChanges, requestCharacterExit]);
 
   async function saveFontSettings() {
     if (!selectedFont) return;
@@ -133,6 +177,26 @@ export function EditorClient() {
     setFontId("");
   }
 
+  async function saveAndContinue() {
+    const saved = await editorDraftActions.current?.save();
+    if (!saved || !pendingExit) return;
+    setPendingExit(null);
+    setHasUnsavedCharacterChanges(false);
+    pendingExit.action();
+  }
+
+  function discardAndContinue() {
+    if (!pendingExit) return;
+    editorDraftActions.current?.discard();
+    setPendingExit(null);
+    setHasUnsavedCharacterChanges(false);
+    pendingExit.action();
+  }
+
+  function cancelPendingExit() {
+    setPendingExit(null);
+  }
+
   if (!selectedFont || !character) {
     return (
       <section className="page-stack">
@@ -152,12 +216,15 @@ export function EditorClient() {
           <select
             value={selectedFont.id}
             onChange={(event) => {
-              setFontId(event.target.value);
-              setCreatingCharacter(false);
-              setSourceCharacterKey("");
-              setDestinationCharacterKey("");
-              setReplaceExistingCharacter(false);
-              setNewCharacterOpen(false);
+              const nextFontId = event.target.value;
+              requestCharacterExit(() => {
+                setFontId(nextFontId);
+                setCreatingCharacter(false);
+                setSourceCharacterKey("");
+                setDestinationCharacterKey("");
+                setReplaceExistingCharacter(false);
+                setNewCharacterOpen(false);
+              });
             }}
           >
             {fonts.map((font) => (
@@ -207,7 +274,7 @@ export function EditorClient() {
         <div className="danger-zone">
           <span className="eyebrow">Danger zone</span>
           <p>Deletes the full font and all characters permanently.</p>
-          <button className="button danger" type="button" onClick={removeSelectedFont}>
+          <button className="button danger" type="button" onClick={() => requestCharacterExit(removeSelectedFont)}>
             <Trash2 aria-hidden="true" size={17} />
             Delete Font...
           </button>
@@ -236,12 +303,14 @@ export function EditorClient() {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => {
-                    setCharacterKey(key);
-                    setDestinationCharacterKey(key);
-                    setSourceCharacterKey("");
-                    setReplaceExistingCharacter(exists);
-                    setCreatingCharacter(false);
-                    setNewCharacterOpen(false);
+                    requestCharacterExit(() => {
+                      setCharacterKey(key);
+                      setDestinationCharacterKey(key);
+                      setSourceCharacterKey("");
+                      setReplaceExistingCharacter(exists);
+                      setCreatingCharacter(false);
+                      setNewCharacterOpen(false);
+                    });
                   }}
                 >
                   {key}
@@ -267,10 +336,12 @@ export function EditorClient() {
             className="button secondary new-character-button"
             type="button"
             onClick={() => {
-              setDestinationCharacterKey(activeKey);
-              setSourceCharacterKey("");
-              setReplaceExistingCharacter(hasFilledStitches(selectedFont.characters[activeKey]));
-              setNewCharacterOpen(true);
+              requestCharacterExit(() => {
+                setDestinationCharacterKey(activeKey);
+                setSourceCharacterKey("");
+                setReplaceExistingCharacter(hasFilledStitches(selectedFont.characters[activeKey]));
+                setNewCharacterOpen(true);
+              });
             }}
           >
             <Copy aria-hidden="true" size={17} />
@@ -307,7 +378,6 @@ export function EditorClient() {
                   onClick={() => {
                     setSourceCharacterKey("");
                     setDestinationCharacterKey(activeKey);
-                    setCreatingCharacter(true);
                   }}
                 >
                   Blank
@@ -320,7 +390,6 @@ export function EditorClient() {
                     onClick={() => {
                       setSourceCharacterKey(key);
                       setDestinationCharacterKey(activeKey);
-                      setCreatingCharacter(true);
                     }}
                   >
                     {key}
@@ -361,6 +430,28 @@ export function EditorClient() {
         </div>
       ) : null}
 
+      {pendingExit ? (
+        <div className="modal-backdrop" role="presentation">
+          <div className="new-character-modal unsaved-change-dialog" role="dialog" aria-modal="true" aria-labelledby="unsaved-character-title">
+            <span className="eyebrow">Unsaved character</span>
+            <h2 id="unsaved-character-title">You have unsaved changes to this character.</h2>
+            <p>Would you like to save your changes before continuing?</p>
+            <div className="button-row unsaved-change-actions">
+              <button className="button primary" type="button" onClick={saveAndContinue}>
+                <Save aria-hidden="true" size={17} />
+                Save &amp; Continue
+              </button>
+              <button className="button secondary" type="button" onClick={discardAndContinue}>
+                Discard Changes
+              </button>
+              <button className="button ghost" type="button" onClick={cancelPendingExit}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <section className="editor-main">
         <CharacterEditor
           key={`${selectedFont.id}-${creatingCharacter ? `new-${sourceCharacterKey || "blank"}` : activeKey}`}
@@ -368,6 +459,10 @@ export function EditorClient() {
           character={character}
           originalCharacter={character}
           onSave={saveCharacter}
+          onDirtyChange={setHasUnsavedCharacterChanges}
+          onEditorActionsChange={(actions) => {
+            editorDraftActions.current = actions;
+          }}
           saveDisabled={Boolean(saveDisabledReason)}
           saveDisabledReason={saveDisabledReason}
           saveLabel={creatingCharacter ? "Save new character" : "Save character"}
@@ -377,7 +472,3 @@ export function EditorClient() {
     </section>
   );
 }
-
-
-
-
