@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
@@ -37,6 +37,7 @@ export function EditorClient() {
   const { fonts, saveFont, deleteFont, persistence } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const selectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
+  const latestFontRef = useRef(selectedFont);
   const characterKeys = Object.keys(selectedFont?.characters ?? {}).sort();
   const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
   const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
@@ -59,12 +60,11 @@ export function EditorClient() {
   const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
   const destinationExists = hasFilledStitches(destinationKey ? selectedFont?.characters[destinationKey] : undefined);
   const sourceCharacter = sourceCharacterKey ? selectedFont?.characters[sourceCharacterKey] : null;
-  const newCharacter = sourceCharacter
-    ? (JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter)
-    : blankCharacter(
-        Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10)),
-        Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10))
-      );
+  const newCharacter = useMemo(() => {
+    if (sourceCharacter) return JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter;
+    const fontHeight = Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10));
+    return blankCharacter(fontHeight, fontHeight);
+  }, [selectedFont?.defaultHeight, sourceCharacter]);
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
   const character = creatingCharacter ? newCharacter : selectedCharacter ?? newCharacter;
   const saveDisabledReason = creatingCharacter
@@ -85,6 +85,10 @@ export function EditorClient() {
     },
     [hasUnsavedCharacterChanges]
   );
+
+  useEffect(() => {
+    latestFontRef.current = selectedFont;
+  }, [selectedFont]);
 
   useEffect(() => {
     if (!selectedFont) return;
@@ -122,7 +126,7 @@ export function EditorClient() {
     return () => document.removeEventListener("click", handleDocumentClick, true);
   }, [hasUnsavedCharacterChanges, requestCharacterExit]);
 
-  async function saveFontSettings() {
+  async function applyFontSettings() {
     if (!selectedFont) return;
 
     const nextName = fontNameDraft.trim();
@@ -133,7 +137,8 @@ export function EditorClient() {
       return;
     }
 
-    const targetFont = resizeFontCharactersHeight(cloneFont(selectedFont), nextHeight);
+    const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;
+    const targetFont = resizeFontCharactersHeight(cloneFont(baseFont), nextHeight);
     targetFont.name = nextName;
     targetFont.updatedAt = new Date().toISOString();
 
@@ -145,8 +150,15 @@ export function EditorClient() {
     );
 
     if (saved) {
+      latestFontRef.current = targetFont;
       setFontId(targetFont.id);
     }
+  }
+
+  function saveFontSettings() {
+    requestCharacterExit(() => {
+      void applyFontSettings();
+    });
   }
 
   async function saveCharacter(updated: StitchCharacter) {
@@ -160,6 +172,7 @@ export function EditorClient() {
     const saved = await saveFont(targetFont);
     if (!saved) return false;
 
+    latestFontRef.current = targetFont;
     setFontId(targetFont.id);
     setCharacterKey(targetKey);
     setCreatingCharacter(false);
@@ -378,6 +391,8 @@ export function EditorClient() {
                   onClick={() => {
                     setSourceCharacterKey("");
                     setDestinationCharacterKey(activeKey);
+                    setCreatingCharacter(true);
+                    setNewCharacterOpen(false);
                   }}
                 >
                   Blank
@@ -390,6 +405,8 @@ export function EditorClient() {
                     onClick={() => {
                       setSourceCharacterKey(key);
                       setDestinationCharacterKey(activeKey);
+                      setCreatingCharacter(true);
+                      setNewCharacterOpen(false);
                     }}
                   >
                     {key}

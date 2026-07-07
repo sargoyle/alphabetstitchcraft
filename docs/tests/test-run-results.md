@@ -1028,3 +1028,28 @@ node .\node_modules\next\dist\bin\next build
 
 - No automated failures remain.
 - Browser-level click-path coverage is still recommended later because current tests are source/utility-level.
+
+## 2026-07-07 - Font Editor Regression Fixes
+
+**Scope:** Punctuation drawing, font setting save preservation, duplicate character workflow, save notification placement, and 24-stitch height-limit documentation.
+
+**Commands run:**
+
+- `node .\node_modules\typescript\bin\tsc --noEmit` using bundled Node path.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json` using bundled Node path.
+- `node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0` using bundled Node path.
+- `node .\.test-build\tests\runTests.js` using bundled Node path.
+- `node .\node_modules\next\dist\bin\next build` using bundled Node path.
+
+**Result:** Passed.
+
+**Tests added or updated:**
+
+- `EDITOR-UI-017`: Duplicate source selection applies the selected source directly to the current draft.
+- `EDITOR-UI-021`: Floating save notification is positioned away from the Save Character button.
+- `EDITOR-UI-022`: Blank punctuation and other not-created character drafts remain stable while edited.
+- `EDITOR-UI-023`: Font settings saves preserve the current character and route through the unsaved-change guard.
+
+**Findings:**
+
+- The 24-stitch maximum is currently an implementation safety clamp in `gridUtils.ts`, not a confirmed product/domain rule. Product decision remains open on whether to raise or configure it.

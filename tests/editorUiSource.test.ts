@@ -82,10 +82,11 @@ assert.ok(
   "EDITOR-UI-009: Duplicate selection should use a tile picker rather than a dropdown."
 );
 
-assert.equal(
-  (editorClientSource.match(/setCreatingCharacter\(true\)/g) ?? []).length,
-  1,
-  "EDITOR-UI-017: Duplicate source tile selection should not enter creating mode until the user confirms the duplicate."
+assert.ok(
+  editorClientSource.includes("setSourceCharacterKey(key)") &&
+    editorClientSource.includes("setCreatingCharacter(true)") &&
+    editorClientSource.includes("setNewCharacterOpen(false)"),
+  "EDITOR-UI-017: Duplicate source tile selection should apply the selected source directly to the current character draft."
 );
 
 assert.ok(
@@ -142,8 +143,24 @@ assert.ok(
   characterEditorSource.includes("editor-floating-status") &&
     characterEditorSource.includes("window.setTimeout") &&
     globalCssSource.includes(".editor-floating-status") &&
-    globalCssSource.includes("position: absolute"),
-  "EDITOR-UI-021: Character save status should use a floating auto-dismiss notification that does not move layout."
+    globalCssSource.includes("position: absolute") &&
+    globalCssSource.includes("top: 72px") &&
+    !globalCssSource.includes("bottom: 14px"),
+  "EDITOR-UI-021: Character save status should use a floating auto-dismiss notification that does not cover the save button."
+);
+
+assert.ok(
+  editorClientSource.includes("const newCharacter = useMemo") &&
+    editorClientSource.includes("selectedFont?.defaultHeight") &&
+    editorClientSource.includes("sourceCharacter"),
+  "EDITOR-UI-022: Blank punctuation and other not-created character drafts should remain stable while cells are edited."
+);
+
+assert.ok(
+  editorClientSource.includes("latestFontRef") &&
+    editorClientSource.includes("requestCharacterExit(() =>") &&
+    editorClientSource.includes("void applyFontSettings()"),
+  "EDITOR-UI-023: Saving font settings should preserve the current character and route through the unsaved-change guard."
 );
 
 console.log("editor UI source tests passed.");

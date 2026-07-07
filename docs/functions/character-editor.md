@@ -295,6 +295,32 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Floating auto-dismiss save notification.
 - Duplicate-source selection before modal confirmation.
 
+
+## 2026-07-07 Bug Fix Update: Draft Stability And Font Settings
+
+### Added Requirements
+
+| Rule | Product Status | Implementation Status | Notes |
+|---|---|---|---|
+| Not-created punctuation characters must be drawable immediately after selection. | Confirmed | Implemented | Blank draft characters are memoised so editing cells is not reset by parent re-renders. |
+| Saving font name or font height must not switch the editor back to `A`. | Confirmed | Implemented | Font settings save preserves the active character and routes through the unsaved-character guard. |
+| Saving font settings after character edits must use the latest saved character data. | Confirmed | Implemented | The editor keeps a latest-font reference after character save to avoid overwriting edits. |
+| Duplicate source selection must apply the chosen source to the selected character draft. | Confirmed | Implemented | Source tiles now apply the duplicate draft directly and close the picker. |
+| The floating save message must not cover the Save Character button. | Confirmed | Implemented | The floating notification is positioned near the upper-right of the editor panel. |
+| Character width and font height are currently clamped to 1-24 stitches. | Assumed | Implemented | This is an implementation safety limit to prevent oversized editor grids; it is not a confirmed craft/domain limit. |
+
+### Added Acceptance Criteria
+
+- Given a not-created punctuation character is selected, when a grid cell is clicked, then the cell remains filled and the draft becomes dirty.
+- Given the current character has unsaved edits, when the user saves font settings, then the unsaved-change confirmation appears before font settings are applied.
+- Given Save & Continue is used before saving font settings, when the font settings save completes, then the active character remains selected and its edits remain in the font.
+- Given Select Duplicate is open, when a source character tile is clicked, then that source is applied to the selected character draft without requiring a second confirmation step.
+- Given a character save succeeds, when the success notification appears, then it does not cover the Save Character button.
+
+### Open Product Question
+
+- Should the 24-stitch maximum width/height remain, be raised, or become user-configurable for larger alphabets?
+
 ## Review Checklist
 
 - [ ] Product behaviour is confirmed.

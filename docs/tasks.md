@@ -1724,3 +1724,26 @@ Acceptance checks:
 - [x] Duplicate source selection does not show the duplicated draft or existing-character warning until confirmed.
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
+
+## Phase 32: Font Editor Regression Fixes
+
+### 32.1 Punctuation Drawing, Font Settings Preservation And Duplicate Restore
+
+- [x] Stabilise blank/not-created character drafts so punctuation characters can be drawn on immediately.
+- [x] Preserve the currently selected character when saving font name or font height.
+- [x] Route font settings saves through the unsaved-character confirmation flow.
+- [x] Ensure Save & Continue before font settings uses the latest saved character data.
+- [x] Restore duplicate source selection so choosing a source applies it to the selected character draft.
+- [x] Move the floating save notification away from the Save Character button.
+- [x] Document the current 1-24 width/height clamp as an implementation safety limit and open product question.
+- [x] Update Character Editor function documentation and Font Editor source tests.
+
+Acceptance checks:
+
+- [x] Newly added punctuation characters can be selected and drawn on.
+- [x] Saving font settings does not switch the view back to `A`.
+- [x] Saving font settings does not silently discard unsaved character edits.
+- [x] Duplicate character selection applies the chosen source to the selected draft.
+- [x] Save success feedback does not cover the Save Character button.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.

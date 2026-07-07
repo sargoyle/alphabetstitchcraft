@@ -136,3 +136,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Removed the character-width information panel from the Font Editor and moved character save feedback into a floating auto-dismiss notification. Files affected: `src/components/CharacterEditor.tsx`, `src/app/globals.css`.
 - Deferred duplicate-source draft application until the user confirms the duplicate selection. File affected: `src/app/editor/EditorClient.tsx`.
+
+## 2026-07-07 - Font Editor Regression Fixes
+
+### Fixed
+- Fixed not-created punctuation character drafts resetting immediately after grid clicks, so newly added punctuation characters can be drawn and saved. Files affected: `src/app/editor/EditorClient.tsx`, `tests/editorUiSource.test.ts`.
+- Fixed font settings saves so they route through the unsaved-character guard and preserve the active character instead of returning to `A`. Files affected: `src/app/editor/EditorClient.tsx`.
+- Restored duplicate source selection so the selected source is applied directly to the current character draft. Files affected: `src/app/editor/EditorClient.tsx`.
+- Moved the floating character save notification away from the Save Character button. Files affected: `src/app/globals.css`.
