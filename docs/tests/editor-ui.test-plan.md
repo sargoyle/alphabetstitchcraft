@@ -23,6 +23,7 @@ Verify the Font Editor usability behaviours that protect character edits, keep t
 | EDITOR-UI-021 | Save status uses a floating auto-dismiss notification. | Success message must not move surrounding controls. | Covered by source test |
 | EDITOR-UI-005 | Old character-width information panel is absent. | Remove low-value help panel and recover editor space. | Covered by source test |
 | EDITOR-UI-025 | Duplicate source picker uses main character order and hides not-created characters. | Select Duplicate should only offer usable source designs in the same order as the main picker. | Covered by source test |
+| EDITOR-UI-026 | Save Character gives immediate pending feedback. | Saving should feel responsive and prevent duplicate clicks while the database save is pending. | Covered by source test |
 
 ## Manual Checks
 

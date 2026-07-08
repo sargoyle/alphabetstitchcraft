@@ -48,7 +48,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Saved character changes to selected font.
 - New mapped character when creation mode is active.
 - Save-disabled warning where applicable.
-- Floating save success or failure status.
+- Floating save success, saving, or failure status.
 - Font delete request.
 - Sidebar character picker with active selected state.
 - Sidebar character picker with A-Z, a-z, 0-9, common punctuation, then other mapped characters.
@@ -76,7 +76,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 10. Character save either updates an existing character or writes a new destination character at the current font height.
 11. Updated font is saved through `useFonts().saveFont()`.
 12. Save success is returned only after the database save and font refresh complete.
-13. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
+13. As soon as save starts, the editor shows `Saving character...`, changes the button label to `Saving...`, marks it busy, and prevents repeat clicks.
+14. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
 14. Editor shows an inline success message when save succeeds or a local failure status when save fails.
 15. Editor returns to normal character-editing mode after saving a new character.
 
@@ -93,6 +94,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Destination characters must be one visible character. | Confirmed | Implemented | User confirmed destination should be one visible character; current code uses the first typed character. |
 | Existing mapped characters must be protected unless replacement is confirmed. | Confirmed | Implemented | Replace checkbox required. |
 | Successful saves must show clear inline confirmation. | Confirmed | Implemented | `CharacterEditor` shows `Font changes saved successfully.` after `saveFont()` returns success. |
+| Character saves must show immediate in-progress feedback. | Confirmed | Implemented | Save Character changes to `Saving...`, exposes `aria-busy`, and shows `Saving character...` while awaiting the database save. |
+| Character saves must prevent repeat clicks while the save is in progress. | Confirmed | Implemented | The save button is disabled while `isSaving` is true. |
 | Database save failures must show local editor status. | Confirmed | Implemented | `CharacterEditor` shows local failure status when `onSave()` returns `false` or throws. Existing hook alerts remain in place. |
 | Users must be able to delete fonts from the editor. | Confirmed | Implemented | Delete font button is currently available and user confirmed this should remain. |
 | Any visible font can be edited under the current public shared model. | Confirmed | Implemented | User confirmed editing any visible font is acceptable. |
@@ -142,6 +145,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not flash to the first available font while a routed or selected font is still loading.
 - Must not flash from a duplicate-created destination back to the duplicated source character while saving.
 - Must not show a transient `character already exists` warning during a successful duplicate-created character save.
+- Must not leave Save Character visually unchanged while a save is in progress.
+- Must not allow repeat Save Character clicks while a save is in progress.
 - Must not place Delete Font beside selected-character save controls.
 - Must not make the character picker scroll the full page awkwardly when many characters exist.
 
@@ -154,6 +159,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given duplicate mode without a destination, then Save is disabled or blocked.
 - Given destination already exists, then Save is blocked until Replace existing is checked.
 - Given a new destination is saved, then it appears in future previews and generator rendering.
+- Given a character save is started, when the database save is still pending, then the button shows `Saving...`, the button is disabled, and a polite `Saving character...` status is shown.
 - Given a character is saved successfully, when the save completes, then an inline confirmation message is shown in the editor.
 - Given a database save fails, when the save attempt finishes, then a local editor status message explains that the save failed.
 - Given Delete font is clicked, when the user confirms deletion, then the selected font is deleted according to the active persistence model.
@@ -214,6 +220,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently creates blank new characters at a size based on selected font default height, clamped to 1-24.
 - Currently clones the selected font before writing edited characters.
 - Currently waits for `saveFont()` to return success before resetting editor state.
+- Currently shows `Saving character...` immediately when a character save begins.
+- Currently changes Save Character to `Saving...`, applies `aria-busy`, and disables the button while the save promise is pending.
 - Currently shows `Font changes saved successfully.` as a floating auto-dismiss notification after a successful save.
 - Currently shows a local editor error status when a save fails.
 - Currently uses `window.confirm` for font deletion.

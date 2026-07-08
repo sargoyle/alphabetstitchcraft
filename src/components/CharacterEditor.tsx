@@ -42,9 +42,10 @@ export function CharacterEditor({
 }: CharacterEditorProps) {
   const [draft, setDraft] = useState(character);
   const [baseline, setBaseline] = useState(character);
-  const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error" | "saving"; message: string } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const validation = useMemo(() => validateCharacter(draft, characterKey), [draft, characterKey]);
-  const cannotSave = saveDisabled || !validation.valid;
+  const cannotSave = saveDisabled || !validation.valid || isSaving;
   const dirty = serialiseCharacter(draft) !== serialiseCharacter(baseline);
 
   useEffect(() => {
@@ -66,10 +67,14 @@ export function CharacterEditor({
   const handleSave = useCallback(async () => {
     setSaveStatus(null);
 
+    if (isSaving) return false;
     if (cannotSave) {
       setSaveStatus({ type: "error", message: saveDisabledReason ?? validation.errors.join(" ") });
       return false;
     }
+
+    setIsSaving(true);
+    setSaveStatus({ type: "saving", message: "Saving character..." });
 
     try {
       const saved = await onSave(draft);
@@ -87,8 +92,10 @@ export function CharacterEditor({
         message: error instanceof Error ? error.message : "Database save failed. Font changes were not saved."
       });
       return false;
+    } finally {
+      setIsSaving(false);
     }
-  }, [cannotSave, draft, onDirtyChange, onSave, saveDisabledReason, validation.errors]);
+  }, [cannotSave, draft, isSaving, onDirtyChange, onSave, saveDisabledReason, validation.errors]);
 
   const discardDraft = useCallback(() => {
     setDraft(baseline);
@@ -160,16 +167,22 @@ export function CharacterEditor({
                 Clear
               </button>
             </div>
-            <button className="button primary save-character-button" type="button" disabled={cannotSave} onClick={handleSave}>
+            <button
+              className="button primary save-character-button"
+              type="button"
+              disabled={cannotSave}
+              aria-busy={isSaving}
+              onClick={handleSave}
+            >
               <Save aria-hidden="true" size={17} />
-              {saveLabel}
+              {isSaving ? "Saving..." : saveLabel}
             </button>
           </div>
         </aside>
       </div>
 
       {saveStatus ? (
-        <p className={saveStatus.type === "success" ? "success-message editor-floating-status" : "warning editor-floating-status"} role={saveStatus.type === "success" ? "status" : "alert"} aria-live={saveStatus.type === "success" ? "polite" : "assertive"}>{saveStatus.message}</p>
+        <p className={saveStatus.type === "success" || saveStatus.type === "saving" ? "success-message editor-floating-status" : "warning editor-floating-status"} role={saveStatus.type === "error" ? "alert" : "status"} aria-live={saveStatus.type === "error" ? "assertive" : "polite"}>{saveStatus.message}</p>
       ) : null}
     </div>
   );

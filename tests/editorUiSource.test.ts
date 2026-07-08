@@ -158,6 +158,15 @@ assert.ok(
 );
 
 assert.ok(
+  characterEditorSource.includes("isSaving") &&
+    characterEditorSource.includes("Saving character...") &&
+    characterEditorSource.includes("aria-busy={isSaving}") &&
+    characterEditorSource.includes("{isSaving ? \"Saving...\" : saveLabel}") &&
+    characterEditorSource.includes("disabled={cannotSave}"),
+  "EDITOR-UI-026: Save Character should show immediate saving feedback and prevent repeat clicks while saving."
+);
+
+assert.ok(
   editorClientSource.includes("const newCharacter = useMemo") &&
     editorClientSource.includes("selectedFont?.defaultHeight") &&
     editorClientSource.includes("sourceCharacter"),

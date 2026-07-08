@@ -1893,3 +1893,17 @@ Acceptance checks:
 - [x] Duplicate source tiles are ordered A-Z, a-z, 0-9, punctuation, then other mapped characters.
 - [x] Characters without filled stitch designs do not appear as duplicate sources.
 - [x] Not-created characters cannot be selected as duplicate sources.
+## Phase 42: Save Character Pending Feedback
+
+### 42.1 Make Character Saves Feel Responsive
+
+- [x] Show immediate saving feedback when Save Character is clicked.
+- [x] Change Save Character to `Saving...` while the save is pending.
+- [x] Disable Save Character while the save is pending to prevent duplicate clicks.
+- [x] Update function documentation and source tests.
+
+Acceptance checks:
+
+- [x] Save Character visibly changes as soon as saving begins.
+- [x] A polite saving status is shown while the database save is pending.
+- [x] The save button cannot be clicked repeatedly while saving.

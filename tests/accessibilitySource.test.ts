@@ -30,8 +30,8 @@ assert.ok(
 );
 
 assert.ok(
-  characterEditorSource.includes('role={saveStatus.type === "success" ? "status" : "alert"}') &&
-    characterEditorSource.includes('aria-live={saveStatus.type === "success" ? "polite" : "assertive"}') &&
+  characterEditorSource.includes('role={saveStatus.type === "error" ? "alert" : "status"}') &&
+    characterEditorSource.includes('aria-live={saveStatus.type === "error" ? "assertive" : "polite"}') &&
     characterEditorSource.includes('role="alert" aria-live="assertive"'),
   "A11Y-004: Character editor save, validation and disabled-save messages should use live regions."
 );
