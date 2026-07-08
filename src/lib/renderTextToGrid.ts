@@ -45,12 +45,6 @@ function resolveRenderableCharacter(char: string, font: StitchFont) {
   const exact = font.characters[char];
   if (hasStitches(exact)) return exact;
 
-  const fallback = char.toUpperCase();
-  if (fallback !== char) {
-    const uppercase = font.characters[fallback];
-    if (hasStitches(uppercase)) return uppercase;
-  }
-
   return undefined;
 }
 

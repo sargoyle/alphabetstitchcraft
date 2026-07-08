@@ -1907,3 +1907,17 @@ Acceptance checks:
 - [x] Save Character visibly changes as soon as saving begins.
 - [x] A polite saving status is shown while the database save is pending.
 - [x] The save button cannot be clicked repeatedly while saving.
+## Phase 43: Missing Lowercase Pattern Warning
+
+### 43.1 Stop Silent Uppercase Replacement
+
+- [x] Remove lowercase-to-uppercase fallback from pattern rendering.
+- [x] Report missing lowercase characters as unsupported.
+- [x] Skip missing lowercase characters rather than rendering uppercase replacements.
+- [x] Update function documentation and renderer tests.
+
+Acceptance checks:
+
+- [x] Missing lowercase characters show in unsupported-character reporting.
+- [x] Missing lowercase characters are skipped from the generated grid.
+- [x] Existing uppercase characters still render when typed as uppercase.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Ensure characters missing from the selected stitch font are visible to the user, represented safely in the generated pattern and reported clearly. V1 skips unsupported characters from the rendered grid, falls back from lowercase to uppercase where possible, counts repeated unsupported characters, and treats tabs as unsupported characters rather than spacing. The user sees one immediate warning message listing the skipped characters where practical.
+Ensure characters missing from the selected stitch font are visible to the user, represented safely in the generated pattern and reported clearly. V1 skips unsupported characters from the rendered grid, treats missing lowercase characters as unsupported rather than silently replacing them with uppercase, counts repeated unsupported characters, and treats tabs as unsupported characters rather than spacing. The user sees one immediate warning message listing the skipped characters where practical.
 
 ## Source References
 
@@ -13,7 +13,7 @@ Ensure characters missing from the selected stitch font are visible to the user,
 - Type: `GeneratedPattern.unsupportedCharacters`
 - Component: `TextPatternPreview`
 - Related product decision: unsupported characters are skipped rather than rendered as placeholders.
-- Related product decision: uppercase fallback is desirable.
+- Related product decision: missing lowercase characters should be skipped and warned rather than replaced with uppercase.
 - Related product decision: unsupported duplicates should be counted.
 - Related product decision: tabs should be treated as unsupported characters.
 
@@ -28,7 +28,6 @@ Ensure characters missing from the selected stitch font are visible to the user,
 - User text.
 - Selected font character map.
 - Exact character key lookup.
-- Uppercase fallback lookup.
 - Font line height.
 - Unsupported-character skip behaviour.
 - Repeated unsupported character occurrences.
@@ -44,15 +43,15 @@ Ensure characters missing from the selected stitch font are visible to the user,
 
 ## Worked Examples
 
-### Uppercase fallback
+### Missing lowercase character
 
 Input:
 - Text: `a`
 - Font supports `A` but not `a`
 
 Expected output:
-- Uses `A` grid.
-- Does not list `a` as unsupported.
+- Skips `a` from the grid.
+- Lists `a` as unsupported.
 
 ### Unsupported duplicate counts
 
@@ -89,25 +88,24 @@ Expected output:
 
 1. User enters text.
 2. Renderer checks each character against the selected font.
-3. If exact key is missing, uppercase fallback is checked.
-4. If no character exists, the character is skipped from the grid.
-5. Unsupported character occurrence is counted.
-6. Tabs are treated as unsupported characters, not converted to spaces.
-7. Final generated pattern includes unsupported character counts.
-8. Generator warning displays the unsupported characters and counts.
+3. If the exact key is missing or blank, the character is skipped from the grid.
+4. Unsupported character occurrence is counted.
+5. Tabs are treated as unsupported characters, not converted to spaces.
+6. Final generated pattern includes unsupported character counts.
+7. Generator warning displays the unsupported characters and counts.
 
 ## Rules and Requirements
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| Unsupported characters must not crash rendering. | Confirmed | Implemented | Placeholder is used. |
+| Unsupported characters must not crash rendering. | Confirmed | Implemented | Unsupported characters are counted and skipped without placeholder graphics. |
 | Unsupported characters must be skipped rather than replaced with placeholder graphics. | Confirmed | Implemented | User requested skipped unsupported characters in the 2026-07-07 update. |
 | Unsupported characters should be visible in the warning, not the grid. | Confirmed | Implemented | Generator warning lists skipped characters. |
 | Unsupported characters must be reported. | Confirmed | Implemented | Generator warning lists them. |
 | Unsupported duplicates should be counted. | Confirmed | Implemented | `UNSUPPORTED-002` verifies counted output. |
 | Normal spaces should not be unsupported. | Confirmed | Implemented | Spaces use word spacing. |
 | Tabs should be treated as unsupported characters. | Confirmed | Implemented | `UNSUPPORTED-003` verifies tabs are reported as unsupported at renderer utility level. |
-| Lowercase should fall back to uppercase. | Confirmed | Implemented | User confirmed uppercase fallback is desirable. |
+| Missing lowercase characters must not fall back to uppercase. | Confirmed | Implemented | Missing lowercase characters are skipped and reported like other unsupported characters. |
 | Unsupported reporting should be clear. | Confirmed | Partially Implemented | Counts are implemented; warning still does not explain how to add or edit missing characters. |
 
 ## Negative Rules
@@ -125,7 +123,7 @@ Expected output:
 - Given unsupported input, when rendered, then the unsupported character is skipped from the grid.
 - Given unsupported input, when rendered, then the unsupported character appears in the warning list.
 - Given repeated unsupported input, then the warning reports the unsupported character with a count.
-- Given lowercase input and uppercase exists, then uppercase fallback is used and no warning appears for that character.
+- Given lowercase input is missing from the font but uppercase exists, then the lowercase character is skipped and appears in the unsupported warning.
 - Given a normal space, then no unsupported warning is created for the space.
 - Given a tab character, then an unsupported warning is created for the tab.
 - Given a tab character, then the renderer does not convert it into word spacing.
@@ -159,7 +157,7 @@ Expected output:
 ## Confirmed Product Decisions
 
 - Unsupported characters are skipped rather than rendered as placeholders.
-- Uppercase fallback is desirable.
+- Missing lowercase characters are skipped and warned rather than replaced with uppercase.
 - Unsupported duplicates should be counted.
 - Tabs should be treated as unsupported characters.
 
@@ -167,7 +165,7 @@ Expected output:
 
 - Unsupported character skip behaviour.
 - Warning list.
-- Uppercase fallback.
+- Missing lowercase handling.
 - Emoji/accented input.
 - Duplicate unsupported characters with counts.
 - Tab characters as unsupported input.
@@ -179,7 +177,7 @@ Expected output:
 
 - Blank character grids are treated as unavailable patterns during text generation.
 - If a character key exists but has no filled stitches, the renderer skips it and reports it in `unsupportedCharacters`.
-- Lowercase characters with blank lowercase grids may still fall back to uppercase when the uppercase grid has stitches.
+- Missing or blank lowercase characters are skipped and reported even when the uppercase character has stitches.
 - This keeps Font Editor `Not created` state consistent with Create Pattern warnings.
 
 ## Review Checklist

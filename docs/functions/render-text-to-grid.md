@@ -62,14 +62,15 @@ Input:
 Expected width:
 - `3 + 1 + 3 = 7`
 
-### Lowercase fallback
+### Missing lowercase character
 
 Input:
-- Text: `abc`
-- Font supports `A`, `B`, `C` but not `a`, `b`, `c`
+- Text: `aA`
+- Font supports `A` but not `a`
 
 Expected output:
-- Renderer uses `A`, `B`, `C` grids.
+- Renderer skips `a` and reports it as unsupported.
+- Renderer still renders `A`.
 
 ### Unsupported character counts
 
@@ -107,7 +108,7 @@ Expected output:
 4. Renderer merges supplied options with default render options.
 5. Empty text and whitespace-only text return an empty pattern.
 6. Non-empty text is split into lines.
-7. Each line is rendered from font character grids, using uppercase fallback when lowercase is unsupported.
+7. Each line is rendered from exact font character grids; missing lowercase characters are unsupported and are not replaced by uppercase.
 8. Unsupported characters are skipped from the grid and counted for one warning message.
 9. Maximum width is calculated, including confirmed trailing-space width.
 10. Alignment is applied to each line.
@@ -123,7 +124,7 @@ Expected output:
 | Whitespace-only text should be treated as empty. | Confirmed | Implemented | `RENDER-001` verifies spaces, tabs and line breaks produce an empty pattern. |
 | Trailing spaces must contribute to final width. | Confirmed | Implemented | Covered by renderer tests. |
 | Line breaks must be preserved. | Confirmed | Implemented | Text is split on CRLF/LF and line spacing rows are inserted. |
-| Lowercase should fall back to uppercase when lowercase is unsupported. | Confirmed | Implemented | User confirmed this; code tries exact key then `char.toUpperCase()`. |
+| Missing lowercase characters must not fall back to uppercase. | Confirmed | Implemented | Missing lowercase characters are skipped and reported in `unsupportedCharacters` so users know the font needs that character drawn. |
 | Unsupported characters must be skipped rather than rendered as placeholders. | Confirmed | Implemented | User requested this in the 2026-07-07 update. |
 | Repeated unsupported characters should be reported with counts. | Confirmed | Implemented | `UNSUPPORTED-002` verifies repeated unsupported characters are counted. |
 | Final pattern must include width and height. | Confirmed | Implemented | Returned as `width` and `height`. |
@@ -155,7 +156,7 @@ Expected output:
 - Given repeated unsupported characters occur, when rendered, then each unsupported character is reported with its count.
 - Given empty text, when rendered, then width and height are `0` and grid is empty.
 - Given whitespace-only text, when rendered, then width and height are `0` and grid is empty.
-- Given a font without lowercase but with uppercase, when lowercase input is rendered, then uppercase fallback is used.
+- Given a font without a lowercase character but with the matching uppercase character, when lowercase input is rendered, then the lowercase character is skipped and reported as unsupported.
 - Given spacing values are negative, `NaN` or outside supported bounds, when rendering is attempted, then the renderer validates, clamps or rejects them consistently without relying only on the UI.
 
 ## Edge Cases
@@ -183,7 +184,7 @@ Expected output:
 - Currently uses normal spaces as word spacing.
 - Currently inserts letter spacing only when the next character exists and is not a space.
 - Currently aligns each rendered line after maximum width is known.
-- Currently falls back from lowercase to uppercase when uppercase data exists.
+- Currently requires an exact character key with filled stitches; missing lowercase characters are reported as unsupported rather than replaced by uppercase.
 - Currently unsupported characters are skipped from the rendered grid.
 - Currently returns unsupported characters as `{ character, count }` entries.
 - Currently rejects invalid numeric spacing values inside the renderer.
@@ -197,6 +198,7 @@ Expected output:
 
 - `RENDER-001` verifies that whitespace-only text returns width `0`, height `0` and an empty grid.
 - `UNSUPPORTED-002` verifies that repeated unsupported characters return counted entries.
+- `UNSUPPORTED-004` verifies that missing lowercase characters are skipped and reported instead of falling back to uppercase.
 - `SPACING-001` verifies that negative letter spacing is rejected.
 - `SPACING-002` verifies that very large letter spacing is rejected.
 - `SPACING-003` verifies that invalid word spacing is rejected.
@@ -210,7 +212,7 @@ Expected output:
 
 ## Confirmed Product Decisions
 
-- Lowercase should fall back to uppercase when lowercase is unsupported.
+- Missing lowercase characters should be skipped and warned, not replaced with uppercase.
 - Unsupported characters should be skipped from the grid and shown in a warning.
 - Repeated unsupported characters should be listed with counts.
 - Trailing spaces should contribute to final width.
@@ -227,7 +229,7 @@ Expected output:
 - Unsupported character skip behaviour.
 - Unsupported character counts.
 - Empty and whitespace-only input.
-- Lowercase-to-uppercase fallback.
+- Missing lowercase warning behaviour.
 - Mixed character heights.
 - Invalid spacing values.
 - Renderer numeric bounds.
@@ -237,7 +239,7 @@ Expected output:
 
 - Blank character grids are treated as unavailable patterns during text generation.
 - If a character key exists but has no filled stitches, the renderer skips it and reports it in `unsupportedCharacters`.
-- Lowercase characters with blank lowercase grids may still fall back to uppercase when the uppercase grid has stitches.
+- Missing or blank lowercase characters are skipped and reported even when the uppercase character has stitches.
 - This keeps Font Editor `Not created` state consistent with Create Pattern warnings.
 
 ## Review Checklist

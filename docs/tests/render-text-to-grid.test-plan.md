@@ -13,6 +13,7 @@ Document automated and pending tests for `renderTextToGrid()` using `/docs/funct
 | UNSUPPORTED-001 | Mixed supported and unsupported characters should render safely. | `tests/renderVisibility.test.ts` | Passing | Asserts supported stitches render, unsupported character is reported, and skipped rather than replaced. |
 | UNSUPPORTED-002 | Repeated unsupported characters should be counted. | `tests/renderVisibility.test.ts` | Passing | Counted `{ character, count }` entries are asserted. |
 | UNSUPPORTED-003 | Tabs should be treated as unsupported characters. | `tests/renderVisibility.test.ts` | Passing | Asserts tab is reported unsupported and rows remain consistent. |
+| UNSUPPORTED-004 | Missing lowercase characters should be skipped and warned instead of falling back to uppercase. | `tests/renderVisibility.test.ts` | Passing | Asserts missing `a` is reported and skipped even when `A` exists. |
 | SPACING-001 | Negative spacing values should be rejected or safely handled by the renderer. | `tests/renderVisibility.test.ts` | Passing | Negative letter spacing throws a `RangeError`. |
 | SPACING-002 | Very large spacing values should be safely handled or documented. | `tests/renderVisibility.test.ts` | Passing | Very large letter spacing throws a `RangeError`. |
 | SPACING-003 | Invalid word spacing should be rejected. | `tests/renderVisibility.test.ts` | Passing | Word spacing below the confirmed range throws a `RangeError`. |
@@ -28,6 +29,7 @@ Document automated and pending tests for `renderTextToGrid()` using `/docs/funct
 
 - Renderer keeps row widths consistent for tested multiline, unsupported, very long and large-spacing inputs.
 - Renderer safely reports tabs as unsupported and skips them from the grid.
+- Renderer reports missing lowercase characters as unsupported instead of silently rendering uppercase.
 - Renderer now treats whitespace-only text as empty.
 - Renderer now rejects invalid spacing values according to confirmed ranges.
 - Renderer now reports unsupported characters as counted entries and skips them instead of inserting placeholders.

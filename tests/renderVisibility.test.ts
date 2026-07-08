@@ -52,6 +52,23 @@ assert.deepEqual(
 assertRowWidthConsistency(mixedUnsupported, "UNSUPPORTED-001");
 assert.equal(mixedUnsupported.width, renderTextToGrid("AA", blockFont, options).width, "UNSUPPORTED-001: unsupported characters should be skipped, not replaced.");
 
+// UNSUPPORTED-004: missing lowercase characters should not silently render as uppercase.
+const noLowercaseAFont: StitchFont = {
+  ...blockFont,
+  characters: Object.fromEntries(Object.entries(blockFont.characters).filter(([key]) => key !== "a"))
+};
+const missingLowercase = renderTextToGrid("aA", noLowercaseAFont, options);
+assert.deepEqual(
+  missingLowercase.unsupportedCharacters,
+  [{ character: "a", count: 1 }],
+  "UNSUPPORTED-004: missing lowercase should be reported instead of falling back to uppercase."
+);
+assert.equal(
+  missingLowercase.width,
+  renderTextToGrid("A", noLowercaseAFont, options).width,
+  "UNSUPPORTED-004: missing lowercase should be skipped rather than rendered with the uppercase grid."
+);
+
 // UNSUPPORTED-002: confirmed requirement says duplicate unsupported characters should be counted.
 const repeatedUnsupported = renderTextToGrid("A€€😀", blockFont, options);
 assert.deepEqual(

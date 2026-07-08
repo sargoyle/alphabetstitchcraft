@@ -6,6 +6,53 @@ This file records meaningful test runs for Alphabet Stitch.
 
 
 
+
+
+### Accessibility Source Test Follow-Up
+
+#### Scope
+
+- Confirmed `tests/accessibilitySource.test.ts` matches the Character Editor saving/success/error live-region logic.
+- Recompiled tests and reran the utility/source suite and lint.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Missing Lowercase Pattern Warning
+
+#### Scope
+
+- Removed lowercase-to-uppercase fallback from `renderTextToGrid()`.
+- Added `UNSUPPORTED-004` coverage so missing lowercase characters are skipped and reported even when uppercase exists.
+- Updated renderer and unsupported-character documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
 ### Duplicate Source Picker Ordering
 
 #### Scope
@@ -941,6 +988,53 @@ $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\de
 
 
 
+
+
+### Accessibility Source Test Follow-Up
+
+#### Scope
+
+- Confirmed `tests/accessibilitySource.test.ts` matches the Character Editor saving/success/error live-region logic.
+- Recompiled tests and reran the utility/source suite and lint.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Missing Lowercase Pattern Warning
+
+#### Scope
+
+- Removed lowercase-to-uppercase fallback from `renderTextToGrid()`.
+- Added `UNSUPPORTED-004` coverage so missing lowercase characters are skipped and reported even when uppercase exists.
+- Updated renderer and unsupported-character documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -1056,6 +1150,53 @@ rg "http://|https://|<script|iframe|gtag|plausible|posthog|analytics" src next.c
 
 
 
+
+
+### Accessibility Source Test Follow-Up
+
+#### Scope
+
+- Confirmed `tests/accessibilitySource.test.ts` matches the Character Editor saving/success/error live-region logic.
+- Recompiled tests and reran the utility/source suite and lint.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Missing Lowercase Pattern Warning
+
+#### Scope
+
+- Removed lowercase-to-uppercase fallback from `renderTextToGrid()`.
+- Added `UNSUPPORTED-004` coverage so missing lowercase characters are skipped and reported even when uppercase exists.
+- Updated renderer and unsupported-character documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -1180,6 +1321,53 @@ rg 'onKeyDown|aria-live|role="status"|role="alert"|focus-visible|aria-label|aria
 
 
 
+
+
+### Accessibility Source Test Follow-Up
+
+#### Scope
+
+- Confirmed `tests/accessibilitySource.test.ts` matches the Character Editor saving/success/error live-region logic.
+- Recompiled tests and reran the utility/source suite and lint.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Missing Lowercase Pattern Warning
+
+#### Scope
+
+- Removed lowercase-to-uppercase fallback from `renderTextToGrid()`.
+- Added `UNSUPPORTED-004` coverage so missing lowercase characters are skipped and reported even when uppercase exists.
+- Updated renderer and unsupported-character documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -1433,3 +1621,50 @@ node .\node_modules\next\dist\bin\next build
 
 ## 2026-07-08 
 
+
+
+### Accessibility Source Test Follow-Up
+
+#### Scope
+
+- Confirmed `tests/accessibilitySource.test.ts` matches the Character Editor saving/success/error live-region logic.
+- Recompiled tests and reran the utility/source suite and lint.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Missing Lowercase Pattern Warning
+
+#### Scope
+
+- Removed lowercase-to-uppercase fallback from `renderTextToGrid()`.
+- Added `UNSUPPORTED-004` coverage so missing lowercase characters are skipped and reported even when uppercase exists.
+- Updated renderer and unsupported-character documentation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.

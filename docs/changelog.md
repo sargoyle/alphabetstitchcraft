@@ -31,6 +31,8 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+- 2026-07-08: Fixed pattern rendering so missing lowercase characters are skipped and warned instead of silently rendering as uppercase replacements. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderVisibility.test.ts`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/tests/render-text-to-grid.test-plan.md`, `docs/tasks.md`.
 - 2026-07-08: Added immediate pending feedback to Save Character, including `Saving...`, `aria-busy`, and repeat-click prevention while the save is pending. Files affected: `src/components/CharacterEditor.tsx`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/editor-ui.test-plan.md`, `docs/tasks.md`.
 - 2026-07-08: Added a Create Pattern loading state to prevent stale fallback font previews flashing before database fonts resolve. Files affected: `src/app/generator/page.tsx`, `tests/renderVisibility.test.ts`, `docs/functions/text-generator.md`, `docs/tasks.md`.
 - 2026-07-08: Added an Alphabet Library loading state to prevent stale default font cards flashing before database fonts resolve. Files affected: `src/app/fonts/page.tsx`, `tests/fontBrowserSource.test.ts`, `docs/functions/font-browser.md`, `docs/tasks.md`.
@@ -152,6 +154,8 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+- 2026-07-08: Fixed pattern rendering so missing lowercase characters are skipped and warned instead of silently rendering as uppercase replacements. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderVisibility.test.ts`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/tests/render-text-to-grid.test-plan.md`, `docs/tasks.md`.
 - 2026-07-08: Added immediate pending feedback to Save Character, including `Saving...`, `aria-busy`, and repeat-click prevention while the save is pending. Files affected: `src/components/CharacterEditor.tsx`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/editor-ui.test-plan.md`, `docs/tasks.md`.
 - 2026-07-08: Updated Select Duplicate so source characters use the same order as the main picker and only characters with existing stitch designs are selectable. Files affected: `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/editor-ui.test-plan.md`, `docs/tasks.md`.
 - 2026-07-08: Stabilised duplicate-created character saving so the editor no longer flashes to the duplicated source or shows a transient existing-character warning, and improved native dropdown option contrast. Files affected: `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `tests/accessibilitySource.test.ts`, `docs/functions/character-editor.md`, `docs/functions/accessibility.md`, `docs/tasks.md`.
