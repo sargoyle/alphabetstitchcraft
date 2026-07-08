@@ -2,6 +2,52 @@
 
 This file records meaningful test runs for Alphabet Stitch.
 
+## 2026-07-08
+
+### Data, Documentation And Test Housekeeping Review
+
+#### Scope
+
+- Reviewed bundled font data, font persistence helpers, Supabase migration coverage and recent renderer/documentation changes.
+- Validated bundled font data for duplicate IDs/names, required punctuation coverage, font-level height consistency and invalid grids.
+- Confirmed active renderer behaviour skips unsupported characters and returns counted warnings rather than placeholder graphics.
+- Refreshed documentation for current Supabase-backed shared font persistence and known-gaps tracking.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' src tests --max-warnings=0
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility tests: passed.
+- ESLint: passed with no warnings after rerun with a longer timeout.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
+#### Data Review Findings
+
+- Bundled font data contains 5 valid fonts.
+- No duplicate bundled font IDs or names were found.
+- All bundled fonts include the required punctuation set.
+- All bundled character heights match their font-level height.
+- No invalid bundled grids were found.
+- Supabase migrations include default font seeding, punctuation patching, public editing policy updates and duplicate `Block Needle 5x7` cleanup scripts.
+
+#### Remaining Gaps / Risks
+
+- Live Supabase database contents were not queried directly during this local pass; migration coverage and persistence code were reviewed instead.
+- Browser-level workflows such as actual save/delete against Supabase still need manual or e2e coverage with a configured test database.
+- Known open renderer gaps remain tracked for odd centre alignment, empty-line handling and invalid alignment validation.
 ## 2026-07-05
 
 ### Lint Warning Cleanup
@@ -794,6 +840,52 @@ $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\de
 - Character grid keyboard navigation and read-only non-interactive cells require component or browser-level tests.
 - PNG preview visibility parity requires additional export tests after the export behaviour is confirmed or fixed.
 
+## 2026-07-08
+
+### Data, Documentation And Test Housekeeping Review
+
+#### Scope
+
+- Reviewed bundled font data, font persistence helpers, Supabase migration coverage and recent renderer/documentation changes.
+- Validated bundled font data for duplicate IDs/names, required punctuation coverage, font-level height consistency and invalid grids.
+- Confirmed active renderer behaviour skips unsupported characters and returns counted warnings rather than placeholder graphics.
+- Refreshed documentation for current Supabase-backed shared font persistence and known-gaps tracking.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' src tests --max-warnings=0
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility tests: passed.
+- ESLint: passed with no warnings after rerun with a longer timeout.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
+#### Data Review Findings
+
+- Bundled font data contains 5 valid fonts.
+- No duplicate bundled font IDs or names were found.
+- All bundled fonts include the required punctuation set.
+- All bundled character heights match their font-level height.
+- No invalid bundled grids were found.
+- Supabase migrations include default font seeding, punctuation patching, public editing policy updates and duplicate `Block Needle 5x7` cleanup scripts.
+
+#### Remaining Gaps / Risks
+
+- Live Supabase database contents were not queried directly during this local pass; migration coverage and persistence code were reviewed instead.
+- Browser-level workflows such as actual save/delete against Supabase still need manual or e2e coverage with a configured test database.
+- Known open renderer gaps remain tracked for odd centre alignment, empty-line handling and invalid alignment validation.
 ## 2026-07-05 - Efficiency, Accessibility And Security Validation
 
 ### Scope
@@ -838,6 +930,52 @@ rg "http://|https://|<script|iframe|gtag|plausible|posthog|analytics" src next.c
 - This pass did not include browser-based Lighthouse, axe, screen-reader or full keyboard traversal testing.
 - Manual responsive and assistive-technology checks are still recommended before public release.
 
+## 2026-07-08
+
+### Data, Documentation And Test Housekeeping Review
+
+#### Scope
+
+- Reviewed bundled font data, font persistence helpers, Supabase migration coverage and recent renderer/documentation changes.
+- Validated bundled font data for duplicate IDs/names, required punctuation coverage, font-level height consistency and invalid grids.
+- Confirmed active renderer behaviour skips unsupported characters and returns counted warnings rather than placeholder graphics.
+- Refreshed documentation for current Supabase-backed shared font persistence and known-gaps tracking.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' src tests --max-warnings=0
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility tests: passed.
+- ESLint: passed with no warnings after rerun with a longer timeout.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
+#### Data Review Findings
+
+- Bundled font data contains 5 valid fonts.
+- No duplicate bundled font IDs or names were found.
+- All bundled fonts include the required punctuation set.
+- All bundled character heights match their font-level height.
+- No invalid bundled grids were found.
+- Supabase migrations include default font seeding, punctuation patching, public editing policy updates and duplicate `Block Needle 5x7` cleanup scripts.
+
+#### Remaining Gaps / Risks
+
+- Live Supabase database contents were not queried directly during this local pass; migration coverage and persistence code were reviewed instead.
+- Browser-level workflows such as actual save/delete against Supabase still need manual or e2e coverage with a configured test database.
+- Known open renderer gaps remain tracked for odd centre alignment, empty-line handling and invalid alignment validation.
 ## 2026-07-05 - Browser-Level Accessibility Pass
 
 ### Scope
@@ -891,6 +1029,52 @@ rg 'onKeyDown|aria-live|role="status"|role="alert"|focus-visible|aria-label|aria
 - No production code was changed.
 - The temporary production server was stopped after the pass.
 
+## 2026-07-08
+
+### Data, Documentation And Test Housekeeping Review
+
+#### Scope
+
+- Reviewed bundled font data, font persistence helpers, Supabase migration coverage and recent renderer/documentation changes.
+- Validated bundled font data for duplicate IDs/names, required punctuation coverage, font-level height consistency and invalid grids.
+- Confirmed active renderer behaviour skips unsupported characters and returns counted warnings rather than placeholder graphics.
+- Refreshed documentation for current Supabase-backed shared font persistence and known-gaps tracking.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' src tests --max-warnings=0
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\next\dist\bin\next' build
+$env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' audit --prod
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility tests: passed.
+- ESLint: passed with no warnings after rerun with a longer timeout.
+- Production build: passed.
+- Production dependency audit: passed, no known vulnerabilities found.
+
+#### Data Review Findings
+
+- Bundled font data contains 5 valid fonts.
+- No duplicate bundled font IDs or names were found.
+- All bundled fonts include the required punctuation set.
+- All bundled character heights match their font-level height.
+- No invalid bundled grids were found.
+- Supabase migrations include default font seeding, punctuation patching, public editing policy updates and duplicate `Block Needle 5x7` cleanup scripts.
+
+#### Remaining Gaps / Risks
+
+- Live Supabase database contents were not queried directly during this local pass; migration coverage and persistence code were reviewed instead.
+- Browser-level workflows such as actual save/delete against Supabase still need manual or e2e coverage with a configured test database.
+- Known open renderer gaps remain tracked for odd centre alignment, empty-line handling and invalid alignment validation.
 ## 2026-07-05 - Accessibility Fix Validation
 
 ### Scope

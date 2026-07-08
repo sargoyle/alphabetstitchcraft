@@ -63,7 +63,7 @@ Input:
 Expected output:
 - `@` is reported with count `2`.
 - `#` is reported with count `1`.
-- Visible placeholders are inserted for each unsupported occurrence.
+- No placeholder or junk glyph is inserted for unsupported occurrences.
 
 ### Tab handling
 

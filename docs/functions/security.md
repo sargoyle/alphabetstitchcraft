@@ -30,7 +30,7 @@ Alphabet Stitch v1 is primarily a web-based cross-stitch lettering tool. The pro
   - Functions: `validateCharacter()`, `validateFont()`, `validateUniqueFontIds()`, `resizeCharacter()`, `cloneFont()`.
 - File: `src/lib/renderTextToGrid.ts`
   - Function: `renderTextToGrid()`.
-  - Related behaviour: unsupported character placeholder, alignment, spacing, generated grid rows.
+  - Related behaviour: unsupported character skipping and warning, alignment, spacing, generated grid rows.
 - File: `src/lib/localStorageUtils.ts`
   - Storage keys: `crossStitch.customFonts`, `crossStitch.deletedFontIds`, `crossStitch.generatorSettings`, `crossStitch.selectedFontId`.
   - Functions: `readJson()`, `writeJson()`, `loadCustomFonts()`, `saveCustomFonts()`, `loadGeneratorSettings()`, `saveGeneratorSettings()`.
@@ -166,7 +166,7 @@ localStorage must be treated as user-controllable browser storage. It is not sui
 | User-entered text must be treated as plain text, not HTML. | Confirmed | Implemented | React rendering and grid rendering do not use raw HTML for text. |
 | Font names, custom font names, character labels, descriptions, and metadata must be rendered as text, not HTML. | Confirmed | Implemented | Reviewed components render values through JSX text nodes. |
 | The app must not use `dangerouslySetInnerHTML` for user-generated content. | Confirmed | Implemented | No usage found in reviewed source. |
-| Unsupported characters must be handled safely. | Confirmed | Partially Implemented | Renderer uses data placeholders and warnings, but duplicate counts/tabs requirements remain product-specific gaps elsewhere. |
+| Unsupported characters must be handled safely. | Confirmed | Implemented | Renderer skips unsupported characters, reports counted entries, and Generator displays a warning. |
 | Invalid grid data must be rejected or safely normalised. | Confirmed | Partially Implemented | Utility and database validation exist; persistence does not consistently show invalid remote fonts to users. |
 | Extremely large text input should be handled safely to avoid browser lock-ups, but v1 must not enforce a fixed maximum text length or generated grid size. | Confirmed | Partially Implemented | Product decision: no fixed maximum text input length and no fixed maximum generated grid size. Current code has no explicit safe-failure handling for very large renders. |
 | Font IDs must be unique. | Confirmed | Partially Implemented | Utility exists; full enforcement across local plus remote merged fonts is not clearly user-visible. |
@@ -320,7 +320,7 @@ Confirmed public font hardening controls: validation, edit history or backups, r
 - The app currently renders user-entered text into grid data through `renderTextToGrid()` and displays grid cells through React components.
 - The app currently appears to render font names, descriptions, categories, and labels through JSX text nodes, not raw HTML.
 - The reviewed source does not appear to use `dangerouslySetInnerHTML`.
-- `renderTextToGrid()` currently handles unsupported characters using a placeholder character grid and an unsupported character list.
+- `renderTextToGrid()` currently skips unsupported characters and returns counted unsupported-character entries for warning display.
 - `renderTextToGrid()` currently does not enforce explicit text length, grid width, or grid height limits.
 - `SpacingControls` currently uses HTML number inputs with min/max attributes, but values are passed through `Number()` and are not independently clamped or rejected inside the renderer.
 - `validateCharacter()` currently checks positive integer dimensions, row count, row width, and binary cell values.

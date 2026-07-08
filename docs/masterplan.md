@@ -101,7 +101,7 @@ The interface may draw strong inspiration from the attached futuristic technolog
 
 ### 5. Editable but Safe
 
-Users can edit duplicated/custom font data locally. Default font data should remain intact and recoverable.
+Users can edit shared font data through the app. Default/shared font data should remain valid, backed up where practical, and recoverable through repeatable migrations or database restore tools.
 
 ## V1 Scope
 
@@ -115,8 +115,8 @@ Version 1 includes:
 - Unsupported character handling.
 - Character editor for individual letters.
 - Custom font creation by duplicating existing fonts.
-- Local saving of custom fonts.
-- My Custom Fonts page.
+- Supabase-backed saving of shared editable fonts.
+- Font Editor and shared font management flows.
 - PNG export.
 - Copy design size.
 - Optional JSON export for generated pattern data.
@@ -126,7 +126,7 @@ Version 1 includes:
 Version 1 does not include:
 
 - User accounts.
-- Cloud sync.
+- Private account-based cloud sync.
 - Community sharing.
 - Marketplace.
 - Uploading chart images.
@@ -149,7 +149,7 @@ Version 1 does not include:
 - Default font data validates successfully.
 - Generated stitch dimensions are accurate.
 - PNG export matches the visible preview.
-- Custom fonts persist after page reload.
+- Shared editable fonts persist after page reload and across browsers.
 
 ### Usability Metrics
 
@@ -180,7 +180,7 @@ V1 is complete when a user can:
 - Adjust spacing and alignment.
 - See total stitch dimensions.
 - Edit at least one character.
-- Save a custom duplicated font locally.
-- Reuse that custom font.
+- Save a duplicated or edited font to the shared database.
+- Reuse that saved shared font.
 - Export the generated lettering pattern as a PNG.
 

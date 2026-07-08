@@ -30,7 +30,7 @@ export default function HomePage() {
             {pattern.width} x {pattern.height}
           </span>
         </div>
-        <TextPatternPreview pattern={pattern} showGrid showFilled zoom={13} />
+        <TextPatternPreview pattern={pattern} showGrid showFilled zoom={13} showCenterGuide={false} />
       </div>
 
       <section className="quick-links" aria-labelledby="homepage-actions-heading">

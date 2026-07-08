@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   description: "Browse, create, edit and export stitch-based lettering patterns.",
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" }
+      { url: "/favicon.ico?v=20260708" },
+      { url: "/icon.png?v=20260708", type: "image/png", sizes: "512x512" }
     ],
-    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }]
+    apple: [{ url: "/apple-icon.png?v=20260708", type: "image/png", sizes: "180x180" }]
   }
 };
 

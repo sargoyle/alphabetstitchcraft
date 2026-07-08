@@ -131,17 +131,15 @@ Confirmed behaviour:
 
 ## Current Code Behaviour
 
-- Currently uses `FontGridPreview` with default sample `ABC 123`.
+- Currently uses `FontGridPreview` with `buildFontPreviewSample()` to create a fuller supported sample such as `ABC DEF GHI`, plus lowercase and numbers when drawable.
 - Currently shows View Alphabet, Use and optional Edit actions.
 - Currently uses Lucide icons in actions.
 - Currently does not show duplicate or delete actions on Font Library cards.
-- Currently does not appear to add lowercase sample text when lowercase characters are available.
-- Currently may show unsupported placeholders if the sample text includes characters not present in the font.
+- Currently adds lowercase sample text when lowercase characters are available and drawable.
+- Currently filters unsupported or blank/uncreated sample characters before rendering the card preview.
 
 ## Known Gaps / Defects
 
-- Lowercase sample text is confirmed but does not appear to be implemented in the current card preview.
-- Preview may show unsupported placeholders if a font does not support the sample text; this conflicts with the confirmed rule to avoid unsupported sample characters in card previews.
 - Long descriptions may affect card height; this is a layout concern to verify manually.
 
 ## Unclear or Assumed Rules

@@ -233,7 +233,7 @@ Acceptance checks:
   - [x] alignment
 - [x] Preserve spaces.
 - [x] Preserve line breaks.
-- [x] Render unsupported characters as visible placeholders.
+- [x] Skip unsupported characters and return warnings/counts.
 - [x] Return unsupported character warnings.
 - [x] Calculate final stitch width.
 - [x] Calculate final stitch height.
@@ -247,7 +247,7 @@ Acceptance checks:
 - [x] Left alignment works.
 - [x] Center alignment works.
 - [x] Right alignment works.
-- [x] Unsupported characters show placeholders and warnings.
+- [x] Unsupported characters are skipped and shown in warnings.
 
 ### 3.2 Add Renderer Tests
 
@@ -1771,6 +1771,7 @@ Acceptance checks:
 
 - [x] Create favicon assets from the supplied needle-and-thread artwork.
 - [x] Add browser tab icon metadata for favicon and Apple touch icon support.
+- [x] Add versioned favicon URLs so browsers refresh cached tab icons.
 - [x] Verify generated favicon dimensions.
 
 Acceptance checks:
@@ -1793,3 +1794,40 @@ Acceptance checks:
 - [x] Alphabet Library previews avoid unsupported sample characters.
 - [x] Alphabet Library previews include more sample lettering than `ABC 123` where supported.
 - [x] Short previews no longer leave a large blank paper area across the card.
+
+## Phase 36: Data, Documentation And Test Housekeeping Review
+
+### 36.1 Housekeeping Pass
+
+- [x] Review current font data model, bundled seed data, persistence helpers and Supabase migration coverage.
+- [x] Validate bundled font data for duplicate IDs/names, complete punctuation coverage, font-level height consistency and invalid grids.
+- [x] Remove obsolete renderer placeholder option from active types and implementation.
+- [x] Update stale function documentation and rules for unsupported-character skipping and warning behaviour.
+- [x] Update the masterplan to reflect current Supabase-backed shared font persistence.
+- [x] Refresh known-gaps tracking for newer function documentation pages.
+- [x] Run app TypeScript compile, test TypeScript compile, utility tests, ESLint, production build and production dependency audit.
+
+Acceptance checks:
+
+- [x] Bundled fonts validate successfully.
+- [x] Required punctuation is present in bundled fonts.
+- [x] Character heights match font-level height in bundled data.
+- [x] Unsupported characters are documented as skipped with warnings, not rendered as placeholders.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility test runner passes.
+- [x] ESLint passes with no warnings.
+- [x] Production build passes.
+- [x] Production dependency audit reports no known vulnerabilities.
+
+## Phase 37: Homepage Preview Guide Cleanup
+
+### 37.1 Remove Homepage Centre Guide
+
+- [x] Disable the centre guide line on the homepage lettering preview.
+- [x] Preserve centre guide behaviour for the Create Pattern page.
+
+Acceptance checks:
+
+- [x] Homepage preview renders without the blue centre guide.
+- [x] Create Pattern preview component default remains unchanged.

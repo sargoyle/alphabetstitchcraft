@@ -191,8 +191,7 @@ Expected output:
 
 ## Known Gaps / Defects
 
-- `placeholderUnsupported` remains in the type for compatibility but current product behaviour skips unsupported characters.
-- No remaining confirmed renderer gap for whitespace-only text, unsupported counts or spacing numeric bounds after the 2026-06-05 renderer fix pass.
+- No remaining confirmed renderer gap for whitespace-only text, unsupported counts, placeholder removal or spacing numeric bounds after the renderer fix passes.
 
 ## Automated Test Evidence
 

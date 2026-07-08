@@ -38,7 +38,6 @@ export type TextRenderOptions = {
   wordSpacing: number;
   lineSpacing: number;
   alignment: TextAlignment;
-  placeholderUnsupported?: boolean;
 };
 
 export type GeneratedPattern = {

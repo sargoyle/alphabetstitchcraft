@@ -47,7 +47,7 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Whitespace-only text is treated as empty by the text renderer.
 - Text renderer enforces numeric bounds independently of the UI.
 - Trailing spaces contribute to rendered pattern width.
-- Unsupported text characters render as visible placeholders and repeated unsupported characters are reported with counts.
+- Unsupported text characters are skipped from the rendered grid, shown in one warning, and repeated unsupported characters are reported with counts.
 - Text rendering falls back from lowercase to uppercase when lowercase is unsupported.
 - Deleted default fonts should use shared persistence, not browser-only localStorage.
 - Browser-local generator preferences are acceptable and should not be synced to Supabase.

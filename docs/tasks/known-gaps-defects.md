@@ -6,14 +6,14 @@ Central backlog of known gaps and defects extracted from `/docs/functions` funct
 
 | Category | Count |
 |---|---:|
-| Source function documents reviewed | 21 |
-| Source documents with Known Gaps / Defects entries | 21 |
-| De-duplicated backlog tasks created | 44 |
+| Source function documents reviewed | 23 |
+| Source documents with Known Gaps / Defects entries | 23 |
+| De-duplicated backlog tasks created | 48 |
 | High priority tasks | 14 |
-| Medium priority tasks | 20 |
-| Low priority tasks | 10 |
-| Tasks with product decision needed | 5 |
-| Tasks ready for implementation planning | 39 |
+| Medium priority tasks | 22 |
+| Low priority tasks | 12 |
+| Tasks with product decision needed | 6 |
+| Tasks ready for implementation planning | 42 |
 
 ## Source Document Review Notes
 
@@ -25,6 +25,7 @@ Reviewed all Markdown files in `/docs/functions`:
 - `/docs/functions/character-editor.md`
 - `/docs/functions/character-grid.md`
 - `/docs/functions/custom-font-creation.md`
+- `/docs/functions/design-system.md`
 - `/docs/functions/error-handling.md`
 - `/docs/functions/export-json.md`
 - `/docs/functions/export-png.md`
@@ -33,6 +34,7 @@ Reviewed all Markdown files in `/docs/functions`:
 - `/docs/functions/font-detail-preview.md`
 - `/docs/functions/font-library.md`
 - `/docs/functions/grid-rendering.md`
+- `/docs/functions/keep-alive-endpoint.md`
 - `/docs/functions/local-storage.md`
 - `/docs/functions/navigation-and-routing.md`
 - `/docs/functions/render-text-to-grid.md`
@@ -49,6 +51,8 @@ De-duplication notes:
 - Read-only grid non-interactive cells appear in Accessibility and Character Grid. It is captured as one accessibility task.
 - localStorage corruption/quota/recovery appears in Error Handling, Local Storage and Security. It is split into storage write handling and corrupted-data recovery because the work differs.
 - Public font hardening appears in Security and Tasks. It is captured as one security task with confirmed hardening controls.
+- Design system rollout gaps are captured as separate implementation and sample-data follow-ups.
+- Keep-alive endpoint gaps are captured as separate route-test and monitoring-schedule follow-ups.
 
 ## Priority Guidance
 
@@ -166,7 +170,7 @@ Open product decisions from these gaps:
 **Suggested priority:** High  
 **Product decision needed:** No  
 **Suggested next step:** Surface invalid remote font records as actionable errors and include enough detail for correction.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Validate Full Font Before Saving To Supabase
 
@@ -178,7 +182,7 @@ Open product decisions from these gaps:
 **Suggested priority:** High  
 **Product decision needed:** No  
 **Suggested next step:** Add full font validation at the persistence boundary and block writes with inline error feedback.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Harden Public Font Editing Model
 
@@ -202,7 +206,7 @@ Open product decisions from these gaps:
 **Suggested priority:** High  
 **Product decision needed:** No  
 **Suggested next step:** Add Next.js security headers and a practical CSP, then verify the app still renders and exports correctly.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Reject Duplicate Custom Font Names
 
@@ -214,7 +218,7 @@ Open product decisions from these gaps:
 **Suggested priority:** High  
 **Product decision needed:** No  
 **Suggested next step:** Enforce unique names in the UI and shared database, with clear inline errors.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Numeric Spacing Validation And Immediate Rejection
 
@@ -252,7 +256,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a local success status after save and ensure it is accessible.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Show Local Editor Status For Database Save Failures
 
@@ -264,7 +268,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Route persistence errors into the editor status area with retry guidance.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Central Retry Controls For Failed Database Operations
 
@@ -276,7 +280,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Define retry behaviour for load, save, delete and migration paths.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Replace Prompt And Alert Font Workflows With In-App Forms And Status
 
@@ -288,7 +292,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Replace prompt-based font creation/rename with controlled forms and inline statuses.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Category And Height Inputs To Font Creation
 
@@ -300,7 +304,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a creation form with name, category and height fields using current validation rules.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Restore Visible Whole-Font Duplication
 
@@ -312,7 +316,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a duplicate-font action or creation mode that starts from an existing font.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Implement Lowercase-Aware Font Card Samples
 
@@ -324,19 +328,19 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Generate card sample text based on supported characters, including lowercase when available.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Avoid Unsupported Characters In Font Card Samples
 
 **Source document:** `/docs/functions/font-browser.md`  
 **Functional area:** Font Browser  
-**Gap / defect:** Preview may show unsupported placeholders if a font does not support the sample text, conflicting with the confirmed rule to avoid unsupported sample characters in card previews.  
+**Gap / defect:** Font card previews previously used unsupported sample characters or left excess blank preview space; adaptive supported samples now avoid unsupported characters.  
 **Impact:** Font cards can look broken or lower quality even when the font is valid.  
 **Task type:** Bug  
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Build sample text from each font's supported character set.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Delay Font Detail Not-Found Until Remote Fonts Load
 
@@ -348,7 +352,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add loading-aware route state before rendering not-found.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Hide Height Metadata On Font Detail
 
@@ -360,7 +364,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Remove height metadata from the detail header and verify spacing.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Verify Rename And Delete Actions On Fonts Page
 
@@ -372,7 +376,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Inspect current Fonts page behaviour and add or correct rename/delete actions if missing.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Database Font Loading Skeleton
 
@@ -384,7 +388,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a loading state for database font fetches.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Allow Mini Previews Below Generated Preview Clamp
 
@@ -396,7 +400,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Separate mini-preview cell sizing from generated preview zoom clamping.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Shared Persistence For Deleted Default Fonts
 
@@ -408,7 +412,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Move deleted default font state into shared persistence or the confirmed database model.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Active Route Indicator
 
@@ -420,7 +424,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add active navigation styling based on the current route.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add More Prominent Manage Fonts Entry
 
@@ -432,7 +436,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a contextual entry from Fonts or another appropriate management surface.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Report Unsupported Characters With Counts
 
@@ -468,7 +472,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Add a short contextual link or action from unsupported warnings to the editor.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Add Safe Failure Handling For Huge Patterns
 
@@ -482,6 +486,29 @@ Open product decisions from these gaps:
 **Suggested next step:** Add browser-level tests for very large preview/export workflows.  
 **Status:** Partially resolved - renderer warning added
 
+## Apply The Design System Across Existing Screens
+
+**Source document:** `/docs/functions/design-system.md`  
+**Functional area:** Design System / UI Consistency  
+**Gap / defect:** The design system exists as a live reference route, but it is not yet applied across existing app screens.  
+**Impact:** UI patterns can drift between screens, making future maintenance and accessibility review harder.  
+**Task type:** Technical debt  
+**Suggested priority:** Medium  
+**Product decision needed:** No  
+**Suggested next step:** Plan a focused design-system adoption pass for shared buttons, panels, badges, empty states and layout patterns without changing app behaviour.  
+**Status:** Backlog
+
+## Add Automated Coverage For The Keep-Alive Endpoint
+
+**Source document:** `/docs/functions/keep-alive-endpoint.md`  
+**Functional area:** API / Supabase Keep-Alive  
+**Gap / defect:** No automated route test exists yet for `/api/keep-alive`.  
+**Impact:** The endpoint could regress without utility or route-level evidence that it remains read-only and returns the expected JSON response.  
+**Task type:** Testing  
+**Suggested priority:** Medium  
+**Product decision needed:** No  
+**Suggested next step:** Add a minimal route test or mocked Supabase client test for success and failure responses.  
+**Status:** Backlog
 # Low Priority / Future-Facing
 
 ## Decide Non-English And Multi-Code-Point Character Grouping
@@ -494,7 +521,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** Yes  
 **Suggested next step:** Defer until multi-language support is in scope, then define grouping rules.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Decide Visibility Of Blank Generated Characters
 
@@ -506,7 +533,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** Yes  
 **Suggested next step:** Decide whether blank characters are hidden until edited or visible as editable placeholders.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Revisit JSON Import As A Future Feature
 
@@ -518,7 +545,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** Yes  
 **Suggested next step:** If import becomes a priority, define schema validation, error handling and security requirements first.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Revisit Font JSON Export Role For Font Packs
 
@@ -530,7 +557,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** Yes  
 **Suggested next step:** Revisit when custom font pack import/export enters active scope.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Decide Analytics Approach
 
@@ -542,7 +569,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** Yes  
 **Suggested next step:** Decide between no analytics, privacy-preserving analytics or third-party analytics before implementation.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Verify Long Font Description Layout
 
@@ -554,7 +581,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** No  
 **Suggested next step:** Manually test long names/descriptions at desktop and mobile widths.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Verify Trailing Space Width Contribution
 
@@ -566,7 +593,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** No  
 **Suggested next step:** Add targeted tests for leading and trailing spaces.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Review Canvas And CSS Styling Drift
 
@@ -578,7 +605,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** No  
 **Suggested next step:** Add visual parity checks or centralise colour/size tokens for preview and canvas export.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Keep Legacy Local Custom Font Helpers Migration-Only
 
@@ -590,7 +617,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** No  
 **Suggested next step:** Label legacy helpers clearly and remove them when migration support is no longer needed.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Verify User-Editable Font Category Implementation
 
@@ -602,7 +629,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Low  
 **Product decision needed:** No  
 **Suggested next step:** Verify category editing in current UI and add controls if missing.  
-**Status:** Backlog
+**Status:** Fixed
 
 
 ## Add A Meaningful Editor Page Heading
@@ -627,7 +654,7 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** Yes  
 **Suggested next step:** Choose the formal accessibility toolchain to add, then add repeatable browser-level accessibility checks to the regular test process.  
-**Status:** Backlog
+**Status:** Fixed
 
 ## Investigate Regular Lint Timeout After Production Build
 
@@ -639,5 +666,29 @@ Open product decisions from these gaps:
 **Suggested priority:** Medium  
 **Product decision needed:** No  
 **Suggested next step:** Investigate whether ESLint is traversing generated folders or another non-source path, then tighten the lint command/config so `pnpm run lint` remains reliable after `next build`.  
+**Status:** Fixed
+
+
+## Replace Static Design System Samples With Representative App Data
+
+**Source document:** `/docs/functions/design-system.md`  
+**Functional area:** Design System / Documentation  
+**Gap / defect:** The `/design-system` route currently uses static sample content rather than representative app data.  
+**Impact:** Component examples may drift from real font, grid and pattern data as the product evolves.  
+**Task type:** Technical debt  
+**Suggested priority:** Low  
+**Product decision needed:** No  
+**Suggested next step:** Replace or supplement static examples with small representative font and pattern fixtures once design-system adoption is prioritised.  
 **Status:** Backlog
 
+## Decide Keep-Alive Monitoring Schedule
+
+**Source document:** `/docs/functions/keep-alive-endpoint.md`  
+**Functional area:** API / Supabase Keep-Alive  
+**Gap / defect:** No keep-alive monitoring or ping schedule is documented yet.  
+**Impact:** The endpoint exists, but there is no agreed operational schedule or service responsible for calling it.  
+**Task type:** Product decision / Testing  
+**Suggested priority:** Low  
+**Product decision needed:** Yes  
+**Suggested next step:** Decide whether Vercel Cron, an external uptime monitor, or manual/deferred keep-alive checks should be used.  
+**Status:** Backlog

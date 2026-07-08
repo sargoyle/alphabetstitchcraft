@@ -4,8 +4,7 @@ const DEFAULT_OPTIONS: TextRenderOptions = {
   letterSpacing: 1,
   wordSpacing: 3,
   lineSpacing: 2,
-  alignment: "left",
-  placeholderUnsupported: false
+  alignment: "left"
 };
 
 const OPTION_BOUNDS = {
