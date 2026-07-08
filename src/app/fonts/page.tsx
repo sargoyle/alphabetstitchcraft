@@ -13,6 +13,7 @@ export default function FontsPage() {
   const [height, setHeight] = useState("All");
   const [search, setSearch] = useState("");
   const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const isLoadingFonts = persistence.mode === "loading";
   const categories = useMemo(() => ["All", ...Array.from(new Set(fonts.map((font) => font.category)))], [fonts]);
   const heights = useMemo(
     () => ["All", ...Array.from(new Set(fonts.map((font) => font.defaultHeight))).sort((a, b) => a - b).map(String)],
@@ -57,7 +58,12 @@ export default function FontsPage() {
           <p>Filter stitch alphabets, inspect samples and choose a lettering style for your next grid.</p>
         </div>
         <div className="page-action-stack">
-          <button className="button primary nowrap-button" type="button" onClick={createFont} disabled={!persistence.canWrite}>
+          <button
+            className="button primary nowrap-button"
+            type="button"
+            onClick={createFont}
+            disabled={!persistence.canWrite || isLoadingFonts}
+          >
             <Plus aria-hidden="true" size={18} />
             Create new font
           </button>
@@ -73,44 +79,52 @@ export default function FontsPage() {
         </div>
       </div>
 
-      <div className="toolbar">
-        <label>
-          Category
-          <select value={category} onChange={(event) => setCategory(event.target.value)}>
-            {categories.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Height
-          <select value={height} onChange={(event) => setHeight(event.target.value)}>
-            {heights.map((item) => (
-              <option key={item} value={item}>
-                {item === "All" ? "All heights" : `${item} stitches`}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Search
-          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Block, serif, modern" />
-        </label>
-      </div>
-
-      {filtered.length ? (
-        <div className="card-grid">
-          {filtered.map((font) => (
-            <FontCard
-              key={font.id}
-              font={font}
-              onUse={(fontId) => saveSelectedFontId(fontId)}
-              showEdit
-            />
-          ))}
+      {isLoadingFonts ? (
+        <div className="empty-preview" role="status" aria-live="polite" aria-busy="true">
+          Loading alphabet library...
         </div>
       ) : (
-        <div className="empty-preview">No fonts match this filter.</div>
+        <>
+          <div className="toolbar">
+            <label>
+              Category
+              <select value={category} onChange={(event) => setCategory(event.target.value)}>
+                {categories.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Height
+              <select value={height} onChange={(event) => setHeight(event.target.value)}>
+                {heights.map((item) => (
+                  <option key={item} value={item}>
+                    {item === "All" ? "All heights" : `${item} stitches`}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Search
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Block, serif, modern" />
+            </label>
+          </div>
+
+          {filtered.length ? (
+            <div className="card-grid">
+              {filtered.map((font) => (
+                <FontCard
+                  key={font.id}
+                  font={font}
+                  onUse={(fontId) => saveSelectedFontId(fontId)}
+                  showEdit
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-preview">No fonts match this filter.</div>
+          )}
+        </>
       )}
     </section>
   );

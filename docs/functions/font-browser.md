@@ -16,6 +16,7 @@ Allow users to scan stitch alphabet options quickly by showing readable metadata
 - Related sample text: `ABC 123`
 - Related optional sample text: lowercase characters when available
 - Reviewed behaviour: card previews now build supported samples from drawable font characters.
+- Reviewed behaviour: Alphabet Library shows a loading state while database fonts load so stale bundled/default cards do not flash before the shared list resolves.
 
 ## Decision Required
 
@@ -33,11 +34,13 @@ Allow users to scan stitch alphabet options quickly by showing readable metadata
 - Standard sample baseline: uppercase stitch text, expanded to `ABC DEF GHI` for card previews to use preview space more efficiently.
 - Lowercase sample characters when the font supports lowercase.
 - User clicks on View Alphabet, Use or Edit.
+- Font persistence/loading state from `useFonts()`.
 
 ## Outputs
 
 - A font card with category, height, name, description, preview and actions.
 - A compact sample preview using a fuller supported sample that starts with uppercase letters and adds lowercase/numbers when drawable.
+- A loading state while the database-backed font list is still resolving.
 - Navigation link to `/fonts/[id]`.
 - Navigation link to `/generator` plus selected font persistence.
 - Optional navigation link to `/editor?font=[id]`.
@@ -74,13 +77,15 @@ Confirmed behaviour:
 
 ## State Transitions
 
-1. Font Library passes each available font into `FontCard`.
-2. `FontCard` renders metadata and preview.
-3. `FontGridPreview` renders sample text into a mini generated pattern.
-4. If lowercase is supported, the browser should include lowercase sample characters.
-5. The sample builder filters unsupported or blank/uncreated characters before rendering the card preview.
-6. User selects an action.
-7. App navigates or saves selected font id depending on action.
+1. Font Library starts with `useFonts()` in `loading` mode.
+2. While `loading`, the page shows a loading status instead of rendering bundled/default cards.
+3. Once persistence resolves, Font Library passes each available font into `FontCard`.
+4. `FontCard` renders metadata and preview.
+5. `FontGridPreview` renders sample text into a mini generated pattern.
+6. If lowercase is supported, the browser should include lowercase sample characters.
+7. The sample builder filters unsupported or blank/uncreated characters before rendering the card preview.
+8. User selects an action.
+9. App navigates or saves selected font id depending on action.
 
 ## Rules and Requirements
 
@@ -96,6 +101,7 @@ Confirmed behaviour:
 | Font cards must provide a way to inspect the alphabet. | Confirmed | Implemented | View Alphabet link. |
 | Font cards must provide a way to use the font. | Confirmed | Implemented | Use link saves font id. |
 | Font cards may provide editing when requested by page context. | Assumed | Implemented | `showEdit` controls Edit link. |
+| Alphabet Library must not briefly show stale bundled/default cards while database fonts are still loading. | Confirmed | Implemented | `src/app/fonts/page.tsx` shows a loading status when `persistence.mode === "loading"`. |
 
 ## Negative Rules
 
@@ -105,6 +111,7 @@ Confirmed behaviour:
 - Must not mutate the font object while previewing.
 - Must not omit lowercase from the sample when lowercase is supported.
 - Must not treat unsupported sample characters as evidence that the whole font is invalid.
+- Must not render stale bundled/default font cards while the database-backed list is still loading.
 
 ## Acceptance Criteria
 
@@ -116,6 +123,8 @@ Confirmed behaviour:
 - Given Use is clicked, when navigation occurs, then selected font id is saved.
 - Given `showEdit` is false, when rendered, then Edit is not shown.
 - Given `showEdit` is true, when rendered, then Edit links to the editor with that font id.
+- Given database fonts are still loading, when the Alphabet Library renders, then a loading status is shown instead of font cards.
+- Given database loading completes, when the Alphabet Library renders, then the resolved font list is shown.
 
 ## Edge Cases
 
@@ -128,6 +137,8 @@ Confirmed behaviour:
 - Missing description.
 - Multiple cards with the same height/category.
 - Sample text where every non-space character is unsupported.
+- Slow database font loading.
+- Database loading error.
 
 ## Current Code Behaviour
 
@@ -137,6 +148,7 @@ Confirmed behaviour:
 - Currently does not show duplicate or delete actions on Font Library cards.
 - Currently adds lowercase sample text when lowercase characters are available and drawable.
 - Currently filters unsupported or blank/uncreated sample characters before rendering the card preview.
+- Currently shows `Loading alphabet library...` while `useFonts()` is in `loading` mode, preventing the bundled/default list from flashing before database fonts resolve.
 
 ## Known Gaps / Defects
 
@@ -159,6 +171,7 @@ Confirmed behaviour:
 - Lowercase sample rendering when supported.
 - Uppercase-only sample rendering.
 - Adaptive supported sample generation.
+- Loading state before database fonts resolve.
 - Use action.
 - View action.
 - Optional Edit action.

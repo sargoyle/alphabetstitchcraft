@@ -24,6 +24,7 @@ assert.equal(
 );
 
 const fontGridPreviewSource = readFileSync("src/components/FontGridPreview.tsx", "utf8");
+const fontsPageSource = readFileSync("src/app/fonts/page.tsx", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 assert.ok(
   fontGridPreviewSource.includes("buildFontPreviewSample"),
@@ -34,6 +35,12 @@ assert.ok(
     globalCssSource.includes("width: fit-content;") &&
     globalCssSource.includes(".mini-preview .pattern-scroll"),
   "FONT-BROWSER-005: mini previews should shrink-wrap short samples while still respecting card width."
+);
+assert.ok(
+  fontsPageSource.includes('persistence.mode === "loading"') &&
+    fontsPageSource.includes("Loading alphabet library...") &&
+    fontsPageSource.includes('aria-busy="true"'),
+  "FONT-BROWSER-006: Alphabet Library should show a loading state instead of stale default font cards while database fonts load."
 );
 
 console.log("fontBrowserSource tests passed.");

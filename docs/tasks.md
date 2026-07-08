@@ -1831,3 +1831,19 @@ Acceptance checks:
 
 - [x] Homepage preview renders without the blue centre guide.
 - [x] Create Pattern preview component default remains unchanged.
+
+## Phase 38: Alphabet Library Loading State
+
+### 38.1 Prevent Stale Font List Flash
+
+- [x] Show a loading status while database-backed font data is still resolving.
+- [x] Prevent bundled/default font cards from rendering during the loading state.
+- [x] Keep Create New Font disabled until write-ready persistence is available.
+- [x] Update Font Browser function documentation and source coverage.
+
+Acceptance checks:
+
+- [x] Alphabet Library shows `Loading alphabet library...` while fonts load.
+- [x] Alphabet Library does not flash the old/default list before database fonts resolve.
+- [x] Resolved font list still renders after loading completes.
+- [x] Create Pattern centre guide behaviour is unaffected.
