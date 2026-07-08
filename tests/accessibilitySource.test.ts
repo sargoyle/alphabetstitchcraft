@@ -88,4 +88,14 @@ assert.ok(
   "A11Y-011: Font action outcomes should use inline live status messages."
 );
 
+assert.ok(
+  globalCssSource.includes("color-scheme: dark") &&
+    globalCssSource.includes("select option") &&
+    globalCssSource.includes("background: #07120f") &&
+    globalCssSource.includes("color: #f4fbf5") &&
+    globalCssSource.includes("select option:checked") &&
+    globalCssSource.includes("background: #20b985"),
+  "A11Y-012: Native select dropdown options should use dark, high-contrast colours."
+);
+
 console.log("accessibility source tests passed.");

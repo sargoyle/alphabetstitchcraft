@@ -69,6 +69,7 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 | Arrow-key navigation must be supported in the grid editor. | Confirmed | Implemented | `CharacterGrid` now handles ArrowUp, ArrowDown, ArrowLeft and ArrowRight, clamped to grid bounds. |
 | Dynamic save, export and error messages must use `aria-live` regions. | Confirmed | Implemented | Editor, generator, export, font sync and font action outcomes now use inline live status or alert regions. Browser prompt/confirm remains only for collecting input or explicit destructive confirmation. |
 | Read-only grid previews must use non-interactive cells. | Confirmed | Implemented | `CharacterGrid` now renders read-only cells as `span` elements inside an image-labelled grid container. |
+| Native dropdown/select options must remain readable in the dark theme. | Confirmed | Implemented | Global select and option styles use dark backgrounds, light text and a high-contrast checked state. |
 | Accessibility checks should include browser-level evidence before release. | Confirmed | Partially Implemented | A no-new-dependency rendered DOM/source pass was completed; axe-style automated browser checks are selected for future tooling but not installed yet. |
 
 ## Negative Rules
@@ -79,6 +80,7 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 - Must not render read-only stitch previews as unnecessary keyboard stops.
 - Must not leave dynamic save/export/error feedback silent for screen-reader users.
 - Must not ship public release without a formal accessibility pass or an accepted manual sign-off.
+- Must not use light native dropdown option backgrounds with white option text.
 
 ## Acceptance Criteria
 
@@ -89,6 +91,7 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 - Given an editable grid cell has focus, when an arrow key is pressed, then focus moves to the adjacent cell where one exists and remains clamped at the grid edge.
 - Given a save, export or error message changes, when the message appears, then the changed message is announced through an `aria-live` region.
 - Given a read-only stitch preview is displayed, when keyboard users tab through the page, then individual preview cells are not included as disabled button controls.
+- Given a native select dropdown is opened, when options are displayed, then option text is readable against a dark high-contrast background.
 - Given a formal browser accessibility test is run, when axe/Lighthouse or equivalent reports violations, then each violation is triaged before public release.
 
 ## Edge Cases
@@ -107,6 +110,7 @@ Ensure Alphabet Stitch is usable with keyboard navigation, visible focus styles,
 
 - Currently renders primary navigation with an accessible label.
 - Currently has global visible focus styles.
+- Currently applies dark high-contrast global styling to native select controls and their options.
 - Currently editable grid cells use labelled buttons with `aria-pressed`.
 - Currently Enter and Space toggle editable grid cells.
 - Currently arrow-key movement between editable grid cells is implemented for the four arrow keys and clamps focus at the grid edges.

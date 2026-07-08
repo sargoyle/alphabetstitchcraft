@@ -139,4 +139,12 @@ assert.ok(
   "GRID-005: Stitch Library font card previews should opt out of centre guide lines."
 );
 
+assert.ok(
+  generatorSource.includes('persistence.mode === "loading"') &&
+    generatorSource.includes("Loading pattern creator...") &&
+    generatorSource.includes("if (isLoadingFonts) return;") &&
+    generatorSource.includes("isLoadingFonts ? undefined"),
+  "GENERATOR-001: Create Pattern should show a loading state and avoid stale fallback fonts while database fonts load."
+);
+
 console.log("renderVisibility tests passed.");

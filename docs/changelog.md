@@ -25,7 +25,12 @@ All notable changes to this project will be documented in this file.
 - 2026-05-04: Added editor support for duplicating an existing letter or starting blank, mapping it to a new character, and protecting existing mappings from accidental overwrite. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`, `docs/tasks.md`, `docs/rules.md`.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
-### Changed
+### Changed
+
+
+
+
+- 2026-07-08: Added a Create Pattern loading state to prevent stale fallback font previews flashing before database fonts resolve. Files affected: `src/app/generator/page.tsx`, `tests/renderVisibility.test.ts`, `docs/functions/text-generator.md`, `docs/tasks.md`.
 - 2026-07-08: Added an Alphabet Library loading state to prevent stale default font cards flashing before database fonts resolve. Files affected: `src/app/fonts/page.tsx`, `tests/fontBrowserSource.test.ts`, `docs/functions/font-browser.md`, `docs/tasks.md`.
 - 2026-07-08: Removed the centre guide line from the homepage lettering preview while preserving Create Pattern guide behaviour. Files affected: `src/app/page.tsx`, `docs/tasks.md`.
 - 2026-07-08: Completed a data, documentation and validation housekeeping pass; refreshed persistence wording, removed obsolete renderer placeholder option, aligned unsupported-character documentation and updated known-gaps tracking for newer function docs. Files affected: `src/lib/fontTypes.ts`, `src/lib/renderTextToGrid.ts`, `docs/masterplan.md`, `docs/rules.md`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/functions/security.md`, `docs/functions/font-browser.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.
@@ -139,7 +144,14 @@ All notable changes to this project will be documented in this file.
 - Added an unsaved-character confirmation dialog for Font Editor character changes, font changes, duplicate setup and internal navigation. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`.
 - Added Font Editor UX source coverage and test planning. Files affected: `tests/editorUiSource.test.ts`, `docs/tests/editor-ui.test-plan.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`.
 
-### Changed
+### Changed
+
+
+
+
+- 2026-07-08: Updated Select Duplicate so source characters use the same order as the main picker and only characters with existing stitch designs are selectable. Files affected: `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/editor-ui.test-plan.md`, `docs/tasks.md`.
+- 2026-07-08: Stabilised duplicate-created character saving so the editor no longer flashes to the duplicated source or shows a transient existing-character warning, and improved native dropdown option contrast. Files affected: `src/app/editor/EditorClient.tsx`, `src/app/globals.css`, `tests/editorUiSource.test.ts`, `tests/accessibilitySource.test.ts`, `docs/functions/character-editor.md`, `docs/functions/accessibility.md`, `docs/tasks.md`.
+- 2026-07-08: Added a Create Pattern loading state to prevent stale fallback font previews flashing before database fonts resolve. Files affected: `src/app/generator/page.tsx`, `tests/renderVisibility.test.ts`, `docs/functions/text-generator.md`, `docs/tasks.md`.
 - 2026-07-08: Added an Alphabet Library loading state to prevent stale default font cards flashing before database fonts resolve. Files affected: `src/app/fonts/page.tsx`, `tests/fontBrowserSource.test.ts`, `docs/functions/font-browser.md`, `docs/tasks.md`.
 - 2026-07-08: Removed the centre guide line from the homepage lettering preview while preserving Create Pattern guide behaviour. Files affected: `src/app/page.tsx`, `docs/tasks.md`.
 - 2026-07-08: Completed a data, documentation and validation housekeeping pass; refreshed persistence wording, removed obsolete renderer placeholder option, aligned unsupported-character documentation and updated known-gaps tracking for newer function docs. Files affected: `src/lib/fontTypes.ts`, `src/lib/renderTextToGrid.ts`, `docs/masterplan.md`, `docs/rules.md`, `docs/functions/render-text-to-grid.md`, `docs/functions/unsupported-characters.md`, `docs/functions/security.md`, `docs/functions/font-browser.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.

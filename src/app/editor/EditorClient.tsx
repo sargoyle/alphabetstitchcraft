@@ -41,10 +41,12 @@ export function EditorClient() {
   const characterKeys = Object.keys(selectedFont?.characters ?? {}).sort();
   const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
   const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
+  const duplicateSourceKeys = displayedCharacterKeys.filter((key) => hasFilledStitches(selectedFont?.characters[key]));
   const [characterKey, setCharacterKey] = useState("A");
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [sourceCharacterKey, setSourceCharacterKey] = useState("");
   const [destinationCharacterKey, setDestinationCharacterKey] = useState("");
+  const [newCharacterDraft, setNewCharacterDraft] = useState<StitchCharacter | null>(null);
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
   const [fontNameDraft, setFontNameDraft] = useState("");
@@ -52,6 +54,7 @@ export function EditorClient() {
   const [fontSettingsStatus, setFontSettingsStatus] = useState<{ type: "success" | "error"; message: string } | null>(
     null
   );
+  const [savingCharacter, setSavingCharacter] = useState(false);
   const [hasUnsavedCharacterChanges, setHasUnsavedCharacterChanges] = useState(false);
   const [pendingExit, setPendingExit] = useState<{ action: () => void } | null>(null);
   const editorDraftActions = useRef<EditorDraftActions | null>(null);
@@ -66,11 +69,11 @@ export function EditorClient() {
     return blankCharacter(fontHeight, fontHeight);
   }, [selectedFont?.defaultHeight, sourceCharacter]);
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
-  const character = creatingCharacter ? newCharacter : selectedCharacter ?? newCharacter;
+  const character = creatingCharacter ? newCharacterDraft ?? newCharacter : selectedCharacter ?? newCharacter;
   const saveDisabledReason = creatingCharacter
     ? !destinationKey
       ? "Choose a new character before saving."
-      : destinationExists && !replaceExistingCharacter
+      : destinationExists && !replaceExistingCharacter && !savingCharacter
         ? `${destinationKey} already exists. Choose an unmapped character or confirm replacement.`
         : undefined
     : undefined;
@@ -169,7 +172,13 @@ export function EditorClient() {
 
     const targetFont = cloneFont(selectedFont);
     targetFont.characters[targetKey] = resizeCharacter(updated, updated.width, targetFont.defaultHeight);
-    const saved = await saveFont(targetFont);
+    setSavingCharacter(true);
+    let saved = false;
+    try {
+      saved = await saveFont(targetFont);
+    } finally {
+      setSavingCharacter(false);
+    }
     if (!saved) return false;
 
     latestFontRef.current = targetFont;
@@ -178,6 +187,7 @@ export function EditorClient() {
     setCreatingCharacter(false);
     setSourceCharacterKey("");
     setDestinationCharacterKey("");
+    setNewCharacterDraft(null);
     setReplaceExistingCharacter(false);
     setNewCharacterOpen(false);
     return true;
@@ -235,6 +245,7 @@ export function EditorClient() {
                 setCreatingCharacter(false);
                 setSourceCharacterKey("");
                 setDestinationCharacterKey("");
+                setNewCharacterDraft(null);
                 setReplaceExistingCharacter(false);
                 setNewCharacterOpen(false);
               });
@@ -320,6 +331,7 @@ export function EditorClient() {
                       setCharacterKey(key);
                       setDestinationCharacterKey(key);
                       setSourceCharacterKey("");
+                      setNewCharacterDraft(null);
                       setReplaceExistingCharacter(exists);
                       setCreatingCharacter(false);
                       setNewCharacterOpen(false);
@@ -352,6 +364,7 @@ export function EditorClient() {
               requestCharacterExit(() => {
                 setDestinationCharacterKey(activeKey);
                 setSourceCharacterKey("");
+                setNewCharacterDraft(null);
                 setReplaceExistingCharacter(hasFilledStitches(selectedFont.characters[activeKey]));
                 setNewCharacterOpen(true);
               });
@@ -391,13 +404,14 @@ export function EditorClient() {
                   onClick={() => {
                     setSourceCharacterKey("");
                     setDestinationCharacterKey(activeKey);
+                    setNewCharacterDraft(blankCharacter(selectedFont.defaultHeight, selectedFont.defaultHeight));
                     setCreatingCharacter(true);
                     setNewCharacterOpen(false);
                   }}
                 >
                   Blank
                 </button>
-                {characterKeys.map((key) => (
+                {duplicateSourceKeys.map((key) => (
                   <button
                     className={sourceCharacterKey === key ? "duplicate-source-tile is-active" : "duplicate-source-tile"}
                     key={key}
@@ -405,6 +419,7 @@ export function EditorClient() {
                     onClick={() => {
                       setSourceCharacterKey(key);
                       setDestinationCharacterKey(activeKey);
+                      setNewCharacterDraft(JSON.parse(JSON.stringify(selectedFont.characters[key])) as StitchCharacter);
                       setCreatingCharacter(true);
                       setNewCharacterOpen(false);
                     }}
@@ -412,6 +427,9 @@ export function EditorClient() {
                     {key}
                   </button>
                 ))}
+                {duplicateSourceKeys.length === 0 ? (
+                  <p className="form-hint duplicate-source-empty">No existing character designs are available to duplicate.</p>
+                ) : null}
               </div>
               <p id="new-character-help" className="form-hint">
                 The selected source will replace the current draft for {activeKey}. Save only happens when you click Save character.
@@ -471,7 +489,7 @@ export function EditorClient() {
 
       <section className="editor-main">
         <CharacterEditor
-          key={`${selectedFont.id}-${creatingCharacter ? `new-${sourceCharacterKey || "blank"}` : activeKey}`}
+          key={`${selectedFont.id}-${creatingCharacter ? `new-${destinationKey || activeKey || "blank"}` : activeKey}`}
           characterKey={activeEditorKey}
           character={character}
           originalCharacter={character}

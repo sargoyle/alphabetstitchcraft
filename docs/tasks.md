@@ -1847,3 +1847,49 @@ Acceptance checks:
 - [x] Alphabet Library does not flash the old/default list before database fonts resolve.
 - [x] Resolved font list still renders after loading completes.
 - [x] Create Pattern centre guide behaviour is unaffected.
+
+## Phase 39: Create Pattern Loading State
+
+### 39.1 Prevent Stale Pattern Preview Flash
+
+- [x] Show a loading status while database-backed font data is still resolving on Create Pattern.
+- [x] Prevent the first-font fallback from running before font loading resolves.
+- [x] Prevent stale preview/export controls from rendering during the loading state.
+- [x] Update Text Generator function documentation and source coverage.
+
+Acceptance checks:
+
+- [x] Create Pattern shows `Loading pattern creator...` while fonts load.
+- [x] Create Pattern does not flash an old/default preview before the selected font resolves.
+- [x] Create Pattern still falls back to the first available font after loading if no saved/selected font is available.
+- [x] Create Pattern centre guide behaviour is unaffected after loading.
+
+## Phase 40: Duplicate Character Save And Dropdown Contrast
+
+### 40.1 Stabilise Duplicate Character Saves
+
+- [x] Keep duplicate-created character drafts attached to the destination character during save.
+- [x] Prevent transient `character already exists` warnings during successful duplicate-created character saves.
+- [x] Improve native dropdown option contrast in the dark theme.
+- [x] Update function documentation and source tests.
+
+Acceptance checks:
+
+- [x] Saving a character created from a duplicate no longer flashes back to the source character.
+- [x] Successful duplicate-created character saves do not show a false existing-character warning.
+- [x] Native dropdown options use dark high-contrast styling.
+
+## Phase 41: Duplicate Source Picker Ordering
+
+### 41.1 Match Main Character Ordering And Hide Not-Created Sources
+
+- [x] Use the same character order in Select Duplicate as the main character picker.
+- [x] Hide not-created or blank characters from the duplicate source picker.
+- [x] Add an empty-state message when no existing character designs are available to duplicate.
+- [x] Update function documentation and source tests.
+
+Acceptance checks:
+
+- [x] Duplicate source tiles are ordered A-Z, a-z, 0-9, punctuation, then other mapped characters.
+- [x] Characters without filled stitch designs do not appear as duplicate sources.
+- [x] Not-created characters cannot be selected as duplicate sources.

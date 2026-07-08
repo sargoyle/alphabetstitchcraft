@@ -83,6 +83,14 @@ assert.ok(
 );
 
 assert.ok(
+  editorClientSource.includes("const duplicateSourceKeys = displayedCharacterKeys.filter") &&
+    editorClientSource.includes("hasFilledStitches(selectedFont?.characters[key])") &&
+    editorClientSource.includes("{duplicateSourceKeys.map((key) =>") &&
+    editorClientSource.includes("No existing character designs are available to duplicate."),
+  "EDITOR-UI-025: Duplicate source picker should use the main character order and only show characters with existing stitch designs."
+);
+
+assert.ok(
   editorClientSource.includes("setSourceCharacterKey(key)") &&
     editorClientSource.includes("setCreatingCharacter(true)") &&
     editorClientSource.includes("setNewCharacterOpen(false)"),
@@ -154,6 +162,16 @@ assert.ok(
     editorClientSource.includes("selectedFont?.defaultHeight") &&
     editorClientSource.includes("sourceCharacter"),
   "EDITOR-UI-022: Blank punctuation and other not-created character drafts should remain stable while cells are edited."
+);
+
+assert.ok(
+  editorClientSource.includes("newCharacterDraft") &&
+    editorClientSource.includes("setNewCharacterDraft(JSON.parse(JSON.stringify(selectedFont.characters[key])) as StitchCharacter)") &&
+    editorClientSource.includes("new-${destinationKey || activeKey || \"blank\"}") &&
+    editorClientSource.includes("destinationExists && !replaceExistingCharacter && !savingCharacter") &&
+    editorClientSource.includes("finally") &&
+    editorClientSource.includes("setSavingCharacter(false)"),
+  "EDITOR-UI-024: Duplicate character creation should keep a stable destination draft during save and suppress false existing-character warnings while saving."
 );
 
 assert.ok(

@@ -18,6 +18,7 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 - Related product decision: generator settings should sync across browsers through the database in the future.
 - Related product decision: first available font is a suitable fallback.
 - Related product decision: very large patterns should scroll rather than auto-fit.
+- Reviewed behaviour: Create Pattern shows a loading state while database fonts resolve so it does not render a stale fallback font or stale preview.
 
 ## Decision Required
 
@@ -28,6 +29,7 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 ## Inputs
 
 - Available fonts.
+- Font persistence/loading state from `useFonts()`.
 - Selected font id.
 - Text input.
 - Letter spacing.
@@ -49,6 +51,7 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 - Future database-backed cross-browser synced settings.
 - Export controls for PNG, copy size and JSON.
 - Scrollable preview for very large patterns.
+- Loading state while database-backed fonts are resolving.
 
 ## Worked Examples
 
@@ -90,14 +93,15 @@ Expected output:
 ## State Transitions
 
 1. Generator page loads initial settings.
-2. Saved settings and selected font id are read from localStorage.
-3. First available font is used as fallback when no saved/valid font is available.
-4. User changes font, text or controls.
-5. Settings state updates and is saved to localStorage for now.
-6. Pattern is recalculated with `renderTextToGrid()`.
-7. Preview, dimensions, warnings and exports update.
-8. Very large patterns remain scrollable rather than auto-fitting.
-9. Future cross-browser settings sync may restore settings from the database.
+2. If font persistence is still loading, the page shows a loading status instead of rendering a pattern preview.
+3. After font loading resolves, saved settings and selected font id are read from localStorage.
+4. First available font is used as fallback when no saved/valid font is available.
+5. User changes font, text or controls.
+6. Settings state updates and is saved to localStorage for now.
+7. Pattern is recalculated with `renderTextToGrid()`.
+8. Preview, dimensions, warnings and exports update.
+9. Very large patterns remain scrollable rather than auto-fitting.
+10. Future cross-browser settings sync may restore settings from the database.
 
 ## Rules and Requirements
 
@@ -112,6 +116,7 @@ Expected output:
 | Generator settings should remain browser-local for now. | Confirmed | Implemented | User confirmed current browser-local behaviour is acceptable for now. |
 | Generator settings should sync across browsers through the database in the future. | Confirmed | Not Implemented | User confirmed database-backed sync. |
 | First available font is a suitable fallback. | Confirmed | Implemented | User confirmed first available font is acceptable fallback. |
+| First available font fallback must not run before database font loading has resolved. | Confirmed | Implemented | Loading state prevents stale default/bundled previews flashing before the selected database font is available. |
 | Very large patterns should scroll rather than auto-fit. | Confirmed | Implemented | User confirmed scroll-only behaviour. |
 | Preview and export should use the same generated pattern data. | Confirmed | Implemented | `GeneratorPage` passes the same `pattern` object to preview and export controls. |
 | Generator should not require a backend to render default fonts. | Assumed | Implemented | Defaults are local. |
@@ -124,6 +129,7 @@ Expected output:
 - Must not hide unsupported characters silently.
 - Must not require Manage Fonts access to use the generator.
 - Must not auto-fit very large patterns instead of allowing scroll.
+- Must not render a stale fallback font preview while database fonts are still loading.
 - Must not use browser-local storage as the only source once future database-backed settings sync is implemented.
 - Must not remove browser-local settings persistence before the future sync mechanism is implemented.
 
@@ -136,6 +142,8 @@ Expected output:
 - Given the text is empty, when the pattern is rendered, then the empty preview state is shown and export controls are disabled.
 - Given settings are changed and the page reloads in the same browser, when saved settings are available, then those settings are restored.
 - Given no selected/saved font is available, when fonts exist, then the first available font is selected as fallback.
+- Given database fonts are still loading, when Create Pattern renders, then a loading status is shown instead of a pattern preview.
+- Given database fonts finish loading, when a selected font id is available, then the preview renders using the resolved selected font.
 - Given settings are changed in one browser, when database-backed cross-browser sync is implemented later, then another browser can restore those settings from the database.
 - Given a very large pattern is generated, then the preview scrolls rather than auto-fitting the pattern.
 
@@ -143,6 +151,7 @@ Expected output:
 
 - No fonts available.
 - Remote font loading failure.
+- Slow database font loading.
 - Empty text.
 - Whitespace-only text.
 - Very long text.
@@ -155,9 +164,10 @@ Expected output:
 ## Current Code Behaviour
 
 - Currently starts with default text `HELLO\nSTITCH`.
-- Currently restores saved settings when fonts change.
+- Currently shows `Loading pattern creator...` while `useFonts()` is in `loading` mode.
+- Currently restores saved settings after font loading resolves.
 - Currently saves updates during state changes.
-- Currently selects the saved font id, saved settings font id, first font, or empty string in that order.
+- Currently selects the saved font id, saved settings font id, first font, or empty string in that order after loading.
 - Currently uses localStorage for generator preferences even though font data may be remote.
 - Currently large patterns are handled through scrollable preview behaviour.
 
@@ -165,7 +175,7 @@ Expected output:
 
 - Persisted generator settings are not synced across browsers yet, which conflicts with the confirmed future sync requirement.
 - Future cross-browser settings sync is confirmed as database-backed but not implemented.
-- If `fonts` changes repeatedly, saved settings are reapplied by the effect.
+- If `fonts` changes repeatedly after loading, saved settings are reapplied by the effect.
 - Local dev server modes can render the page without hydration; this is an environment/runtime issue, not generator logic.
 
 ## Unclear or Assumed Rules
@@ -184,6 +194,7 @@ Expected output:
 - Typing updates preview.
 - Font selection.
 - First available font fallback.
+- Loading state before database fonts resolve.
 - Spacing and alignment integration.
 - Unsupported warnings.
 - Empty state.

@@ -5,6 +5,79 @@ This file records meaningful test runs for Alphabet Stitch.
 ## 2026-07-08
 
 
+
+### Duplicate Source Picker Ordering
+
+#### Scope
+
+- Updated Select Duplicate to use the same character order as the main Font Editor picker.
+- Filtered duplicate source tiles to characters with existing filled stitch designs only.
+- Added an empty message when no existing character designs are available to duplicate.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+### Duplicate Character Save And Dropdown Contrast
+
+#### Scope
+
+- Stabilised duplicate-created character drafts so saving no longer flashes back to the duplicated source character.
+- Suppressed transient false existing-character warnings during successful duplicate-created character saves.
+- Improved native select/dropdown option contrast in the dark theme.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+$env:PATH='C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin;' + $env:PATH; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\pnpm.cmd' run lint
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- ESLint: passed with no warnings after rerun with a longer timeout.
+
+
+### Create Pattern Loading State Fix
+
+#### Scope
+
+- Prevented Create Pattern from rendering stale fallback font previews while database-backed font data is still loading.
+- Added source coverage for the generator loading status and fallback guard.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility tests: passed.
+
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -26,6 +99,7 @@ This file records meaningful test runs for Alphabet Stitch.
 - App TypeScript compile: passed.
 - Test TypeScript compile: passed.
 - Automated utility tests: passed.
+
 ### Data, Documentation And Test Housekeeping Review
 
 #### Scope
@@ -865,6 +939,8 @@ $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\de
 ## 2026-07-08
 
 
+
+
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -886,6 +962,7 @@ $env:CI='true'; & 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\de
 - App TypeScript compile: passed.
 - Test TypeScript compile: passed.
 - Automated utility tests: passed.
+
 ### Data, Documentation And Test Housekeeping Review
 
 #### Scope
@@ -977,6 +1054,8 @@ rg "http://|https://|<script|iframe|gtag|plausible|posthog|analytics" src next.c
 ## 2026-07-08
 
 
+
+
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -998,6 +1077,7 @@ rg "http://|https://|<script|iframe|gtag|plausible|posthog|analytics" src next.c
 - App TypeScript compile: passed.
 - Test TypeScript compile: passed.
 - Automated utility tests: passed.
+
 ### Data, Documentation And Test Housekeeping Review
 
 #### Scope
@@ -1098,6 +1178,8 @@ rg 'onKeyDown|aria-live|role="status"|role="alert"|focus-visible|aria-label|aria
 ## 2026-07-08
 
 
+
+
 ### Alphabet Library Loading State Fix
 
 #### Scope
@@ -1119,6 +1201,7 @@ rg 'onKeyDown|aria-live|role="status"|role="alert"|focus-visible|aria-label|aria
 - App TypeScript compile: passed.
 - Test TypeScript compile: passed.
 - Automated utility tests: passed.
+
 ### Data, Documentation And Test Housekeeping Review
 
 #### Scope
@@ -1348,29 +1431,5 @@ node .\node_modules\next\dist\bin\next build
 
 - Existing blank character records are now treated as unavailable patterns for generation, matching the Font Editor `Not created` concept.
 
-## 2026-07-08 - Alphabet Library Preview Efficiency
+## 2026-07-08 
 
-**Scope:** Adaptive supported samples and compact mini-preview layout for Alphabet Library font cards.
-
-**Commands run:**
-
-- `node .\node_modules\typescript\bin\tsc --noEmit` using bundled Node path.
-- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json` using bundled Node path.
-- `node .\.test-build\tests\runTests.js` using bundled Node path.
-- `node .\node_modules\eslint\bin\eslint.js src tests --max-warnings=0` using bundled Node path.
-- `node .\node_modules\next\dist\bin\next build` using bundled Node path.
-
-**Result:** Passed.
-
-**Tests added or updated:**
-
-- `FONT-BROWSER-001`: Card preview uses a fuller uppercase sample.
-- `FONT-BROWSER-002`: Card preview includes numbers when supported.
-- `FONT-BROWSER-003`: Card preview avoids unsupported lowercase and number characters.
-- `FONT-BROWSER-004`: FontGridPreview uses supported sample generation.
-- `FONT-BROWSER-005`: Mini preview paper shrink-wraps short samples while respecting card width.
-
-**Findings:**
-
-- No automated failures remain.
-- Manual browser review is recommended to confirm the visual spacing feels right across real database fonts.

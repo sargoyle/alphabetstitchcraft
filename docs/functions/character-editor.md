@@ -10,7 +10,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Component: `EditorClient` in `src/app/editor/EditorClient.tsx`
 - Component: `CharacterEditor` in `src/components/CharacterEditor.tsx`
 - Component: `CharacterGrid` in `src/components/CharacterGrid.tsx`
-- UI state: `newCharacterOpen`, `creatingCharacter`, `sourceCharacterKey`, `destinationCharacterKey`, `replaceExistingCharacter`
+- UI state: `newCharacterOpen`, `creatingCharacter`, `sourceCharacterKey`, `destinationCharacterKey`, `replaceExistingCharacter`, `newCharacterDraft`, `savingCharacter`
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
 - Functions: `cloneFont()`, `clearCharacter()`, `resizeCharacter()`, `validateCharacter()` in `src/lib/gridUtils.ts`
 - Related route parameter: `/editor?font=`
@@ -54,6 +54,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Sidebar character picker with A-Z, a-z, 0-9, common punctuation, then other mapped characters.
 - Exists, not-created and selected tile states.
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
+- Stable duplicate draft state that remains attached to the destination character during save and font refresh.
+- Duplicate source picker ordered the same as the main character picker and limited to characters with filled stitch designs.
 - Compact dimension controls below the editable grid.
 - Editable font name and font-level height controls in the editor sidebar.
 - Font panel containing font selector, font settings and Delete Font danger zone.
@@ -74,8 +76,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 10. Character save either updates an existing character or writes a new destination character at the current font height.
 11. Updated font is saved through `useFonts().saveFont()`.
 12. Save success is returned only after the database save and font refresh complete.
-13. Editor shows an inline success message when save succeeds or a local failure status when save fails.
-14. Editor returns to normal character-editing mode after saving a new character.
+13. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
+14. Editor shows an inline success message when save succeeds or a local failure status when save fails.
+15. Editor returns to normal character-editing mode after saving a new character.
 
 ## Rules and Requirements
 
@@ -104,6 +107,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Character tiles must visually distinguish existing, not-created and selected characters. | Confirmed | Implemented | Existing means the character has at least one filled stitch, not merely that a blank starter grid exists. |
 | Selected characters should use the filled tile style, existing unselected characters should use a solid outline, and not-created characters should use a different-colour dashed outline. | Confirmed | Implemented | Blank starter-grid characters remain not-created unless they contain filled stitches. |
 | Duplicate selection should use a tile selection UI rather than a dropdown. | Confirmed | Implemented | Select Duplicate opens a modal with a blank option and source character tiles. |
+| Duplicate source tiles must use the same ordering as the main character picker. | Confirmed | Implemented | Source tiles are derived from the same displayed character list: A-Z, a-z, 0-9, punctuation, then other mapped characters. |
+| Duplicate source tiles must only show characters with existing stitch designs. | Confirmed | Implemented | Not-created/blank characters are hidden from duplicate-source selection and cannot be selected. |
 | Duplicate selection should copy the selected source into the currently selected character. | Confirmed | Implemented | The selected character remains the destination; source selection changes the draft only. |
 | Character width controls should sit directly below the editable character grid. | Confirmed | Implemented | Font height is controlled in the sidebar; character width stays in the same left stack as the grid. |
 | Font height must be set at the font level. | Confirmed | Implemented | The editor exposes font height in the sidebar and character save resizes the saved character to the font height. |
@@ -112,6 +117,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Font name must be editable on the editor screen. | Confirmed | Implemented | Font name is editable from the editor sidebar. |
 | Character height must not be edited per character. | Confirmed | Implemented | Character editor now only exposes character width; height is controlled by the font. |
 | The editor must not briefly fall back to another font while the requested font is loading or refreshing. | Confirmed | Implemented | The editor now shows a loading state for unresolved requested fonts rather than rendering the first font. |
+| Duplicate-created characters must not flash back to the source character during save. | Confirmed | Implemented | The duplicate source is copied into a stable destination draft and the editor key is based on the destination, not the source. |
+| Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 
 ## Negative Rules
 
@@ -124,6 +131,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not let editor action buttons overlap character width or font-height controls.
 - Must not hide not-created standard letters, numbers or punctuation from the picker.
 - Must not use a dropdown for duplicate-source selection.
+- Must not show duplicate-source character tiles in a different order from the main character picker.
+- Must not allow not-created/blank characters to be selected as duplicate sources.
 - Must not change the selected destination character when choosing a duplicate source.
 - Must not use the filled tile style for existing unselected characters.
 - Must not treat blank starter grids as existing created letters.
@@ -131,6 +140,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not expose per-character height editing while height is a font-level setting.
 - Must not save a blank font name.
 - Must not flash to the first available font while a routed or selected font is still loading.
+- Must not flash from a duplicate-created destination back to the duplicated source character while saving.
+- Must not show a transient `character already exists` warning during a successful duplicate-created character save.
 - Must not place Delete Font beside selected-character save controls.
 - Must not make the character picker scroll the full page awkwardly when many characters exist.
 
@@ -154,7 +165,11 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given a character is selected, when the picker renders, then the selected character uses the filled tile style with the selected border treatment.
 - Given a font route points to a font that has not loaded yet, when the editor first renders, then it shows a loading state rather than briefly showing another font.
 - Given Select Duplicate is clicked, when the modal opens, then the user can choose Blank or an existing source character from a tile selector.
+- Given the duplicate source modal opens, when source character tiles are displayed, then they appear in the same order as the main character picker.
+- Given a character has no filled stitch design, when the duplicate source modal opens, then that character is not shown and cannot be selected as a duplicate source.
 - Given a duplicate source is selected, when the user confirms the modal, then the selected destination character draft uses the source grid.
+- Given a duplicate source is selected and the user edits the destination draft, when Save Character is clicked, then the editor remains on the destination character and does not briefly show the source character.
+- Given a duplicate-created destination is saving successfully, when the font data refreshes, then the editor does not show a false character already exists warning.
 - Given dimension controls and editor actions are visible, when the screen is viewed at desktop width, then Clear, Reset and Save do not overlap the Width field or font settings fields.
 - Given the editor grid is visible, when character dimension controls render, then character Width appears directly below the character grid and Height is controlled in the sidebar.
 - Given the editor screen is open, when the user changes the font name and saves font settings, then the font is saved with the new name.
@@ -218,6 +233,9 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently removes the previous character-width information panel from the editor controls.
 - Currently shows an unsaved-change confirmation dialog before character changes, font changes, internal navigation or duplicate setup when the current character draft is dirty.
 - Currently waits for duplicate modal confirmation before applying the duplicated source to the editor draft.
+- Currently stores the duplicated source as a stable `newCharacterDraft` for the destination character so refreshes do not recompute the draft from the source.
+- Currently builds duplicate-source tiles from the ordered main character list and filters out characters without filled stitches.
+- Currently suppresses duplicate-destination save warnings while `savingCharacter` is true to avoid transient false warnings during successful saves.
 
 ## Known Gaps / Defects
 

@@ -478,9 +478,20 @@ select {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(4, 14, 12, 0.92);
   color: var(--text);
   padding: 10px 12px;
+  color-scheme: dark;
+}
+
+select option {
+  background: #07120f;
+  color: #f4fbf5;
+}
+
+select option:checked {
+  background: #20b985;
+  color: #03110d;
 }
 
 textarea {
@@ -791,6 +802,12 @@ textarea {
   color: #03140f;
   border-color: transparent;
   background: linear-gradient(135deg, var(--accent), #86f8cc);
+}
+
+
+.duplicate-source-empty {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
 }
 
 .new-character-button,
