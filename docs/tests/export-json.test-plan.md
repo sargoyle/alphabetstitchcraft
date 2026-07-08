@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Verify that JSON export preserves the generated pattern object used by the Generator preview and does not add unrelated metadata.
+Verify that JSON export utilities preserve expected data, while the Create Pattern UI no longer exposes a visible pattern JSON export button.
 
 ## Source Requirements
 
@@ -14,17 +14,19 @@ Verify that JSON export preserves the generated pattern object used by the Gener
 
 | Test ID | Requirement | Test file | Status | Notes |
 |---|---|---|---|---|
-| PARITY-002 | Pattern JSON export preserves the generated pattern object. | `tests/exportUtils.test.ts` | Passing | Captured JSON payload deep-equals the source `GeneratedPattern`, including grid, width, height and warnings. |
+| PARITY-002 | Pattern JSON export preserves the generated pattern object at utility level. | `tests/exportUtils.test.ts` | Passing | Captured JSON payload deep-equals the source `GeneratedPattern`, including grid, width, height and warnings. |
 | EXPORT-004 | Empty pattern JSON export preserves safe empty data at utility level. | `tests/exportUtils.test.ts` | Passing | Captured JSON payload deep-equals an empty `GeneratedPattern`. |
+| EXPORT-006 | Create Pattern export controls do not expose a visible Export JSON button. | `tests/accessibilitySource.test.ts` | Passing | Source-level guard confirms `ExportControls` keeps Export PNG and Copy size only. |
 
 ## Manual Checks Still Required
 
-- Export JSON from the Generator and inspect the downloaded file.
-- Confirm multiline generated grids preserve line spacing rows.
-- Confirm unsupported character count data appears in JSON when present.
-- Confirm large-pattern warnings appear in JSON when present.
+- Confirm font JSON export remains available where intentionally exposed.
+- If generated pattern JSON export is reintroduced later, inspect the downloaded file for multiline grids and line spacing rows.
+- If generated pattern JSON export is reintroduced later, confirm unsupported character count data appears in JSON when present.
+- If generated pattern JSON export is reintroduced later, confirm large-pattern warnings appear in JSON when present.
 
 ## Known Remaining Limits
 
-- Export controls disable JSON export for empty patterns in the UI; utility-level JSON export still serialises empty data safely.
+- Create Pattern no longer exposes pattern JSON export in the UI; utility-level JSON export still serialises empty data safely.
 - Browser download behaviour is simulated in automated tests.
+

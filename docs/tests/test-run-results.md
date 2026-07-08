@@ -1668,3 +1668,31 @@ node .\node_modules\next\dist\bin\next build
 - App TypeScript compile: passed.
 - Test TypeScript compile: passed.
 - Automated utility/source tests: passed.
+
+### Export Controls Cleanup
+
+#### Scope
+
+- Removed the visible Export JSON button from the Create Pattern export controls.
+- Kept Export PNG as the primary pattern export action.
+- Kept Copy size for copying stitch dimensions to the clipboard.
+- Updated export documentation, test plans and source regression coverage.
+- Updated manual journey and desktop browser verification task statuses from user-confirmed testing.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed after rerun with a longer timeout.
+- `EXPORT-006` now covers that Create Pattern export controls show Export PNG and Copy size only.

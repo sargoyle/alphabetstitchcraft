@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-08: Removed the visible Export JSON button from Create Pattern export controls while keeping Export PNG and Copy size. Files affected: `src/components/ExportControls.tsx`, `tests/accessibilitySource.test.ts`, `docs/functions/export-json.md`, `docs/tests/export-json.test-plan.md`, `docs/tests/export-png.test-plan.md`, `docs/tests/test-index.md`, `docs/tasks.md`.
 
 
 
@@ -180,3 +181,4 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed Create Pattern warnings for characters whose key exists in the font but whose grid has no filled stitches. These blank/uncreated characters are now skipped and reported as unavailable. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
+

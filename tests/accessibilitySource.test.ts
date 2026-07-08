@@ -50,6 +50,15 @@ assert.ok(
 );
 
 assert.ok(
+  exportControlsSource.includes("Export PNG") &&
+    exportControlsSource.includes("Copy size") &&
+    !exportControlsSource.includes("Export JSON") &&
+    !exportControlsSource.includes("exportPatternJson") &&
+    !exportControlsSource.includes("FileJson"),
+  "EXPORT-006: Create Pattern export controls should show PNG export and Copy size only."
+);
+
+assert.ok(
   customFontsSource.includes('role="status" aria-live="polite"') &&
     customFontsSource.includes('role="alert" aria-live="assertive"'),
   "A11Y-007: Font sync status and warnings should use live regions."
@@ -99,3 +108,4 @@ assert.ok(
 );
 
 console.log("accessibility source tests passed.");
+

@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Allow users to download generated pattern data or font data as JSON for reuse, inspection or handoff. JSON export is a utility feature for designers/developers; it is not the primary visual export, and it should not add schema or app version metadata in v1.
+Document JSON export behaviour. Font JSON export remains available where the current UI exposes it, and generated pattern JSON remains available as a utility helper, but the Create Pattern export controls no longer show a visible Export JSON button. PNG is the primary user-facing export for created pattern images.
 
 ## Source References
 
-- Component: `ExportControls` in `src/components/ExportControls.tsx`
+- Component: `ExportControls` in `src/components/ExportControls.tsx` (Create Pattern UI now exposes PNG export and Copy size only)
 - Page: `src/app/custom-fonts/page.tsx`
 - File: `src/lib/exportUtils.ts`
 - Function: `exportPatternJson()`
@@ -35,7 +35,7 @@ Allow users to download generated pattern data or font data as JSON for reuse, i
 - JSON download for generated pattern.
 - JSON download for font, where the current UI exposes it.
 - Safe filename for font export.
-- Status message after pattern JSON export.
+- No visible Create Pattern pattern-JSON export status message because the visible pattern JSON button has been removed.
 - No schema version, app version or extra metadata added to the exported JSON in v1.
 
 ## Worked Examples
@@ -59,7 +59,7 @@ Output:
 ## State Transitions
 
 1. User generates a valid pattern or opens a font export action.
-2. User clicks Export JSON.
+2. If using a UI that still exposes JSON export, the user clicks Export JSON; Create Pattern no longer exposes this button.
 3. App serialises the selected object with two-space indentation.
 4. App creates a Blob and temporary object URL.
 5. Browser download is triggered.
@@ -70,11 +70,11 @@ Output:
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| Generated pattern JSON export is optional but allowed in v1. | Confirmed | Implemented | Original scope listed optional JSON export. |
+| Generated pattern JSON export is optional but no longer exposed as a visible Create Pattern control. | Confirmed | Partially Implemented | Utility helper remains implemented; visible Create Pattern button was removed to keep export controls focused on PNG and Copy size. |
 | JSON export is a utility feature for designers/developers. | Confirmed | Implemented | User confirmed the assumption. |
 | JSON exports must not include schema or app version metadata in v1. | Confirmed | Implemented | Current code serialises the object directly without adding metadata. |
 | JSON import is not part of v1. | Confirmed | Implemented | User confirmed import may be a whole future feature. |
-| Font JSON export is available from Manage Fonts where exposed by the current UI. | Confirmed | Implemented | User confirmed font JSON export remains useful as a developer/designer utility. |
+| Font JSON export is available where exposed by the current UI. | Confirmed | Implemented | User confirmed font JSON export remains useful as a developer/designer utility. |
 | JSON export must not mutate source objects. | Assumed | Implemented | Serialises only. |
 | Filenames should be safe for download. | Assumed | Implemented for font export | Pattern filename is fixed. |
 | PNG/image export remains the primary user-facing export. | Confirmed | Implemented | Product scope prioritises PNG image export. |
@@ -92,8 +92,9 @@ Output:
 
 ## Acceptance Criteria
 
-- Given a valid generated pattern, when Export JSON is clicked, then a JSON download is triggered.
-- Given an empty pattern, then pattern JSON export is disabled.
+- Given the Create Pattern export controls render, then Export JSON is not shown.
+- Given a generated pattern JSON helper is called directly, then a JSON download is triggered.
+- Given an empty pattern, then Create Pattern does not present a visible pattern JSON export action.
 - Given a font with spaces or punctuation in its name, when exported, then filename is normalised.
 - Given JSON is downloaded, then it contains the exported pattern or font object.
 - Given JSON is downloaded in v1, then it does not include schema version metadata.
@@ -112,7 +113,7 @@ Output:
 
 ## Current Code Behaviour
 
-- Currently pattern JSON filename is `stitch-lettering-pattern.json`.
+- Currently pattern JSON helper filename is `stitch-lettering-pattern.json`, but the Create Pattern UI no longer exposes the pattern JSON export button.
 - Currently font JSON filename is derived from lowercased font name and falls back to `stitch-font`.
 - Currently JSON is formatted with two-space indentation.
 - Currently JSON export serialises the object directly and does not appear to add schema or app version metadata.
@@ -125,8 +126,9 @@ Output:
 
 ## Automated Test Evidence
 
-- `PARITY-002` verifies generated pattern JSON export preserves the source `GeneratedPattern` object, including grid, dimensions and warnings.
+- `PARITY-002` verifies generated pattern JSON export preserves the source `GeneratedPattern` object, including grid, dimensions and warnings, at utility level
 - `EXPORT-004` verifies empty pattern JSON export preserves safe empty data at utility level.
+- `EXPORT-006` verifies Create Pattern export controls do not expose a visible Export JSON button.
 
 ## Unclear or Assumed Rules
 
@@ -143,8 +145,9 @@ Output:
 
 ## Suggested Test Areas
 
-- Pattern JSON export.
+- Utility-level pattern JSON export.
 - Font JSON export.
+- Confirm Create Pattern does not show a visible Export JSON button.
 - Filename sanitisation.
 - Empty export disabled state.
 - JSON payload shape.
@@ -159,6 +162,4 @@ Output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
-
-
 

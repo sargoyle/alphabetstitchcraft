@@ -27,6 +27,7 @@ Verify that PNG export uses the same generated pattern grid and relevant visibil
 | PREVIEW-001 | `src/app/generator/page.tsx` passes the same `pattern` object to `TextPatternPreview` and `ExportControls`. | Reviewed | Confirms preview and export share generated pattern data at page level. |
 | PREVIEW-002 | `ExportControls` passes `showGrid` and `showFilled` into `exportPatternPng()`. | Reviewed | Confirms PNG export receives preview visibility settings. |
 | PARITY-002 | `exportPatternPng()` calls `patternToCanvas(pattern, options)` and does not call `renderTextToGrid()`. | Reviewed | Confirms PNG export does not recalculate layout. |
+| EXPORT-006 | `ExportControls` renders `Export PNG` and `Copy size` without rendering `Export JSON`. | Tested | Confirms Create Pattern export controls stay focused on PNG export and stitch dimensions. |
 
 ## Manual Checks Still Required
 
@@ -41,3 +42,4 @@ Verify that PNG export uses the same generated pattern grid and relevant visibil
 
 - Canvas style parity with CSS preview is not pixel-perfect tested in the utility runner.
 - Browser download behaviour is only simulated by the utility test harness.
+

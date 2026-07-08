@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardCopy, Download, FileJson } from "lucide-react";
+import { ClipboardCopy, Download } from "lucide-react";
 import type { GeneratedPattern } from "@/lib/fontTypes";
-import { copyDesignSize, exportPatternJson, exportPatternPng } from "@/lib/exportUtils";
+import { copyDesignSize, exportPatternPng } from "@/lib/exportUtils";
 
 type ExportControlsProps = {
   pattern: GeneratedPattern;
@@ -49,18 +49,7 @@ export function ExportControls({ pattern, showGrid, showFilled }: ExportControls
         <ClipboardCopy aria-hidden="true" size={17} />
         Copy size
       </button>
-      <button
-        className="button ghost"
-        type="button"
-        disabled={!canExport}
-        onClick={() => {
-          exportPatternJson(pattern);
-          setMessage("JSON exported.");
-        }}
-      >
-        <FileJson aria-hidden="true" size={17} />
-        Export JSON
-      </button>
+
       {message ? <p className="status-text" role="status" aria-live="polite">{message}</p> : null}
     </div>
   );

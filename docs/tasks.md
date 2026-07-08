@@ -594,33 +594,33 @@ Acceptance checks:
 
 ### 11.2 Manual User Journey Testing
 
-- [ ] Test Journey 1: Browse a font.
-- [ ] Test Journey 2: Generate text.
-- [ ] Test Journey 3: Edit a character.
-- [ ] Test Journey 4: Create a custom font.
-- [ ] Test export.
-- [ ] Test reload persistence.
+- [x] Test Journey 1: Browse a font.
+- [x] Test Journey 2: Generate text.
+- [x] Test Journey 3: Edit a character.
+- [x] Test Journey 4: Create a custom font.
+- [x] Test export.
+- [x] Test reload persistence.
 
 Acceptance checks:
 
-- [ ] A user can complete every v1 journey without developer tools.
-- [ ] Saved custom font data affects future previews.
-- [ ] PNG export opens as a valid image.
+- [x] A user can complete every v1 journey without developer tools.
+- [x] Saved custom font data affects future previews.
+- [x] PNG export opens as a valid image.
 
 ### 11.3 Browser Verification
 
 - [x] Run local dev server.
-- [ ] Verify the app in a browser.
-- [ ] Check desktop viewport.
+- [x] Verify the app in a browser.
+- [x] Check desktop viewport.
 - [ ] Check mobile viewport.
-- [ ] Inspect for console errors.
+- [x] Inspect for console errors.
 - [ ] Capture screenshots if needed for review.
 
 Acceptance checks:
 
-- [ ] No blocking console errors.
-- [ ] Main workflows work in the browser.
-- [ ] Canvas or SVG export works in the browser.
+- [x] No blocking console errors.
+- [x] Main workflows work in the browser.
+- [x] Canvas or SVG export works in the browser.
 
 ## V1 Definition of Done
 
@@ -1921,3 +1921,19 @@ Acceptance checks:
 - [x] Missing lowercase characters show in unsupported-character reporting.
 - [x] Missing lowercase characters are skipped from the generated grid.
 - [x] Existing uppercase characters still render when typed as uppercase.
+
+## Phase 44: Pattern Export Controls Cleanup
+
+### 44.1 Remove Pattern JSON Button
+
+- [x] Remove Export JSON from the Create Pattern export controls.
+- [x] Keep Export PNG available as the primary visual export.
+- [x] Keep Copy size available for copying stitch dimensions.
+- [x] Update manual journey and browser verification task statuses from user-confirmed testing.
+
+Acceptance checks:
+
+- [x] Export controls show Export PNG and Copy size only.
+- [x] Export PNG remains enabled for valid generated patterns.
+- [x] Copy size copies the generated stitch dimensions.
+
