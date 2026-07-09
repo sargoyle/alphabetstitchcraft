@@ -11,19 +11,19 @@ export function createBlankCharacter(width = 8, height = 10): StitchCharacter {
   };
 }
 
-export function createBlankFont(name: string): StitchFont {
+export function createBlankFont(name: string, options: { category?: FontCategory; height?: number } = {}): StitchFont {
   const now = new Date().toISOString();
   return {
     id: crypto.randomUUID(),
     name,
     description: "A blank editable alphabet ready for drawing on the character grid.",
-    category: "Block" as FontCategory,
-    defaultHeight: 10,
+    category: options.category ?? ("Block" as FontCategory),
+    defaultHeight: options.height ?? 10,
     recommendedUse: "Custom lettering alphabets, experiments and personal stitch styles",
     licence: "User-created public font",
     isCustom: true,
     createdAt: now,
     updatedAt: now,
-    characters: Object.fromEntries(blankFontCharacterKeys.map((key) => [key, createBlankCharacter()]))
+    characters: Object.fromEntries(blankFontCharacterKeys.map((key) => [key, createBlankCharacter(options.height ?? 10, options.height ?? 10)]))
   };
 }

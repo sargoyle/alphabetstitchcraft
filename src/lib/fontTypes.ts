@@ -1,12 +1,4 @@
-export type FontCategory =
-  | "Block"
-  | "Serif"
-  | "Gothic"
-  | "Script-inspired"
-  | "Tiny"
-  | "Decorative"
-  | "Sampler"
-  | "Modern";
+export type FontCategory = string;
 
 export type StitchCharacter = {
   width: number;
