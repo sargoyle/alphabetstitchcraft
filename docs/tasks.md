@@ -1937,3 +1937,53 @@ Acceptance checks:
 - [x] Export PNG remains enabled for valid generated patterns.
 - [x] Copy size copies the generated stitch dimensions.
 
+
+## Phase 45: Create Pattern Loading Stability
+
+### 45.1 Prevent Default Text Flicker
+
+- [x] Keep Create Pattern in a loading state until database fonts resolve.
+- [x] Keep Create Pattern in a loading state until stored generator settings hydrate.
+- [x] Prevent the default `HELLO STITCH` preview from flashing before saved text and selected font load.
+- [x] Update regression source coverage.
+
+Acceptance checks:
+
+- [x] Create Pattern shows `Loading pattern creator...` while fonts or stored settings are preparing.
+- [x] Create Pattern does not render the first font or default text during preparation.
+
+## Phase 46: Print-Ready PDF Export
+
+### 46.1 Add Download Print PDF
+
+- [x] Add `Download Print PDF` to Create Pattern export controls.
+- [x] Keep `Download PNG` available as the single-image digital export.
+- [x] Add A4 landscape PDF generation.
+- [x] Add automatic PDF pagination.
+- [x] Add 2-stitch overlap in PDF page planning.
+- [x] Add footer neighbour navigation data.
+- [x] Add total pattern dimensions to PNG and PDF output.
+- [x] Add 10-stitch grouping and centre guide lines to export rendering.
+- [x] Update function documentation and automated utility tests.
+
+Acceptance checks:
+
+- [x] Export controls show Download PNG, Download Print PDF and Copy size.
+- [x] PDF utility creates a PDF payload.
+- [x] Large patterns paginate.
+- [x] PDF page planning includes neighbour navigation and overlap data.
+
+## Phase 47: Shared Font Deletion Policy Decision
+
+### 47.1 Allow Deleting Any Font
+
+- [ ] Get explicit approval for a public `default_fonts` delete policy or choose a safer admin-only deletion model.
+- [ ] Add the approved Supabase policy/migration.
+- [ ] Route default/shared slug deletes to `default_fonts` after policy approval.
+- [ ] Keep UUID custom font deletes routed to `custom_fonts`.
+
+Acceptance checks:
+
+- [ ] `Alphabet Pic Serif Sample` can be deleted from the app.
+- [ ] Deleting a default/shared font does not pass a slug into UUID fields.
+- [ ] Security implications of public delete access are accepted or mitigated.

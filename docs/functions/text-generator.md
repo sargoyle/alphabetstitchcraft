@@ -18,7 +18,7 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 - Related product decision: generator settings should sync across browsers through the database in the future.
 - Related product decision: first available font is a suitable fallback.
 - Related product decision: very large patterns should scroll rather than auto-fit.
-- Reviewed behaviour: Create Pattern shows a loading state while database fonts resolve so it does not render a stale fallback font or stale preview.
+- Reviewed behaviour: Create Pattern shows a loading state while database fonts and stored generator settings resolve so it does not render stale fallback fonts, stale preview text, or the default `HELLO STITCH` state.
 
 ## Decision Required
 
@@ -49,9 +49,9 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 - Unsupported-character warning.
 - Persisted generator settings in the current browser.
 - Future database-backed cross-browser synced settings.
-- Export controls for PNG, copy size and JSON.
+- Export controls for PNG, print PDF and copy size.
 - Scrollable preview for very large patterns.
-- Loading state while database-backed fonts are resolving.
+- Loading state while database-backed fonts and stored generator settings are resolving.
 
 ## Worked Examples
 
@@ -116,7 +116,7 @@ Expected output:
 | Generator settings should remain browser-local for now. | Confirmed | Implemented | User confirmed current browser-local behaviour is acceptable for now. |
 | Generator settings should sync across browsers through the database in the future. | Confirmed | Not Implemented | User confirmed database-backed sync. |
 | First available font is a suitable fallback. | Confirmed | Implemented | User confirmed first available font is acceptable fallback. |
-| First available font fallback must not run before database font loading has resolved. | Confirmed | Implemented | Loading state prevents stale default/bundled previews flashing before the selected database font is available. |
+| First available font fallback must not run before database font loading and stored settings hydration have resolved. | Confirmed | Implemented | Loading state prevents stale default/bundled previews or default text flashing before the selected database font and saved text are available. |
 | Very large patterns should scroll rather than auto-fit. | Confirmed | Implemented | User confirmed scroll-only behaviour. |
 | Preview and export should use the same generated pattern data. | Confirmed | Implemented | `GeneratorPage` passes the same `pattern` object to preview and export controls. |
 | Generator should not require a backend to render default fonts. | Assumed | Implemented | Defaults are local. |
@@ -130,6 +130,7 @@ Expected output:
 - Must not require Manage Fonts access to use the generator.
 - Must not auto-fit very large patterns instead of allowing scroll.
 - Must not render a stale fallback font preview while database fonts are still loading.
+- Must not render default text or the first font before stored generator settings have hydrated.
 - Must not use browser-local storage as the only source once future database-backed settings sync is implemented.
 - Must not remove browser-local settings persistence before the future sync mechanism is implemented.
 
@@ -143,6 +144,7 @@ Expected output:
 - Given settings are changed and the page reloads in the same browser, when saved settings are available, then those settings are restored.
 - Given no selected/saved font is available, when fonts exist, then the first available font is selected as fallback.
 - Given database fonts are still loading, when Create Pattern renders, then a loading status is shown instead of a pattern preview.
+- Given database fonts have loaded but stored generator settings have not hydrated yet, when Create Pattern renders, then the loading status remains visible and the default text preview is not shown.
 - Given database fonts finish loading, when a selected font id is available, then the preview renders using the resolved selected font.
 - Given settings are changed in one browser, when database-backed cross-browser sync is implemented later, then another browser can restore those settings from the database.
 - Given a very large pattern is generated, then the preview scrolls rather than auto-fitting the pattern.
@@ -163,7 +165,8 @@ Expected output:
 
 ## Current Code Behaviour
 
-- Currently starts with default text `HELLO\nSTITCH`.
+- Currently starts with default text `HELLO
+STITCH`.
 - Currently shows `Loading pattern creator...` while `useFonts()` is in `loading` mode.
 - Currently restores saved settings after font loading resolves.
 - Currently saves updates during state changes.
@@ -210,4 +213,3 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
-

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fontsData from "../src/data/fonts.json";
 import type { GeneratedPattern, StitchFont } from "../src/lib/fontTypes";
-import { copyDesignSize, exportFontJson, exportPatternJson, exportPatternPng, patternToCanvas } from "../src/lib/exportUtils";
+import { copyDesignSize, exportFontJson, exportPatternJson, exportPatternPdf, exportPatternPng, patternToCanvas, planPdfPages } from "../src/lib/exportUtils";
 
 const fonts = fontsData as StitchFont[];
 const blockFont = fonts.find((font) => font.id === "block-needle-5x7");
@@ -11,6 +11,7 @@ const clicks: Array<{ download: string; href: string }> = [];
 const objectUrls: string[] = [];
 const revokedUrls: string[] = [];
 const jsonPayloads: unknown[] = [];
+const pdfPayloads: string[] = [];
 const drawCalls: Array<{ type: "fillRect" | "strokeRect"; x: number; y: number; width: number; height: number }> = [];
 
 class MockBlob {
@@ -60,6 +61,9 @@ function createCanvas() {
         },
         strokeRect(x: number, y: number, width: number, height: number) {
           drawCalls.push({ type: "strokeRect", x, y, width, height });
+        },
+        fillText() {
+          return undefined;
         }
       };
     }
@@ -76,8 +80,13 @@ function createCanvas() {
 
 (globalThis as any).URL = {
   createObjectURL(blob: Blob) {
-    assert.equal(blob.type, "application/json");
-    jsonPayloads.push(JSON.parse((blob as unknown as MockBlob).content));
+    if (blob.type === "application/json") {
+      jsonPayloads.push(JSON.parse((blob as unknown as MockBlob).content));
+    } else if (blob.type === "application/pdf") {
+      pdfPayloads.push((blob as unknown as MockBlob).content);
+    } else {
+      throw new Error(`Unexpected blob type ${blob.type}`);
+    }
     const url = `blob:mock-${objectUrls.length + 1}`;
     objectUrls.push(url);
     return url;
@@ -117,8 +126,8 @@ const pattern: GeneratedPattern = {
 
 const canvas = patternToCanvas(pattern, { cellSize: 10, showGrid: true });
 assert.equal(canvas.width, 40);
-assert.equal(canvas.height, 40);
-assert.ok(drawCalls.some((call) => call.type === "fillRect"), "Canvas export should draw filled cells and background.");
+assert.equal(canvas.height, 64);
+assert.ok(drawCalls.some((call) => call.type === "fillRect"), "Canvas export should draw filled cells, dimensions and background.");
 assert.ok(drawCalls.some((call) => call.type === "strokeRect"), "Canvas export should draw grid lines when enabled.");
 
 drawCalls.length = 0;
@@ -155,8 +164,8 @@ assert.equal(
   "PARITY-001: Canvas export should draw one grid square for every provided grid cell."
 );
 assert.ok(
-  drawCalls.some((call) => call.type === "fillRect" && call.x === 19 && call.y === 10 && call.width === 2 && call.height === 20) &&
-    drawCalls.some((call) => call.type === "fillRect" && call.x === 10 && call.y === 19 && call.width === 20 && call.height === 2),
+  drawCalls.some((call) => call.type === "fillRect" && call.x === 19 && call.y === 34 && call.width === 2 && call.height === 20) &&
+    drawCalls.some((call) => call.type === "fillRect" && call.x === 10 && call.y === 43 && call.width === 20 && call.height === 2),
   "EXPORT-005: Canvas export should draw centre guide lines through the exact middle of the pattern."
 );
 
@@ -188,6 +197,18 @@ const emptyPattern: GeneratedPattern = {
 const emptyCanvas = patternToCanvas(emptyPattern, { cellSize: 10, showGrid: true, showFilled: true });
 assert.equal(emptyCanvas.width, 20, "EXPORT-003: Empty patterns should produce a safe margin-only canvas.");
 assert.equal(emptyCanvas.height, 20, "EXPORT-003: Empty patterns should produce a safe margin-only canvas.");
+
+const pdfPlan = planPdfPages({ ...pattern, width: 180, height: 120, grid: Array.from({ length: 120 }, () => "1".repeat(180)) });
+assert.equal(pdfPlan.pageWidth > pdfPlan.pageHeight, true, "PDF-001: Print PDF should use landscape A4 dimensions.");
+assert.equal(pdfPlan.pages.length > 1, true, "PDF-002: Large patterns should paginate.");
+assert.equal(pdfPlan.pages.some((page) => page.startColumn < page.primaryStartColumn || page.startRow < page.primaryStartRow), true, "PDF-003: Paginated pages should include 2-stitch overlap where adjoining pages exist.");
+assert.equal(pdfPlan.pages[0].neighbours.right, 2, "PDF-004: Footer navigation should calculate right neighbours.");
+assert.equal(pdfPlan.pages[0].neighbours.left, null, "PDF-004: Footer navigation should report missing neighbours as null before rendering None.");
+
+exportPatternPdf(pattern, "letters.pdf");
+assert.equal(clicks.at(-1)?.download, "letters.pdf", "PDF-005: PDF export should trigger a PDF download.");
+assert.ok(pdfPayloads.at(-1)?.startsWith("%PDF-1.4"), "PDF-005: PDF export should create a PDF payload.");
+assert.ok(pdfPayloads.at(-1)?.includes("2 x 2 Squares"), "PDF-006: PDF export should include total pattern dimensions.");
 
 exportPatternJson(emptyPattern);
 assert.deepEqual(jsonPayloads.at(-1), emptyPattern, "EXPORT-004: Empty pattern JSON export should preserve safe empty data.");

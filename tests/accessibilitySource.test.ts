@@ -50,12 +50,13 @@ assert.ok(
 );
 
 assert.ok(
-  exportControlsSource.includes("Export PNG") &&
+  exportControlsSource.includes("Download PNG") &&
+    exportControlsSource.includes("Download Print PDF") &&
     exportControlsSource.includes("Copy size") &&
     !exportControlsSource.includes("Export JSON") &&
     !exportControlsSource.includes("exportPatternJson") &&
     !exportControlsSource.includes("FileJson"),
-  "EXPORT-006: Create Pattern export controls should show PNG export and Copy size only."
+  "EXPORT-006: Create Pattern export controls should show PNG export, PDF export and Copy size only."
 );
 
 assert.ok(
@@ -108,4 +109,3 @@ assert.ok(
 );
 
 console.log("accessibility source tests passed.");
-

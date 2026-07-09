@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardCopy, Download } from "lucide-react";
+import { ClipboardCopy, Download, FileText } from "lucide-react";
 import type { GeneratedPattern } from "@/lib/fontTypes";
-import { copyDesignSize, exportPatternPng } from "@/lib/exportUtils";
+import { copyDesignSize, exportPatternPdf, exportPatternPng } from "@/lib/exportUtils";
 
 type ExportControlsProps = {
   pattern: GeneratedPattern;
@@ -31,7 +31,23 @@ export function ExportControls({ pattern, showGrid, showFilled }: ExportControls
         }}
       >
         <Download aria-hidden="true" size={17} />
-        Export PNG
+        Download PNG
+      </button>
+      <button
+        className="button secondary"
+        type="button"
+        disabled={!canExport}
+        onClick={() => {
+          try {
+            exportPatternPdf(pattern, "stitch-lettering-pattern.pdf");
+            setMessage("Print PDF exported.");
+          } catch (error) {
+            setMessage(error instanceof Error ? error.message : "PDF export failed.");
+          }
+        }}
+      >
+        <FileText aria-hidden="true" size={17} />
+        Download Print PDF
       </button>
       <button
         className="button secondary"
@@ -54,4 +70,3 @@ export function ExportControls({ pattern, showGrid, showFilled }: ExportControls
     </div>
   );
 }
-

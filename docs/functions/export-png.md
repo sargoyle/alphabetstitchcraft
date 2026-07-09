@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Allow users to download the generated lettering pattern as a PNG image for use outside the app. PNG is the primary export for the created visual pattern in v1, and it should match the user's approved preview visibility settings without adding title, dimensions or font name metadata for now.
+Allow users to download the generated lettering pattern as a PNG image for use outside the app. PNG remains the single-image digital export for the complete generated pattern. It should match the PDF rendering rules where practical, including 10-stitch grouping, centre guide lines and total pattern dimensions.
 
 ## Source References
 
@@ -46,7 +46,9 @@ Allow users to download the generated lettering pattern as a PNG image for use o
 - Error message if canvas is unavailable or export fails.
 - Image export that honours preview visibility settings.
 - Image export that includes centre guide lines at the exact middle of the pattern.
-- No title, dimensions, font name or print metadata in v1.
+- Total pattern dimensions displayed on the exported image.
+- 10-stitch grouping lines.
+- Centre guide lines matching PDF centre-guide calculation.
 
 ## Worked Examples
 
@@ -118,6 +120,8 @@ Expected output:
 | Fixed export cell size is acceptable for v1. | Confirmed | Implemented | User confirmed fixed export cell size is acceptable. |
 | Preview zoom does not need to control PNG cell size. | Confirmed | Implemented | User confirmed fixed export cell size takes precedence over preview zoom in v1. |
 | Exported PNG must include horizontal and vertical centre guide lines at the exact middle of the pattern. | Confirmed | Implemented | `EXPORT-005` verifies canvas centre-guide drawing. |
+| Exported PNG must include 10-stitch grouping lines. | Confirmed | Implemented | Grid drawing uses darker/thicker lines every 10 stitches. |
+| Exported PNG must display total pattern dimensions. | Confirmed | Implemented | Canvas header writes total dimensions as `W x H Squares`. |
 | Centre guide lines must be visually distinct from normal grid lines. | Confirmed | Implemented | Canvas uses blue guide lines instead of the paper grid colour. |
 | Exported PNG must not include title, dimensions or font name metadata for now. | Confirmed | Implemented | User confirmed additional print values are future-feature decisions. |
 | Export must not change the generated pattern. | Assumed | Implemented | Reads pattern only. |
@@ -149,7 +153,7 @@ Expected output:
 - Given a valid generated pattern, when PNG export is clicked, then the image uses the fixed v1 export cell size.
 - Given a valid generated pattern, when PNG export is clicked, then the image includes vertical and horizontal centre guide lines at the exact pattern midpoint.
 - Given grid visibility is disabled, when PNG export is clicked, then centre guide lines remain visible.
-- Given a valid generated pattern, when PNG export is clicked, then the PNG does not include title, dimensions or font name text.
+- Given a valid generated pattern, when PNG export is clicked, then the PNG includes total pattern dimensions and does not include unrelated decorative metadata.
 
 ## Edge Cases
 
@@ -174,7 +178,7 @@ Expected output:
 - Currently draws blue centre guide lines after cells and grid are drawn.
 - Currently receives preview grid and filled-stitch visibility settings from `ExportControls`.
 - Currently does not use current preview zoom, which matches the fixed export cell-size decision.
-- Currently does not add title, dimensions or font name metadata to the PNG.
+- Currently adds total pattern dimensions to the PNG header and avoids unrelated decorative metadata.
 
 ## Known Gaps / Defects
 
@@ -223,5 +227,3 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
-
-

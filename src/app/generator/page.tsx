@@ -53,6 +53,7 @@ function unsupportedWarning(pattern: GeneratedPattern) {
 export default function GeneratorPage() {
   const { fonts, persistence } = useFonts();
   const [settings, setSettings] = useState<GeneratorSettings>(initialSettings);
+  const [hasLoadedStoredSettings, setHasLoadedStoredSettings] = useState(false);
   const isLoadingFonts = persistence.mode === "loading";
 
   useEffect(() => {
@@ -65,9 +66,11 @@ export default function GeneratorPage() {
       ...saved,
       fontId: selected || saved.fontId || fonts[0]?.id || ""
     }));
+    setHasLoadedStoredSettings(true);
   }, [fonts, isLoadingFonts]);
 
-  const font = isLoadingFonts ? undefined : fonts.find((item) => item.id === settings.fontId) ?? fonts[0];
+  const isPreparingGenerator = isLoadingFonts || !hasLoadedStoredSettings;
+  const font = isPreparingGenerator ? undefined : fonts.find((item) => item.id === settings.fontId) ?? fonts[0];
   const pattern = useMemo(() => {
     if (!font) {
       return emptyPattern();
@@ -96,7 +99,7 @@ export default function GeneratorPage() {
     });
   }
 
-  if (isLoadingFonts) {
+  if (isPreparingGenerator) {
     return (
       <section className="workspace-layout">
         <aside className="workspace-sidebar">
@@ -179,4 +182,3 @@ export default function GeneratorPage() {
     </section>
   );
 }
-

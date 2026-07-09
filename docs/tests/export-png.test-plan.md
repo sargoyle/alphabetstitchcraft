@@ -19,6 +19,7 @@ Verify that PNG export uses the same generated pattern grid and relevant visibil
 | EXPORT-002 | PNG canvas export honours hidden filled-stitch visibility. | `tests/exportUtils.test.ts` | Passing | `patternToCanvas(..., { showFilled: false })` does not draw filled stitch rectangles. |
 | EXPORT-003 | Empty patterns are handled safely at canvas utility level. | `tests/exportUtils.test.ts` | Passing | Empty pattern creates a safe margin-only canvas. |
 | PARITY-001 | PNG canvas draws filled and blank cells from the provided `GeneratedPattern.grid`. | `tests/exportUtils.test.ts` | Passing | Filled-cell draw count and grid-cell stroke count match the supplied grid. |
+| EXPORT-005 | PNG canvas draws centre guide lines through the exact pattern midpoint. | `tests/exportUtils.test.ts` | Passing | Centre guide line coordinates account for the dimensions header and grid bounds. |
 
 ## Source Review Evidence
 
@@ -27,7 +28,7 @@ Verify that PNG export uses the same generated pattern grid and relevant visibil
 | PREVIEW-001 | `src/app/generator/page.tsx` passes the same `pattern` object to `TextPatternPreview` and `ExportControls`. | Reviewed | Confirms preview and export share generated pattern data at page level. |
 | PREVIEW-002 | `ExportControls` passes `showGrid` and `showFilled` into `exportPatternPng()`. | Reviewed | Confirms PNG export receives preview visibility settings. |
 | PARITY-002 | `exportPatternPng()` calls `patternToCanvas(pattern, options)` and does not call `renderTextToGrid()`. | Reviewed | Confirms PNG export does not recalculate layout. |
-| EXPORT-006 | `ExportControls` renders `Export PNG` and `Copy size` without rendering `Export JSON`. | Tested | Confirms Create Pattern export controls stay focused on PNG export and stitch dimensions. |
+| EXPORT-006 | `ExportControls` renders `Download PNG`, `Download Print PDF` and `Copy size` without rendering `Export JSON`. | Tested | Confirms Create Pattern export controls stay focused on image/PDF export and stitch dimensions. |
 
 ## Manual Checks Still Required
 
@@ -42,4 +43,3 @@ Verify that PNG export uses the same generated pattern grid and relevant visibil
 
 - Canvas style parity with CSS preview is not pixel-perfect tested in the utility runner.
 - Browser download behaviour is only simulated by the utility test harness.
-

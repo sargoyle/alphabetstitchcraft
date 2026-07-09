@@ -160,8 +160,10 @@ assert.ok(
   generatorSource.includes('persistence.mode === "loading"') &&
     generatorSource.includes("Loading pattern creator...") &&
     generatorSource.includes("if (isLoadingFonts) return;") &&
-    generatorSource.includes("isLoadingFonts ? undefined"),
-  "GENERATOR-001: Create Pattern should show a loading state and avoid stale fallback fonts while database fonts load."
+    generatorSource.includes("hasLoadedStoredSettings") &&
+    generatorSource.includes("isPreparingGenerator") &&
+    generatorSource.includes("isPreparingGenerator ? undefined"),
+  "GENERATOR-001: Create Pattern should show a loading state and avoid stale fallback fonts or default text while database fonts and stored settings load."
 );
 
 console.log("renderVisibility tests passed.");

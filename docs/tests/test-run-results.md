@@ -1696,3 +1696,31 @@ node .\node_modules\next\dist\bin\next build
 - Automated utility/source tests: passed.
 - Direct ESLint: passed after rerun with a longer timeout.
 - `EXPORT-006` now covers that Create Pattern export controls show Export PNG and Copy size only.
+
+### Create Pattern Loading And PDF Export
+
+#### Scope
+
+- Prevented Create Pattern from rendering default text or fallback font before stored generator settings hydrate.
+- Added Download Print PDF beside Download PNG and Copy size.
+- Added PDF page planning for landscape A4, pagination, 2-stitch overlap and footer neighbour navigation.
+- Improved PNG export with total dimensions and 10-stitch grouping while retaining centre guide lines.
+- Default/shared font deletion was investigated, but the broad public `default_fonts` delete policy requires explicit security approval before implementation.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- Status: passed for implemented code paths.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- Direct ESLint: passed.
+- Shared/default font deletion remains blocked pending explicit approval for the database delete policy.

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- 2026-07-09: Added print-ready PDF export planning and download support, improved PNG export with dimensions and grid grouping, and hardened Create Pattern loading so saved settings hydrate before preview render. Files affected: `src/app/generator/page.tsx`, `src/components/ExportControls.tsx`, `src/lib/exportUtils.ts`, `tests/exportUtils.test.ts`, `tests/renderVisibility.test.ts`, `tests/accessibilitySource.test.ts`, `docs/functions/export-pdf.md`, `docs/functions/export-png.md`, `docs/functions/text-generator.md`, `docs/tests/export-pdf.test-plan.md`, `docs/tests/export-png.test-plan.md`, `docs/tests/test-index.md`, `docs/tasks.md`.
 - 2026-07-07: Added browser favicon assets from the supplied needle-and-thread artwork and registered app icon metadata. Files affected: `src/app/favicon.ico`, `src/app/favicon-16x16.png`, `src/app/favicon-32x32.png`, `src/app/icon.png`, `src/app/apple-icon.png`, `src/app/layout.tsx`, `docs/tasks.md`.
 - 2026-07-01: Added a follow-up Supabase cleanup migration for `Block Needle 5x7` display-name variants such as `Block Needle 5 x 7`, including self-contained backup-table creation when needed. Files affected: `supabase/migrations/202607010004_cleanup_block_needle_name_variants.sql`, `tests/migrationScripts.test.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
 - 2026-07-01: Added a repeatable Supabase cleanup migration for duplicate `Block Needle 5x7` shared font records, including backup snapshots for accidental custom duplicates before deletion. Files affected: `supabase/migrations/202607010003_cleanup_duplicate_block_needle.sql`, `tests/migrationScripts.test.ts`, `tests/runTests.ts`, `docs/database.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`.
@@ -146,6 +147,7 @@ All notable changes to this project will be documented in this file.
 ## 2026-07-07 - Font Editor UX Improvements
 
 ### Added
+- 2026-07-09: Added print-ready PDF export planning and download support, improved PNG export with dimensions and grid grouping, and hardened Create Pattern loading so saved settings hydrate before preview render. Files affected: `src/app/generator/page.tsx`, `src/components/ExportControls.tsx`, `src/lib/exportUtils.ts`, `tests/exportUtils.test.ts`, `tests/renderVisibility.test.ts`, `tests/accessibilitySource.test.ts`, `docs/functions/export-pdf.md`, `docs/functions/export-png.md`, `docs/functions/text-generator.md`, `docs/tests/export-pdf.test-plan.md`, `docs/tests/export-png.test-plan.md`, `docs/tests/test-index.md`, `docs/tasks.md`.
 - Added an unsaved-character confirmation dialog for Font Editor character changes, font changes, duplicate setup and internal navigation. Files affected: `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/globals.css`.
 - Added Font Editor UX source coverage and test planning. Files affected: `tests/editorUiSource.test.ts`, `docs/tests/editor-ui.test-plan.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`.
 
@@ -181,4 +183,3 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed Create Pattern warnings for characters whose key exists in the font but whose grid has no filled stitches. These blank/uncreated characters are now skipped and reported as unavailable. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
-
