@@ -244,5 +244,3 @@ assert.equal(
 );
 
 console.log("exportUtils tests passed.");
-
-

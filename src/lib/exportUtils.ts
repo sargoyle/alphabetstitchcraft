@@ -394,5 +394,3 @@ export function exportFontJson(font: StitchFont) {
 export async function copyDesignSize(pattern: GeneratedPattern) {
   await navigator.clipboard.writeText(`Width: ${pattern.width} stitches, Height: ${pattern.height} stitches`);
 }
-
-

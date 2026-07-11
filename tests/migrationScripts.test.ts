@@ -7,6 +7,7 @@ const variantCleanupSql = readFileSync(
   "utf8"
 );
 const punctuationSql = readFileSync("supabase/migrations/202607070001_add_default_punctuation_characters.sql", "utf8");
+const defaultFontArchiveSql = readFileSync("supabase/migrations/202607110002_allow_default_font_archive.sql", "utf8");
 
 assert.match(
   cleanupSql,
@@ -80,4 +81,15 @@ assert.match(
   "Punctuation migration should include the required tilde character."
 );
 
+assert.match(
+  defaultFontArchiveSql,
+  /on public\.default_fonts for update[\s\S]*using \(is_public = true\)[\s\S]*with check \(true\)/,
+  "Default font archive migration should allow public rows to be archived with is_public = false."
+);
+
+assert.doesNotMatch(
+  defaultFontArchiveSql,
+  /for delete/,
+  "Default font archive migration should keep physical deletes unavailable."
+);
 console.log("migration script tests passed.");

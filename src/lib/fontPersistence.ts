@@ -587,5 +587,3 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
-
-

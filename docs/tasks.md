@@ -2018,3 +2018,12 @@ Acceptance checks:
 - [x] Filter archived shared/default fonts out of the app font list.
 - [x] Add regression tests for visible PDF dimensions and shared default font archive-delete behaviour.
 
+
+### 48.2 Shared/default font archive policy
+- [x] Add Supabase policy migration that allows public default fonts to be archived with is_public = false.
+- [x] Keep physical default_fonts delete access unavailable.
+- [x] Add migration regression tests for the archive policy.
+
+Acceptance checks:
+- [x] Alphabet Pic Serif Sample can be removed from the app by archive update after the migration is run.
+- [x] The migration does not create a default_fonts delete policy.

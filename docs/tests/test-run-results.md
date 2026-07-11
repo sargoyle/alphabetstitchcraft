@@ -1783,3 +1783,17 @@ Updates:
 - Shared/default font delete now archives rows with is_public = false and font loading filters archived rows out.
 - Added regression assertions for both behaviours.
 
+
+## 2026-07-11 - Shared default font archive policy
+
+Updates:
+- Added approved Supabase migration to allow default_fonts rows to be archived with is_public = false.
+- Kept physical default_fonts delete access unavailable.
+- Added migration regression assertions.
+
+Validation:
+- App TypeScript compile: Pass.
+- Test TypeScript compile: Pass.
+- Utility test runner: Pass.
+- Next production build: Pass.
+- Targeted ESLint command timed out in this environment before returning a result.

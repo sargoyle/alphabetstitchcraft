@@ -108,5 +108,3 @@ assert.ok(
   "Default/shared font deletes should archive public default font rows instead of requiring a broad delete policy."
 );
 console.log("fontPersistence tests passed.");
-
-

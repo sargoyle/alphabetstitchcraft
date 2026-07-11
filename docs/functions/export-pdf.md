@@ -84,5 +84,3 @@ Generate a print-ready A4 landscape PDF for home stitching. The PDF is separate 
 - [ ] Assumptions are accepted or corrected.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into browser tests.
-
-
