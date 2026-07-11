@@ -1978,7 +1978,7 @@ Acceptance checks:
 ### 47.1 Allow Deleting Any Font
 
 - [ ] Get explicit approval for a public `default_fonts` delete policy or choose a safer admin-only deletion model.
-- [ ] Add the approved Supabase policy/migration.
+- [x] Add the approved Supabase archive policy/migration.
 - [x] Route default/shared slug deletes to `default_fonts` after policy approval.
 - [x] Keep UUID custom font deletes routed to `custom_fonts`.
 
@@ -2023,6 +2023,7 @@ Acceptance checks:
 - [x] Add Supabase policy migration that allows public default fonts to be archived with is_public = false.
 - [x] Keep physical default_fonts delete access unavailable.
 - [x] Add migration regression tests for the archive policy.
+- [x] Avoid post-archive select checks because RLS can hide rows immediately after is_public = false.
 
 Acceptance checks:
 - [x] Alphabet Pic Serif Sample can be removed from the app by archive update after the migration is run.

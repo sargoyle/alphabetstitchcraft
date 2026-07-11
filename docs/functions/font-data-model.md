@@ -127,7 +127,7 @@ Expected output:
 13. Saves for UUID custom/shared font IDs upsert `custom_fonts` and replace the related character rows.
 14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
 15. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
-16. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs are blocked with a clear message.
+16. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs archive default_fonts.is_public = false after first confirming the public row exists.
 17. Duplicate `Block Needle 5x7` and `Block Needle 5 x 7` shared rows are cleaned by retaining `block-needle-5x7`, repointing related custom base references, backing up accidental custom duplicates, and removing accidental duplicate records.
 
 ## Rules and Requirements
@@ -304,7 +304,7 @@ Expected output:
 - Duplicate-name validation for create, edit and rename flows.
 - Slug versus UUID handling in duplicate checks.
 - Custom UUID delete targeting.
-- Default/shared slug delete blocking.
+- Default/shared slug archive-delete targeting and post-archive RLS visibility handling.
 - Duplicate Block Needle cleanup migration coverage.
 
 ## Review Checklist

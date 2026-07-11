@@ -562,15 +562,21 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
 
   if (deleteTarget.table === "default_fonts") {
     const defaultFontsTable = supabase.from("default_fonts") as any;
-    const { data, error } = await defaultFontsTable
-      .update({ is_public: false, updated_at: new Date().toISOString() })
+    const { data: existingFont, error: findError } = await defaultFontsTable
+      .select("id")
       .eq("id", fontId)
       .eq("is_public", true)
-      .select("id")
       .maybeSingle();
 
+    if (findError) throw findError;
+    if (!existingFont) throw new Error(`Default/shared font "${fontId}" was not found or could not be deleted.`);
+
+    const { error } = await defaultFontsTable
+      .update({ is_public: false, updated_at: new Date().toISOString() })
+      .eq("id", fontId)
+      .eq("is_public", true);
+
     if (error) throw error;
-    if (!data) throw new Error(`Default/shared font "${fontId}" was not found or could not be deleted.`);
     return true;
   }
 

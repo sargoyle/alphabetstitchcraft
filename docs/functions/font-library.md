@@ -163,7 +163,7 @@ Expected output:
 - Currently disables Create New Font when `persistence.canWrite` is false.
 - Currently uses an in-app Create Font dialog for name, category, new-category and height.
 - Currently shows View Alphabet, Use and Edit actions.
-- Current implementation status for Rename and Delete on the Fonts page needs code verification.
+- Rename and Delete are available from the Fonts page/editor management flow; shared/default deletes archive the row rather than physically deleting it.
 - Current Create New Font flow collects category and height before creation.
 - Currently there is no admin login/permission model.
 
@@ -173,7 +173,7 @@ Expected output:
 
 - Create New Font does not yet collect category and height before creation, which conflicts with the confirmed requirement.
 - Creation feedback uses prompt/alert rather than an in-app form and status area.
-- Rename/Delete availability on the Fonts page needs implementation verification against the confirmed requirement.
+- Shared/default archive-delete should be browser-verified against live Supabase after the archive policy migration is applied.
 - There is no admin login/permission model to restrict font management actions in the future.
 - There is no visible loading skeleton while database fonts are loading.
 

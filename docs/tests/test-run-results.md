@@ -1723,7 +1723,7 @@ node .\node_modules\next\dist\bin\next build
 - Test TypeScript compile: passed.
 - Automated utility/source tests: passed.
 - Direct ESLint: passed.
-- Shared/default font deletion remains blocked pending explicit approval for the database delete policy.
+- Shared/default font deletion uses the approved archive model and no longer requires a physical delete policy.
 
 ### Font Category Management And Delete Routing
 
@@ -1749,7 +1749,7 @@ node .\node_modules\next\dist\bin\next build
 - Test TypeScript compile: passed.
 - Utility tests: passed.
 - ESLint: passed after fixing one hook dependency warning.
-- Default/shared font deletion still requires explicit approval for the public Supabase delete policy before it can work against the live database.
+- Default/shared font deletion now requires the approved archive update policy, not a public physical delete policy.
 
 ## 2026-07-11 - PDF overlap and export controls follow-up
 
@@ -1797,3 +1797,13 @@ Validation:
 - Utility test runner: Pass.
 - Next production build: Pass.
 - Targeted ESLint command timed out in this environment before returning a result.
+
+## 2026-07-11 - Shared default archive result handling
+
+Updates:
+- Changed shared/default font archive delete to pre-check the public row before setting `is_public = false`.
+- Removed the post-archive row select because RLS can hide archived rows immediately and cause a false failure in the UI.
+- Updated source regression coverage and function/task documentation.
+
+Validation:
+- Pending this run.
