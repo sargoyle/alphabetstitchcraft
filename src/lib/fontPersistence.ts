@@ -572,7 +572,7 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
     if (!existingFont) throw new Error(`Default/shared font "${fontId}" was not found or could not be deleted.`);
 
     const { error } = await defaultFontsTable
-      .update({ is_public: false, updated_at: new Date().toISOString() })
+      .update({ is_public: false })
       .eq("id", fontId)
       .eq("is_public", true);
 

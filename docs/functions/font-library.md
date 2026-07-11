@@ -169,7 +169,7 @@ Expected output:
 
 ## Known Gaps / Defects
 
-- Shared/default fonts are deleted from the user experience by archiving default_fonts.is_public = false; they are no longer loaded by the library after deletion.
+- Shared/default fonts are deleted from the user experience by archiving `default_fonts.is_public = false`; they are no longer loaded by the library after deletion. The database grants only column-level `update (is_public)` for this archive action.
 
 - Create New Font does not yet collect category and height before creation, which conflicts with the confirmed requirement.
 - Creation feedback uses prompt/alert rather than an in-app form and status area.

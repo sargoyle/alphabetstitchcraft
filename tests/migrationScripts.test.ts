@@ -8,6 +8,7 @@ const variantCleanupSql = readFileSync(
 );
 const punctuationSql = readFileSync("supabase/migrations/202607070001_add_default_punctuation_characters.sql", "utf8");
 const defaultFontArchiveSql = readFileSync("supabase/migrations/202607110002_allow_default_font_archive.sql", "utf8");
+const defaultFontArchiveGrantSql = readFileSync("supabase/migrations/202607110003_grant_default_font_archive_update.sql", "utf8");
 
 assert.match(
   cleanupSql,
@@ -91,5 +92,16 @@ assert.doesNotMatch(
   defaultFontArchiveSql,
   /for delete/,
   "Default font archive migration should keep physical deletes unavailable."
+);
+assert.match(
+  defaultFontArchiveGrantSql,
+  /grant update \(is_public\) on public\.default_fonts to anon, authenticated/i,
+  "Default font archive grant should allow the public client to update only is_public."
+);
+
+assert.doesNotMatch(
+  defaultFontArchiveGrantSql,
+  /grant delete/i,
+  "Default font archive grant should not allow physical deletes."
 );
 console.log("migration script tests passed.");

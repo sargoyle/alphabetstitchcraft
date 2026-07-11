@@ -106,7 +106,7 @@ assert.ok(
   fontPersistenceSource.includes("const { data: existingFont, error: findError } = await defaultFontsTable") &&
     fontPersistenceSource.includes("if (findError) throw findError;") &&
     fontPersistenceSource.includes("if (!existingFont) throw new Error") &&
-    fontPersistenceSource.includes('.update({ is_public: false, updated_at: new Date().toISOString() })'),
+    fontPersistenceSource.includes('.update({ is_public: false })'),
   "Default/shared font deletes should pre-check the public row, archive it, and avoid post-archive select visibility issues."
 );
 console.log("fontPersistence tests passed.");
