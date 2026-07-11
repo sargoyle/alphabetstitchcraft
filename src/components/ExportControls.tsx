@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardCopy, Download, FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import type { GeneratedPattern } from "@/lib/fontTypes";
-import { copyDesignSize, exportPatternPdf, exportPatternPng } from "@/lib/exportUtils";
+import { exportPatternPdf, exportPatternPng } from "@/lib/exportUtils";
 
 type ExportControlsProps = {
   pattern: GeneratedPattern;
@@ -48,22 +48,6 @@ export function ExportControls({ pattern, showGrid, showFilled }: ExportControls
       >
         <FileText aria-hidden="true" size={17} />
         Download Print PDF
-      </button>
-      <button
-        className="button secondary"
-        type="button"
-        disabled={!canExport}
-        onClick={async () => {
-          try {
-            await copyDesignSize(pattern);
-            setMessage("Design size copied.");
-          } catch {
-            setMessage(`Width: ${pattern.width} stitches, Height: ${pattern.height} stitches`);
-          }
-        }}
-      >
-        <ClipboardCopy aria-hidden="true" size={17} />
-        Copy size
       </button>
 
       {message ? <p className="status-text" role="status" aria-live="polite">{message}</p> : null}

@@ -147,7 +147,7 @@ Expected output:
 | Font IDs must be unique. | Confirmed | Partially Implemented | Utility exists; runtime uniqueness enforcement depends on data source. |
 | Fonts must include metadata and character data. | Confirmed | Implemented | Types require these fields. |
 | Default and blank editable fonts must include common printable punctuation. | Confirmed | Implemented | `punctuationCharacters` covers the newly required printable punctuation set and tests assert bundled/blank font coverage. |
-| Font categories should be user-editable. | Confirmed | Unknown | User confirmed categories are editable; current implementation status should be checked before implementation/test work. |
+| Font categories should be user-editable. | Confirmed | Implemented | Font Editor saves category changes, and Font Library creation supports existing or new category names. |
 | Remote fonts must be validated before use. | Assumed | Implemented | `toStitchFont()` returns null for invalid mapped fonts. |
 | Invalid remote fonts must be shown as errors needing attention, not silently skipped. | Confirmed | Implemented | `loadRemoteFontResult()` returns invalid font warnings and `useFonts()` surfaces them in font sync status. |
 | User-created fonts should be marked as custom. | Assumed | Implemented | `createBlankFont()` and `ensureDatabaseFont()` set `isCustom`. |

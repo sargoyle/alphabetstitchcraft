@@ -15,7 +15,7 @@ This index maps confirmed functional requirements to current automated tests, pe
 | Character editor UI | `/docs/functions/character-editor.md` | `tests/editorUiSource.test.ts` | Partial | Source-level guard covers the editor sidebar tiles, new-character dialog, danger zone, dimension panel and footer action row. Visual/browser interaction still needs manual or browser coverage. |
 | Font refresh stability | `/docs/functions/font-data-model.md`, `/docs/functions/character-editor.md` | `tests/fontRefreshSource.test.ts` | Partial | Source-level guard covers avoiding saved-font clearing during refresh and keeping the just-saved font in state while remote refresh completes. Browser timing still needs manual verification. |
 | Local storage | `/docs/functions/local-storage.md` | `tests/localStorageUtils.test.ts` | Partial | Covers missing/corrupt storage fallback, custom fonts, deleted IDs and generator settings. Database persistence is out of this utility test scope. |
-| Export | `/docs/functions/export-png.md`, `/docs/functions/export-pdf.md`, `/docs/functions/export-json.md` | `tests/exportUtils.test.ts` | Partial | Covers canvas sizing, grid drawing on/off, filled drawing on/off, PNG trigger, PDF planning/download payload, JSON utility payload parity, safe empty export utilities, copy size and source coverage that Create Pattern no longer shows Export JSON. Full visual browser parity remains manual. |
+| Export | `/docs/functions/export-png.md`, `/docs/functions/export-pdf.md`, `/docs/functions/export-json.md` | `tests/exportUtils.test.ts` | Partial | Covers canvas sizing, grid drawing on/off, filled drawing on/off, PNG trigger, PDF planning/download payload, JSON utility payload parity, safe empty export utilities, source coverage that Create Pattern no longer shows Export JSON or Copy size. Full visual browser parity remains manual. |
 
 ## Pending Automated Test Areas
 
@@ -63,3 +63,9 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 ## Generator Missing Pattern Warning Coverage
 
 - Blank/uncreated character grids are now covered as unsupported pattern input in `tests/renderTextToGrid.test.ts`.
+
+## Font Category Management Coverage
+
+- `FONT-BROWSER-007`: Create New Font uses an in-app form with category, new-category and height controls.
+- `EDITOR-UI-027`: Font Editor allows choosing, creating and saving font categories.
+- `fontPersistence.test.ts`: Shared/default slug deletes route to `default_fonts`; UUID custom font deletes route to `custom_fonts`.

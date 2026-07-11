@@ -202,13 +202,32 @@ const pdfPlan = planPdfPages({ ...pattern, width: 180, height: 120, grid: Array.
 assert.equal(pdfPlan.pageWidth > pdfPlan.pageHeight, true, "PDF-001: Print PDF should use landscape A4 dimensions.");
 assert.equal(pdfPlan.pages.length > 1, true, "PDF-002: Large patterns should paginate.");
 assert.equal(pdfPlan.pages.some((page) => page.startColumn < page.primaryStartColumn || page.startRow < page.primaryStartRow), true, "PDF-003: Paginated pages should include 2-stitch overlap where adjoining pages exist.");
+assert.equal(pdfPlan.pages[0].startColumn, pdfPlan.pages[0].primaryStartColumn, "PDF-007: First/source page should not include left overlap shading.");
+assert.equal(pdfPlan.pages[0].startRow, pdfPlan.pages[0].primaryStartRow, "PDF-007: First/source page should not include top overlap shading.");
+assert.equal(pdfPlan.pages[0].endColumn, pdfPlan.pages[0].primaryEndColumn, "PDF-007: First/source page should not include future right overlap cells.");
+assert.equal(pdfPlan.pages[0].endRow, pdfPlan.pages[0].primaryEndRow, "PDF-007: First/source page should not include future lower overlap cells.");
+const continuationPage = pdfPlan.pages.find((page) => page.columnIndex > 0 || page.rowIndex > 0);
+assert.ok(continuationPage, "PDF-008: A paginated pattern should include at least one continuation page.");
+assert.equal(
+  continuationPage.startColumn < continuationPage.primaryStartColumn || continuationPage.startRow < continuationPage.primaryStartRow,
+  true,
+  "PDF-008: Continuation pages should include repeated overlap from previous pages."
+);
+assert.equal(
+  pdfPlan.pages.every((page) => page.endColumn === page.primaryEndColumn && page.endRow === page.primaryEndRow),
+  true,
+  "PDF-009: PDF pages should not include future overlap cells on source pages."
+);
 assert.equal(pdfPlan.pages[0].neighbours.right, 2, "PDF-004: Footer navigation should calculate right neighbours.");
 assert.equal(pdfPlan.pages[0].neighbours.left, null, "PDF-004: Footer navigation should report missing neighbours as null before rendering None.");
 
 exportPatternPdf(pattern, "letters.pdf");
 assert.equal(clicks.at(-1)?.download, "letters.pdf", "PDF-005: PDF export should trigger a PDF download.");
-assert.ok(pdfPayloads.at(-1)?.startsWith("%PDF-1.4"), "PDF-005: PDF export should create a PDF payload.");
-assert.ok(pdfPayloads.at(-1)?.includes("2 x 2 Squares"), "PDF-006: PDF export should include total pattern dimensions.");
+const latestPdf = pdfPayloads.at(-1) ?? "";
+assert.ok(latestPdf.startsWith("%PDF-1.4"), "PDF-005: PDF export should create a PDF payload.");
+assert.ok(latestPdf.includes("2 x 2 Squares"), "PDF-006: PDF export should include total pattern dimensions.");
+assert.ok(latestPdf.includes("0.031 0.137 0.114 rg"), "PDF-010: PDF export should include stitch fill drawing commands.");
+assert.equal(latestPdf.includes("NaN"), false, "PDF-010: PDF export should not contain invalid PDF colour values.");
 
 exportPatternJson(emptyPattern);
 assert.deepEqual(jsonPayloads.at(-1), emptyPattern, "EXPORT-004: Empty pattern JSON export should preserve safe empty data.");

@@ -49,7 +49,7 @@ Allow users to type custom lettering, choose a stitch font, adjust layout settin
 - Unsupported-character warning.
 - Persisted generator settings in the current browser.
 - Future database-backed cross-browser synced settings.
-- Export controls for PNG, print PDF and copy size.
+- Export controls for PNG and print PDF.
 - Scrollable preview for very large patterns.
 - Loading state while database-backed fonts and stored generator settings are resolving.
 

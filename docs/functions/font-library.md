@@ -104,7 +104,7 @@ Expected output:
 | Users should be able to rename fonts from the Fonts page. | Confirmed | Unknown | User confirmed this; implementation status needs code verification. |
 | Users should be able to delete fonts from the Fonts page. | Confirmed | Unknown | User confirmed this; implementation status needs code verification. |
 | Users should be able to create a new font when persistence is available. | Confirmed | Implemented | Create button calls font creation flow. |
-| Create New Font should allow category and height selection before creation. | Confirmed | Not Implemented | User confirmed this; current code previously used prompt-based name entry. |
+| Create New Font should allow category and height selection before creation. | Confirmed | Implemented | Create New Font now uses an in-app dialog with name, category, new-category and height fields. |
 | Create must not proceed when persistence cannot write. | Assumed | Implemented | Disabled button and alert guard. |
 | Font cards should show a preview. | Confirmed | Implemented | `FontGridPreview` is used. |
 | Font card previews must not show pattern centre guide lines. | Confirmed | Implemented | Centre guides remain on Create Pattern but `FontGridPreview` passes `showCenterGuide={false}`. |
@@ -161,10 +161,10 @@ Expected output:
 - Currently derives category and height options from available fonts.
 - Currently filters by category, height and case-insensitive search over name and description.
 - Currently disables Create New Font when `persistence.canWrite` is false.
-- Currently uses `window.prompt` for the new font name.
+- Currently uses an in-app Create Font dialog for name, category, new-category and height.
 - Currently shows View Alphabet, Use and Edit actions.
 - Current implementation status for Rename and Delete on the Fonts page needs code verification.
-- Current Create New Font flow does not appear to collect category and height before creation.
+- Current Create New Font flow collects category and height before creation.
 - Currently there is no admin login/permission model.
 
 ## Known Gaps / Defects

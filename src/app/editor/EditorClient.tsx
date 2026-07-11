@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import { defaultEditableCharacterKeys, lowercaseCharacters, numberCharacters, punctuationCharacters, uppercaseCharacters } from "@/lib/characterSets";
+import { getFontCategoryDescription, mergeFontCategories, normaliseFontCategory } from "@/lib/fontCategories";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
 import { useFonts } from "@/lib/useFonts";
@@ -31,6 +32,7 @@ function hasFilledStitches(character: StitchCharacter | undefined) {
 }
 
 const orderedBaseCharacters = new Set(defaultEditableCharacterKeys);
+const CUSTOM_CATEGORY_VALUE = "__custom__";
 
 export function EditorClient() {
   const params = useSearchParams();
@@ -42,6 +44,7 @@ export function EditorClient() {
   const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
   const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
   const duplicateSourceKeys = displayedCharacterKeys.filter((key) => hasFilledStitches(selectedFont?.characters[key]));
+  const fontCategoryOptions = useMemo(() => mergeFontCategories(fonts.map((font) => font.category)), [fonts]);
   const [characterKey, setCharacterKey] = useState("A");
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [sourceCharacterKey, setSourceCharacterKey] = useState("");
@@ -51,6 +54,8 @@ export function EditorClient() {
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
   const [fontNameDraft, setFontNameDraft] = useState("");
   const [fontHeightDraft, setFontHeightDraft] = useState(10);
+  const [fontCategoryDraft, setFontCategoryDraft] = useState("Block");
+  const [customFontCategoryDraft, setCustomFontCategoryDraft] = useState("");
   const [fontSettingsStatus, setFontSettingsStatus] = useState<{ type: "success" | "error"; message: string } | null>(
     null
   );
@@ -63,9 +68,12 @@ export function EditorClient() {
   const destinationKey = creatingCharacter ? firstCharacter(destinationCharacterKey) : activeKey;
   const destinationExists = hasFilledStitches(destinationKey ? selectedFont?.characters[destinationKey] : undefined);
   const sourceCharacter = sourceCharacterKey ? selectedFont?.characters[sourceCharacterKey] : null;
+  const resolvedFontCategory = fontCategoryDraft === CUSTOM_CATEGORY_VALUE
+    ? normaliseFontCategory(customFontCategoryDraft)
+    : normaliseFontCategory(fontCategoryDraft);
   const newCharacter = useMemo(() => {
     if (sourceCharacter) return JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter;
-    const fontHeight = Math.max(1, Math.min(24, selectedFont?.defaultHeight ?? 10));
+    const fontHeight = Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10));
     return blankCharacter(fontHeight, fontHeight);
   }, [selectedFont?.defaultHeight, sourceCharacter]);
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
@@ -95,10 +103,13 @@ export function EditorClient() {
 
   useEffect(() => {
     if (!selectedFont) return;
+    const nextCategory = normaliseFontCategory(selectedFont.category);
     setFontNameDraft(selectedFont.name);
     setFontHeightDraft(selectedFont.defaultHeight);
+    setFontCategoryDraft(fontCategoryOptions.includes(nextCategory) ? nextCategory : CUSTOM_CATEGORY_VALUE);
+    setCustomFontCategoryDraft(fontCategoryOptions.includes(nextCategory) ? "" : nextCategory);
     setFontSettingsStatus(null);
-  }, [selectedFont]);
+  }, [fontCategoryOptions, selectedFont]);
 
   useEffect(() => {
     if (!hasUnsavedCharacterChanges) return;
@@ -133,16 +144,23 @@ export function EditorClient() {
     if (!selectedFont) return;
 
     const nextName = fontNameDraft.trim();
-    const nextHeight = Math.max(1, Math.min(24, Math.round(fontHeightDraft)));
+    const nextHeight = Math.max(1, Math.min(60, Math.round(fontHeightDraft)));
+    const nextCategory = resolvedFontCategory;
 
     if (!nextName) {
       setFontSettingsStatus({ type: "error", message: "Font name is required." });
       return;
     }
 
+    if (!nextCategory) {
+      setFontSettingsStatus({ type: "error", message: "Choose or create a font category." });
+      return;
+    }
+
     const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;
     const targetFont = resizeFontCharactersHeight(cloneFont(baseFont), nextHeight);
     targetFont.name = nextName;
+    targetFont.category = nextCategory;
     targetFont.updatedAt = new Date().toISOString();
 
     const saved = await saveFont(targetFont);
@@ -272,12 +290,12 @@ export function EditorClient() {
               placeholder="Font name"
             />
           </label>
-          <label>
+                    <label>
             Font height
             <input
               type="number"
               min={1}
-              max={24}
+              max={60}
               value={fontHeightDraft}
               onChange={(event) => {
                 setFontHeightDraft(Number(event.target.value));
@@ -285,6 +303,35 @@ export function EditorClient() {
               }}
             />
           </label>
+          <label>
+            Category
+            <select
+              value={fontCategoryDraft}
+              onChange={(event) => {
+                setFontCategoryDraft(event.target.value);
+                setFontSettingsStatus(null);
+              }}
+            >
+              {fontCategoryOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+              <option value={CUSTOM_CATEGORY_VALUE}>New category...</option>
+            </select>
+          </label>
+          {fontCategoryDraft === CUSTOM_CATEGORY_VALUE ? (
+            <label>
+              New category name
+              <input
+                value={customFontCategoryDraft}
+                onChange={(event) => {
+                  setCustomFontCategoryDraft(event.target.value);
+                  setFontSettingsStatus(null);
+                }}
+                placeholder="For example: Holiday"
+              />
+            </label>
+          ) : null}
+          <p className="form-hint">{getFontCategoryDescription(resolvedFontCategory)}</p>
           <p className="form-hint">Height applies to every character in this font.</p>
           <button className="button secondary" type="button" onClick={saveFontSettings}>
             <Save aria-hidden="true" size={17} />

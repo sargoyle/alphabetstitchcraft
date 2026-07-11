@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Verify that print-ready PDF export creates A4 landscape output with pagination, 2-stitch overlap, footer navigation, centre guide lines and total pattern dimensions.
+Verify that print-ready PDF export creates A4 landscape output with pagination, continuation-page-only 2-stitch overlap, footer navigation, centre guide lines and total pattern dimensions.
 
 ## Source Requirements
 
@@ -32,3 +32,9 @@ Verify that print-ready PDF export creates A4 landscape output with pagination, 
 
 - Automated tests do not visually render the PDF pages.
 - Future print polish may need a richer PDF renderer if requirements expand.
+
+
+- PDF-007: First/source pages must not include or shade future overlap cells.
+- PDF-008: Continuation pages must include the previous page's repeated overlap cells.
+- PDF-009: Page windows must end at their primary bounds so overlap is never marked on source pages.
+- PDF-010: PDF payload must include stitch fill commands and no invalid colour values.

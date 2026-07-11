@@ -6,7 +6,7 @@ Document JSON export behaviour. Font JSON export remains available where the cur
 
 ## Source References
 
-- Component: `ExportControls` in `src/components/ExportControls.tsx` (Create Pattern UI now exposes PNG export and Copy size only)
+- Component: `ExportControls` in `src/components/ExportControls.tsx` (Create Pattern UI now exposes PNG and print PDF export only)
 - Page: `src/app/custom-fonts/page.tsx`
 - File: `src/lib/exportUtils.ts`
 - Function: `exportPatternJson()`
@@ -70,7 +70,7 @@ Output:
 
 | Rule | Product Status | Implementation Status | Notes |
 |---|---|---|---|
-| Generated pattern JSON export is optional but no longer exposed as a visible Create Pattern control. | Confirmed | Partially Implemented | Utility helper remains implemented; visible Create Pattern button was removed to keep export controls focused on PNG and Copy size. |
+| Generated pattern JSON export is optional but no longer exposed as a visible Create Pattern control. | Confirmed | Partially Implemented | Utility helper remains implemented; visible Create Pattern button was removed to keep export controls focused on PNG and print PDF. |
 | JSON export is a utility feature for designers/developers. | Confirmed | Implemented | User confirmed the assumption. |
 | JSON exports must not include schema or app version metadata in v1. | Confirmed | Implemented | Current code serialises the object directly without adding metadata. |
 | JSON import is not part of v1. | Confirmed | Implemented | User confirmed import may be a whole future feature. |
@@ -162,4 +162,3 @@ Output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
-

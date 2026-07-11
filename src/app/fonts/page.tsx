@@ -1,11 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { FontCard } from "@/components/FontCard";
 import { createBlankFont } from "@/lib/fontFactory";
+import { fontCategoryDefinitions, getFontCategoryDescription, mergeFontCategories, normaliseFontCategory } from "@/lib/fontCategories";
 import { saveSelectedFontId } from "@/lib/localStorageUtils";
 import { useFonts } from "@/lib/useFonts";
+
+const CUSTOM_CATEGORY_VALUE = "__custom__";
 
 export default function FontsPage() {
   const { fonts, saveFont, persistence } = useFonts();
@@ -13,12 +16,21 @@ export default function FontsPage() {
   const [height, setHeight] = useState("All");
   const [search, setSearch] = useState("");
   const [actionStatus, setActionStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newFontName, setNewFontName] = useState("New stitch alphabet");
+  const [newFontCategory, setNewFontCategory] = useState("Block");
+  const [newFontCustomCategory, setNewFontCustomCategory] = useState("");
+  const [newFontHeight, setNewFontHeight] = useState(10);
   const isLoadingFonts = persistence.mode === "loading";
-  const categories = useMemo(() => ["All", ...Array.from(new Set(fonts.map((font) => font.category)))], [fonts]);
+  const categories = useMemo(() => ["All", ...mergeFontCategories(fonts.map((font) => font.category))], [fonts]);
+  const categoryOptions = useMemo(() => mergeFontCategories(fonts.map((font) => font.category)), [fonts]);
   const heights = useMemo(
     () => ["All", ...Array.from(new Set(fonts.map((font) => font.defaultHeight))).sort((a, b) => a - b).map(String)],
     [fonts]
   );
+  const resolvedNewFontCategory = newFontCategory === CUSTOM_CATEGORY_VALUE
+    ? normaliseFontCategory(newFontCustomCategory)
+    : normaliseFontCategory(newFontCategory);
   const filtered = fonts.filter((font) => {
     const matchesCategory = category === "All" || font.category === category;
     const matchesHeight = height === "All" || font.defaultHeight === Number(height);
@@ -28,6 +40,15 @@ export default function FontsPage() {
     return matchesCategory && matchesHeight && matchesSearch;
   });
 
+  function openCreateFont() {
+    setActionStatus(null);
+    setNewFontName("New stitch alphabet");
+    setNewFontCategory(category !== "All" ? category : "Block");
+    setNewFontCustomCategory("");
+    setNewFontHeight(10);
+    setCreateOpen(true);
+  }
+
   async function createFont() {
     setActionStatus(null);
     if (!persistence.canWrite) {
@@ -35,18 +56,30 @@ export default function FontsPage() {
       return;
     }
 
-    const name = window.prompt("Name your new font", "New stitch alphabet");
-    if (!name?.trim()) return;
-    if (fonts.some((font) => font.name.trim().toLowerCase() === name.trim().toLowerCase())) {
+    const name = newFontName.trim();
+    const categoryName = resolvedNewFontCategory;
+    const heightValue = Math.max(1, Math.min(60, Math.round(newFontHeight)));
+
+    if (!name) {
+      setActionStatus({ type: "error", message: "Font name is required." });
+      return;
+    }
+    if (!categoryName) {
+      setActionStatus({ type: "error", message: "Choose or create a font category." });
+      return;
+    }
+    if (fonts.some((font) => font.name.trim().toLowerCase() === name.toLowerCase())) {
       setActionStatus({ type: "error", message: "A font with this name already exists." });
       return;
     }
-    const saved = await saveFont(createBlankFont(name.trim()));
+
+    const saved = await saveFont(createBlankFont(name, { category: categoryName, height: heightValue }));
     setActionStatus(
       saved
         ? { type: "success", message: "Font changes saved successfully." }
         : { type: "error", message: persistence.message || "Font was not saved." }
     );
+    if (saved) setCreateOpen(false);
   }
 
   return (
@@ -61,7 +94,7 @@ export default function FontsPage() {
           <button
             className="button primary nowrap-button"
             type="button"
-            onClick={createFont}
+            onClick={openCreateFont}
             disabled={!persistence.canWrite || isLoadingFonts}
           >
             <Plus aria-hidden="true" size={18} />
@@ -110,6 +143,17 @@ export default function FontsPage() {
             </label>
           </div>
 
+          <details className="category-guide">
+            <summary>What do the categories mean?</summary>
+            <div className="category-definition-list">
+              {fontCategoryDefinitions.map((item) => (
+                <p key={item.name}>
+                  <strong>{item.name}:</strong> {item.description}
+                </p>
+              ))}
+            </div>
+          </details>
+
           {filtered.length ? (
             <div className="card-grid">
               {filtered.map((font) => (
@@ -126,6 +170,65 @@ export default function FontsPage() {
           )}
         </>
       )}
+
+      {createOpen ? (
+        <div className="modal-backdrop" role="presentation">
+          <div className="new-character-modal create-font-modal" role="dialog" aria-modal="true" aria-labelledby="create-font-title">
+            <button
+              className="icon-button modal-close"
+              type="button"
+              aria-label="Close create font dialog"
+              onClick={() => setCreateOpen(false)}
+            >
+              <X aria-hidden="true" size={18} />
+            </button>
+            <span className="eyebrow">Create font</span>
+            <h2 id="create-font-title">New stitch alphabet</h2>
+            <label>
+              Font name
+              <input value={newFontName} onChange={(event) => setNewFontName(event.target.value)} />
+            </label>
+            <label>
+              Category
+              <select value={newFontCategory} onChange={(event) => setNewFontCategory(event.target.value)}>
+                {categoryOptions.map((item) => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
+                <option value={CUSTOM_CATEGORY_VALUE}>New category...</option>
+              </select>
+            </label>
+            {newFontCategory === CUSTOM_CATEGORY_VALUE ? (
+              <label>
+                New category name
+                <input
+                  value={newFontCustomCategory}
+                  onChange={(event) => setNewFontCustomCategory(event.target.value)}
+                  placeholder="For example: Holiday"
+                />
+              </label>
+            ) : null}
+            <p className="form-hint">{getFontCategoryDescription(resolvedNewFontCategory)}</p>
+            <label>
+              Font height
+              <input
+                type="number"
+                min={1}
+                max={60}
+                value={newFontHeight}
+                onChange={(event) => setNewFontHeight(Number(event.target.value))}
+              />
+            </label>
+            <div className="button-row">
+              <button className="button primary" type="button" onClick={createFont}>
+                Create font
+              </button>
+              <button className="button secondary" type="button" onClick={() => setCreateOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

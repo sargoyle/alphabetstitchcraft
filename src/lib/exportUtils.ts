@@ -46,8 +46,8 @@ type PdfPlan = {
 
 const normalGrid = "#d6cdbc";
 const groupedGrid = "#9f927f";
-const centreGuide = "rgba(43, 157, 255, 0.86)";
-const overlapFill = "rgba(145, 145, 145, 0.18)";
+const centreGuide = "#2b9dff";
+const overlapFill = "#e6e2db";
 const stitchFill = "#08231d";
 const paperFill = "#f8f3ea";
 
@@ -105,7 +105,7 @@ function drawPatternCellsToCanvas(
       const localX = bounds.x + (column - startColumn) * cellSize;
       const localY = bounds.y + (row - startRow) * cellSize;
       const isOverlap = overlap
-        ? column < overlap.primaryStartColumn || column >= overlap.primaryEndColumn || row < overlap.primaryStartRow || row >= overlap.primaryEndRow
+        ? column < overlap.primaryStartColumn || row < overlap.primaryStartRow
         : false;
 
       if (isOverlap) {
@@ -203,23 +203,40 @@ export function planPdfPages(pattern: GeneratedPattern, options: { cellSize?: nu
   const cellSize = Math.max(6, Math.min(targetCellSize, singlePageCellSize || targetCellSize));
   const columnsPerPage = Math.max(1, Math.floor(availableWidth / cellSize));
   const rowsPerPage = Math.max(1, Math.floor(availableHeight / cellSize));
-  const primaryColumnStep = Math.max(1, columnsPerPage - overlap);
-  const primaryRowStep = Math.max(1, rowsPerPage - overlap);
-  const columnCount = pattern.width === 0 ? 1 : Math.max(1, Math.ceil(pattern.width / primaryColumnStep));
-  const rowCount = pattern.height === 0 ? 1 : Math.max(1, Math.ceil(pattern.height / primaryRowStep));
+  const buildPrimaryRanges = (total: number, capacity: number) => {
+    if (total === 0) return [{ start: 0, end: 0 }];
+    const ranges: Array<{ start: number; end: number }> = [];
+    let start = 0;
+
+    while (start < total) {
+      const hasPreviousPage = ranges.length > 0;
+      const primaryCapacity = Math.max(1, capacity - (hasPreviousPage ? overlap : 0));
+      const end = Math.min(total, start + primaryCapacity);
+      ranges.push({ start, end });
+      if (end >= total) break;
+      start = end;
+    }
+
+    return ranges;
+  };
+
+  const columnRanges = buildPrimaryRanges(pattern.width, columnsPerPage);
+  const rowRanges = buildPrimaryRanges(pattern.height, rowsPerPage);
+  const columnCount = columnRanges.length;
+  const rowCount = rowRanges.length;
   const pages: PatternPage[] = [];
 
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
     for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
       const pageNumber = rowIndex * columnCount + columnIndex + 1;
-      const primaryStartColumn = columnIndex * primaryColumnStep;
-      const primaryStartRow = rowIndex * primaryRowStep;
-      const primaryEndColumn = Math.min(pattern.width, primaryStartColumn + primaryColumnStep);
-      const primaryEndRow = Math.min(pattern.height, primaryStartRow + primaryRowStep);
+      const primaryStartColumn = columnRanges[columnIndex].start;
+      const primaryStartRow = rowRanges[rowIndex].start;
+      const primaryEndColumn = columnRanges[columnIndex].end;
+      const primaryEndRow = rowRanges[rowIndex].end;
       const startColumn = Math.max(0, primaryStartColumn - (columnIndex > 0 ? overlap : 0));
       const startRow = Math.max(0, primaryStartRow - (rowIndex > 0 ? overlap : 0));
-      const endColumn = Math.min(pattern.width, primaryEndColumn + (columnIndex < columnCount - 1 ? overlap : 0));
-      const endRow = Math.min(pattern.height, primaryEndRow + (rowIndex < rowCount - 1 ? overlap : 0));
+      const endColumn = primaryEndColumn;
+      const endRow = primaryEndRow;
 
       pages.push({
         pageNumber,
@@ -281,8 +298,8 @@ function pageContent(pattern: GeneratedPattern, plan: PdfPlan, page: PatternPage
     for (let column = page.startColumn; column < page.endColumn; column += 1) {
       const x = gridX + (column - page.startColumn) * cellSize;
       const y = gridY + (page.endRow - row - 1) * cellSize;
-      const isOverlap = column < page.primaryStartColumn || column >= page.primaryEndColumn || row < page.primaryStartRow || row >= page.primaryEndRow;
-      if (isOverlap) commands.push(pdfRect(x, y, cellSize, cellSize, "#d8d8d8"));
+      const isOverlap = column < page.primaryStartColumn || row < page.primaryStartRow;
+      if (isOverlap) commands.push(pdfRect(x, y, cellSize, cellSize, overlapFill));
       if (rowData[column] === "1") {
         const inset = Math.max(1, cellSize * 0.2);
         commands.push(pdfRect(x + inset, y + inset, cellSize - inset * 2, cellSize - inset * 2, stitchFill));

@@ -1928,14 +1928,14 @@ Acceptance checks:
 
 - [x] Remove Export JSON from the Create Pattern export controls.
 - [x] Keep Export PNG available as the primary visual export.
-- [x] Keep Copy size available for copying stitch dimensions.
+- [x] Remove the visible Copy size export button from Create Pattern.
 - [x] Update manual journey and browser verification task statuses from user-confirmed testing.
 
 Acceptance checks:
 
-- [x] Export controls show Export PNG and Copy size only.
+- [x] Export controls show Download PNG and Download Print PDF only.
 - [x] Export PNG remains enabled for valid generated patterns.
-- [x] Copy size copies the generated stitch dimensions.
+- [x] Confirm Copy size is no longer shown in Create Pattern export controls.
 
 
 ## Phase 45: Create Pattern Loading Stability
@@ -1968,7 +1968,7 @@ Acceptance checks:
 
 Acceptance checks:
 
-- [x] Export controls show Download PNG, Download Print PDF and Copy size.
+- [x] Export controls show Download PNG and Download Print PDF.
 - [x] PDF utility creates a PDF payload.
 - [x] Large patterns paginate.
 - [x] PDF page planning includes neighbour navigation and overlap data.
@@ -1979,11 +1979,35 @@ Acceptance checks:
 
 - [ ] Get explicit approval for a public `default_fonts` delete policy or choose a safer admin-only deletion model.
 - [ ] Add the approved Supabase policy/migration.
-- [ ] Route default/shared slug deletes to `default_fonts` after policy approval.
-- [ ] Keep UUID custom font deletes routed to `custom_fonts`.
+- [x] Route default/shared slug deletes to `default_fonts` after policy approval.
+- [x] Keep UUID custom font deletes routed to `custom_fonts`.
 
 Acceptance checks:
 
 - [ ] `Alphabet Pic Serif Sample` can be deleted from the app.
 - [ ] Deleting a default/shared font does not pass a slug into UUID fields.
 - [ ] Security implications of public delete access are accepted or mitigated.
+
+## Phase 48: Font Category Management
+
+### 48.1 Choose, Create And Explain Font Categories
+
+- [x] Add category selection to Create New Font.
+- [x] Add new-category creation to Create New Font.
+- [x] Add category editing to Font Editor.
+- [x] Show plain-English category definitions in the app.
+- [x] Update function documentation and source tests.
+
+Acceptance checks:
+
+- [x] A user can choose a category when creating a font.
+- [x] A user can create a new category name when creating or editing a font.
+- [x] A user can change an existing font category in Font Editor.
+- [x] Category definitions are visible from the Font Library.
+
+### 46.7 PDF overlap and export controls follow-up
+- [x] Fix PDF colour output so stitch fill drawing commands remain valid.
+- [x] Update PDF page planning so only continuation pages include the 2-stitch overlap.
+- [x] Ensure source pages do not include future overlap cells.
+- [x] Remove the visible Copy size button from Create Pattern.
+- [x] Add automated assertions for continuation-page-only overlap behaviour.

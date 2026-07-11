@@ -52,11 +52,13 @@ assert.ok(
 assert.ok(
   exportControlsSource.includes("Download PNG") &&
     exportControlsSource.includes("Download Print PDF") &&
-    exportControlsSource.includes("Copy size") &&
+    !exportControlsSource.includes("Copy size") &&
+    !exportControlsSource.includes("copyDesignSize") &&
+    !exportControlsSource.includes("ClipboardCopy") &&
     !exportControlsSource.includes("Export JSON") &&
     !exportControlsSource.includes("exportPatternJson") &&
     !exportControlsSource.includes("FileJson"),
-  "EXPORT-006: Create Pattern export controls should show PNG export, PDF export and Copy size only."
+  "EXPORT-006: Create Pattern export controls should show PNG export and PDF export only."
 );
 
 assert.ok(

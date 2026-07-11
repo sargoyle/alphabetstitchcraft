@@ -90,7 +90,7 @@ export function getRemoteFontSaveTarget(font: Pick<StitchFont, "id">) {
 export function getRemoteFontDeleteTarget(fontId: string) {
   return isUuid(fontId)
     ? { allowed: true as const, table: "custom_fonts" as const, idKind: "uuid" as const }
-    : { allowed: false as const, table: "default_fonts" as const, idKind: "slug" as const };
+    : { allowed: true as const, table: "default_fonts" as const, idKind: "slug" as const };
 }
 
 export function hasSharedFontNameConflict(
@@ -559,10 +559,29 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   const supabase = getSupabaseClient();
   if (!supabase) return false;
 
+  if (deleteTarget.table === "default_fonts") {
+    const defaultFontsTable = supabase.from("default_fonts") as any;
+    const { data, error } = await defaultFontsTable
+      .delete()
+      .eq("id", fontId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) throw new Error(`Default/shared font "${fontId}" was not found or could not be deleted.`);
+    return true;
+  }
+
   await createRemoteFontBackup(fontId, "delete");
 
   const customFontsTable = supabase.from("custom_fonts") as any;
-  const { error } = await customFontsTable.delete().eq("id", fontId);
+  const { data, error } = await customFontsTable
+    .delete()
+    .eq("id", fontId)
+    .select("id")
+    .maybeSingle();
+
   if (error) throw error;
+  if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }

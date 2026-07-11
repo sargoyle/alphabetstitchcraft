@@ -71,8 +71,8 @@ assert.deepEqual(
 
 assert.deepEqual(
   getRemoteFontDeleteTarget(defaultFont.id),
-  { allowed: false, table: "default_fonts", idKind: "slug" },
-  "Deleting a default/shared font slug is not allowed through the custom font delete path."
+  { allowed: true, table: "default_fonts", idKind: "slug" },
+  "Deleting a default/shared font slug should target default_fonts by slug."
 );
 
 assert.equal(

@@ -16,7 +16,7 @@ Verify that JSON export utilities preserve expected data, while the Create Patte
 |---|---|---|---|---|
 | PARITY-002 | Pattern JSON export preserves the generated pattern object at utility level. | `tests/exportUtils.test.ts` | Passing | Captured JSON payload deep-equals the source `GeneratedPattern`, including grid, width, height and warnings. |
 | EXPORT-004 | Empty pattern JSON export preserves safe empty data at utility level. | `tests/exportUtils.test.ts` | Passing | Captured JSON payload deep-equals an empty `GeneratedPattern`. |
-| EXPORT-006 | Create Pattern export controls do not expose a visible Export JSON button. | `tests/accessibilitySource.test.ts` | Passing | Source-level guard confirms `ExportControls` keeps Export PNG and Copy size only. |
+| EXPORT-006 | Create Pattern export controls do not expose a visible Export JSON button. | `tests/accessibilitySource.test.ts` | Passing | Source-level guard confirms `ExportControls` keeps Download PNG and Download Print PDF only. |
 
 ## Manual Checks Still Required
 
@@ -29,4 +29,3 @@ Verify that JSON export utilities preserve expected data, while the Create Patte
 
 - Create Pattern no longer exposes pattern JSON export in the UI; utility-level JSON export still serialises empty data safely.
 - Browser download behaviour is simulated in automated tests.
-

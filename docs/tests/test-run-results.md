@@ -1675,7 +1675,7 @@ node .\node_modules\next\dist\bin\next build
 
 - Removed the visible Export JSON button from the Create Pattern export controls.
 - Kept Export PNG as the primary pattern export action.
-- Kept Copy size for copying stitch dimensions to the clipboard.
+- Removed the visible Copy size control from Create Pattern export controls.
 - Updated export documentation, test plans and source regression coverage.
 - Updated manual journey and desktop browser verification task statuses from user-confirmed testing.
 
@@ -1695,14 +1695,14 @@ node .\node_modules\next\dist\bin\next build
 - Test TypeScript compile: passed.
 - Automated utility/source tests: passed.
 - Direct ESLint: passed after rerun with a longer timeout.
-- `EXPORT-006` now covers that Create Pattern export controls show Export PNG and Copy size only.
+- `EXPORT-006` now covers that Create Pattern export controls show Download PNG and Download Print PDF only.
 
 ### Create Pattern Loading And PDF Export
 
 #### Scope
 
 - Prevented Create Pattern from rendering default text or fallback font before stored generator settings hydrate.
-- Added Download Print PDF beside Download PNG and Copy size.
+- Added Download Print PDF beside Download PNG.
 - Added PDF page planning for landscape A4, pagination, 2-stitch overlap and footer neighbour navigation.
 - Improved PNG export with total dimensions and 10-stitch grouping while retaining centre guide lines.
 - Default/shared font deletion was investigated, but the broad public `default_fonts` delete policy requires explicit security approval before implementation.
@@ -1724,3 +1724,54 @@ node .\node_modules\next\dist\bin\next build
 - Automated utility/source tests: passed.
 - Direct ESLint: passed.
 - Shared/default font deletion remains blocked pending explicit approval for the database delete policy.
+
+### Font Category Management And Delete Routing
+
+#### Scope
+
+- Added category selection and custom category creation to Create New Font.
+- Added category editing to Font Editor.
+- Added plain-English category definitions.
+- Routed default/shared slug deletes to `default_fonts` in app code; Supabase delete policy remains blocked pending explicit approval.
+
+#### Commands
+
+```powershell
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' --noEmit
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\typescript\bin\tsc' -p tsconfig.tests.json
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\.test-build\tests\runTests.js'
+& 'C:\Users\61402\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\node_modules\eslint\bin\eslint.js' .
+```
+
+#### Result
+
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Utility tests: passed.
+- ESLint: passed after fixing one hook dependency warning.
+- Default/shared font deletion still requires explicit approval for the public Supabase delete policy before it can work against the live database.
+
+## 2026-07-11 - PDF overlap and export controls follow-up
+
+Commands run:
+- App TypeScript compile using bundled Node: Pass
+- Test TypeScript compile using bundled Node: Pass
+
+Updates:
+- Removed the visible Copy size button from Create Pattern export controls.
+- Updated PDF page planning so source pages do not include future overlap cells.
+- Updated PDF page planning so continuation pages include previous-page overlap cells only.
+- Added PDF utility assertions for stitch fill commands and invalid PDF colour values.
+
+
+Validation:
+- App TypeScript compile: Pass.
+- Test TypeScript compile: Pass.
+- Utility test runner: Pass, all utility tests passed.
+
+
+
+Additional validation:
+- Targeted ESLint on changed source/test files: Pass.
+- Full ESLint command timed out in this environment before returning a result.
+- Next production build: Pass.

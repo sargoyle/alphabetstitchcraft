@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import {
   deleteRemoteFont,
-  getRemoteFontDeleteTarget,
   loadRemoteFontBackups,
   loadRemoteFontResult,
   restoreRemoteFontBackup,
@@ -39,13 +39,17 @@ export function useFonts() {
   });
 
   const fonts = useMemo(() => {
+    if (persistence.mode === "remote") {
+      return savedFonts.filter((font) => !deletedFontIds.includes(font.id));
+    }
+
     const savedById = new Map(savedFonts.map((font) => [font.id, font]));
     const mergedDefaultFonts = defaultFonts
       .filter((font) => !deletedFontIds.includes(font.id))
       .map((font) => savedById.get(font.id) ?? font);
     const addedFonts = savedFonts.filter((font) => !defaultFonts.some((defaultFont) => defaultFont.id === font.id));
     return [...mergedDefaultFonts, ...addedFonts.filter((font) => !deletedFontIds.includes(font.id))];
-  }, [savedFonts, deletedFontIds]);
+  }, [savedFonts, deletedFontIds, persistence.mode]);
 
   const deletedFonts = useMemo(
     () => defaultFonts.filter((font) => deletedFontIds.includes(font.id)),
@@ -163,24 +167,15 @@ export function useFonts() {
   }
 
   async function deleteEditableFont(fontId: string): Promise<boolean> {
-    const deleteTarget = getRemoteFontDeleteTarget(fontId);
-
-    if (!deleteTarget.allowed) {
-      const message = `Default/shared font "${fontId}" uses a slug ID and cannot be deleted from the app. Create or edit custom fonts instead.`;
-      console.warn(`[useFonts] ${message}`);
-      setPersistence((current) => ({ ...current, message }));
-      return false;
-    }
-
     try {
       const deletedRemotely = await deleteRemoteFont(fontId);
       if (!deletedRemotely) {
-        const message = "Only database-saved custom fonts can be deleted here.";
+        const message = "Only database-saved fonts can be deleted here.";
         setPersistence((current) => ({ ...current, message }));
         return false;
       }
-    } catch {
-      const message = "Database delete failed. Font was not deleted.";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Database delete failed. Font was not deleted.";
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
       return false;
     }

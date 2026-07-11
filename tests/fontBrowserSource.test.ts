@@ -43,4 +43,11 @@ assert.ok(
   "FONT-BROWSER-006: Alphabet Library should show a loading state instead of stale default font cards while database fonts load."
 );
 
+assert.ok(
+  fontsPageSource.includes("createOpen") &&
+    fontsPageSource.includes("New category...") &&
+    fontsPageSource.includes("fontCategoryDefinitions") &&
+    fontsPageSource.includes("createBlankFont(name, { category: categoryName, height: heightValue })"),
+  "FONT-BROWSER-007: Create New Font should use an in-app form with category, new-category and height controls."
+);
 console.log("fontBrowserSource tests passed.");

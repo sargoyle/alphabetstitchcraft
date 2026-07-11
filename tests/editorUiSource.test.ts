@@ -190,6 +190,14 @@ assert.ok(
   "EDITOR-UI-023: Saving font settings should preserve the current character and route through the unsaved-change guard."
 );
 
+
+assert.ok(
+  editorClientSource.includes("fontCategoryDraft") &&
+    editorClientSource.includes("New category...") &&
+    editorClientSource.includes("getFontCategoryDescription") &&
+    editorClientSource.includes("targetFont.category = nextCategory"),
+  "EDITOR-UI-027: Font Editor should allow choosing, creating and saving font categories."
+);
 console.log("editor UI source tests passed.");
 
 assert.ok(
