@@ -1775,3 +1775,11 @@ Additional validation:
 - Targeted ESLint on changed source/test files: Pass.
 - Full ESLint command timed out in this environment before returning a result.
 - Next production build: Pass.
+
+## 2026-07-11 - PDF dimension and shared default delete follow-up
+
+Updates:
+- PDF dimension text now draws in the dark stitch colour so the square count is visible.
+- Shared/default font delete now archives rows with is_public = false and font loading filters archived rows out.
+- Added regression assertions for both behaviours.
+

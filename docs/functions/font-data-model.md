@@ -255,6 +255,8 @@ Expected output:
 
 ## Known Gaps / Defects
 
+- Shared/default font deletion archives the row by setting is_public = false instead of physically deleting from default_fonts, avoiding a broad public delete policy while removing the font from the app.
+
 - Invalid remote font warnings are implemented, but the final warning UX should still be reviewed in browser.
 - Database type definitions now reflect the current public no-login persistence model for nullable custom font owners and the backup table.
 - Default font validation exists but is not automatically enforced at every app startup path.
@@ -312,3 +314,4 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+

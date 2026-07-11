@@ -226,6 +226,7 @@ assert.equal(clicks.at(-1)?.download, "letters.pdf", "PDF-005: PDF export should
 const latestPdf = pdfPayloads.at(-1) ?? "";
 assert.ok(latestPdf.startsWith("%PDF-1.4"), "PDF-005: PDF export should create a PDF payload.");
 assert.ok(latestPdf.includes("2 x 2 Squares"), "PDF-006: PDF export should include total pattern dimensions.");
+assert.ok(latestPdf.includes("0.031 0.137 0.114 rg BT /F1 10 Tf"), "PDF-011: PDF dimension text should be drawn in a visible dark colour.");
 assert.ok(latestPdf.includes("0.031 0.137 0.114 rg"), "PDF-010: PDF export should include stitch fill drawing commands.");
 assert.equal(latestPdf.includes("NaN"), false, "PDF-010: PDF export should not contain invalid PDF colour values.");
 
@@ -243,3 +244,5 @@ assert.equal(
 );
 
 console.log("exportUtils tests passed.");
+
+

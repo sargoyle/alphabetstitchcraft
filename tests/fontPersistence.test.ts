@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { createBlankFont } from "../src/lib/fontFactory";
 import {
   getFontIdKind,
@@ -7,6 +8,8 @@ import {
   hasSharedFontNameConflict
 } from "../src/lib/fontPersistence";
 import type { StitchFont } from "../src/lib/fontTypes";
+
+const fontPersistenceSource = readFileSync("src/lib/fontPersistence.ts", "utf8");
 
 const defaultFont: StitchFont = {
   id: "block-needle-5x7",
@@ -72,7 +75,7 @@ assert.deepEqual(
 assert.deepEqual(
   getRemoteFontDeleteTarget(defaultFont.id),
   { allowed: true, table: "default_fonts", idKind: "slug" },
-  "Deleting a default/shared font slug should target default_fonts by slug."
+  "Deleting a default/shared font slug should target default_fonts by slug for archive/soft delete."
 );
 
 assert.equal(
@@ -99,4 +102,11 @@ assert.equal(
   "Renaming a default font to another shared font name should be rejected."
 );
 
+assert.ok(
+  fontPersistenceSource.includes('.eq("is_public", true)') &&
+    fontPersistenceSource.includes('.update({ is_public: false, updated_at: new Date().toISOString() })'),
+  "Default/shared font deletes should archive public default font rows instead of requiring a broad delete policy."
+);
 console.log("fontPersistence tests passed.");
+
+

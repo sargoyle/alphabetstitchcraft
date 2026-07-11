@@ -1986,7 +1986,7 @@ Acceptance checks:
 
 - [ ] `Alphabet Pic Serif Sample` can be deleted from the app.
 - [ ] Deleting a default/shared font does not pass a slug into UUID fields.
-- [ ] Security implications of public delete access are accepted or mitigated.
+- [x] Security implications of public delete access are mitigated by archiving shared default rows instead of adding a broad public delete policy.
 
 ## Phase 48: Font Category Management
 
@@ -2011,3 +2011,10 @@ Acceptance checks:
 - [x] Ensure source pages do not include future overlap cells.
 - [x] Remove the visible Copy size button from Create Pattern.
 - [x] Add automated assertions for continuation-page-only overlap behaviour.
+
+### 46.8 PDF dimensions and shared default delete follow-up
+- [x] Draw PDF dimension labels in a visible dark colour.
+- [x] Archive shared/default fonts with is_public = false instead of requiring a public delete policy.
+- [x] Filter archived shared/default fonts out of the app font list.
+- [x] Add regression tests for visible PDF dimensions and shared default font archive-delete behaviour.
+

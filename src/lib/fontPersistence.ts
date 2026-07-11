@@ -321,6 +321,7 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
   const { data: defaultFontRows, error: defaultFontError } = await supabase
     .from("default_fonts")
     .select("*")
+    .eq("is_public", true)
     .order("name", { ascending: true });
 
   if (defaultFontError) throw defaultFontError;
@@ -562,8 +563,9 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (deleteTarget.table === "default_fonts") {
     const defaultFontsTable = supabase.from("default_fonts") as any;
     const { data, error } = await defaultFontsTable
-      .delete()
+      .update({ is_public: false, updated_at: new Date().toISOString() })
       .eq("id", fontId)
+      .eq("is_public", true)
       .select("id")
       .maybeSingle();
 
@@ -585,3 +587,5 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+
+

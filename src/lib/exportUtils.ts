@@ -276,7 +276,7 @@ function pdfColour(hex: string) {
 }
 
 function pdfText(x: number, y: number, text: string, size = 9) {
-  return `BT /F1 ${size} Tf ${x.toFixed(2)} ${y.toFixed(2)} Td (${pdfEscape(text)}) Tj ET`;
+  return `${pdfColour(stitchFill)} rg BT /F1 ${size} Tf ${x.toFixed(2)} ${y.toFixed(2)} Td (${pdfEscape(text)}) Tj ET`;
 }
 
 function pdfRect(x: number, y: number, width: number, height: number, colour: string, mode: "f" | "S" = "f", lineWidth = 1) {
@@ -394,3 +394,5 @@ export function exportFontJson(font: StitchFont) {
 export async function copyDesignSize(pattern: GeneratedPattern) {
   await navigator.clipboard.writeText(`Width: ${pattern.width} stitches, Height: ${pattern.height} stitches`);
 }
+
+

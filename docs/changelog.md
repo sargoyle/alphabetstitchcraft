@@ -93,6 +93,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
+- 2026-07-11: Fixed PDF dimension labels so they render in the visible stitch colour and changed shared/default font deletion to archive public rows with `is_public = false` instead of requiring a broad public delete policy. Files affected: `src/lib/exportUtils.ts`, `src/lib/fontPersistence.ts`, `tests/exportUtils.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/export-pdf.md`, `docs/functions/font-data-model.md`, `docs/functions/font-library.md`, `docs/tasks.md`.
 - 2026-07-11: Fixed print PDF export rendering by using valid PDF colour values, updated PDF overlap so only continuation pages show repeated overlap cells, and removed the visible Copy size export button. Files affected: `src/lib/exportUtils.ts`, `src/components/ExportControls.tsx`, `tests/exportUtils.test.ts`, `tests/accessibilitySource.test.ts`, `docs/functions/export-pdf.md`, `docs/tests/export-pdf.test-plan.md`, `docs/tasks.md`.
 - 2026-07-06: Fixed remaining accessibility backlog by adding arrow-key stitch-grid navigation, rendering read-only grid previews as non-interactive cells, and replacing remaining font action alerts with inline live status messages. Files affected: `src/components/CharacterGrid.tsx`, `src/app/fonts/page.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/useFonts.ts`, `src/app/globals.css`, `tests/accessibilitySource.test.ts`, `docs/functions/accessibility.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.
 - 2026-07-05: Fixed initial accessibility gaps by adding a Font Editor route heading, live-region semantics for editor/generator/export/font-sync status messages, source regression tests, and an axe-style tooling decision for go-live. Files affected: `src/app/editor/page.tsx`, `src/app/editor/EditorClient.tsx`, `src/components/CharacterEditor.tsx`, `src/app/generator/page.tsx`, `src/components/ExportControls.tsx`, `src/app/custom-fonts/page.tsx`, `src/app/globals.css`, `tests/accessibilitySource.test.ts`, `tests/runTests.ts`, `docs/functions/accessibility.md`, `docs/tasks.md`, `docs/tasks/known-gaps-defects.md`, `docs/tests/test-run-results.md`.
@@ -177,6 +178,7 @@ All notable changes to this project will be documented in this file.
 ## 2026-07-07 - Font Editor Regression Fixes
 
 ### Fixed
+- 2026-07-11: Fixed PDF dimension labels so they render in the visible stitch colour and changed shared/default font deletion to archive public rows with `is_public = false` instead of requiring a broad public delete policy. Files affected: `src/lib/exportUtils.ts`, `src/lib/fontPersistence.ts`, `tests/exportUtils.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/export-pdf.md`, `docs/functions/font-data-model.md`, `docs/functions/font-library.md`, `docs/tasks.md`.
 - Fixed not-created punctuation character drafts resetting immediately after grid clicks, so newly added punctuation characters can be drawn and saved. Files affected: `src/app/editor/EditorClient.tsx`, `tests/editorUiSource.test.ts`.
 - Fixed font settings saves so they route through the unsaved-character guard and preserve the active character instead of returning to `A`. Files affected: `src/app/editor/EditorClient.tsx`.
 - Restored duplicate source selection so the selected source is applied directly to the current character draft. Files affected: `src/app/editor/EditorClient.tsx`.
@@ -185,4 +187,6 @@ All notable changes to this project will be documented in this file.
 ## 2026-07-07 - Generator Missing Pattern Warning Fix
 
 ### Fixed
+- 2026-07-11: Fixed PDF dimension labels so they render in the visible stitch colour and changed shared/default font deletion to archive public rows with `is_public = false` instead of requiring a broad public delete policy. Files affected: `src/lib/exportUtils.ts`, `src/lib/fontPersistence.ts`, `tests/exportUtils.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/export-pdf.md`, `docs/functions/font-data-model.md`, `docs/functions/font-library.md`, `docs/tasks.md`.
 - Fixed Create Pattern warnings for characters whose key exists in the font but whose grid has no filled stitches. These blank/uncreated characters are now skipped and reported as unavailable. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
+

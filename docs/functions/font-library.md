@@ -169,6 +169,8 @@ Expected output:
 
 ## Known Gaps / Defects
 
+- Shared/default fonts are deleted from the user experience by archiving default_fonts.is_public = false; they are no longer loaded by the library after deletion.
+
 - Create New Font does not yet collect category and height before creation, which conflicts with the confirmed requirement.
 - Creation feedback uses prompt/alert rather than an in-app form and status area.
 - Rename/Delete availability on the Fonts page needs implementation verification against the confirmed requirement.
@@ -211,3 +213,4 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+

@@ -27,7 +27,7 @@ Generate a print-ready A4 landscape PDF for home stitching. The PDF is separate 
 
 - Downloaded `.pdf` file.
 - One or more landscape A4 pages.
-- Total pattern dimensions on each page.
+- Visible total pattern dimensions on each page.
 - Pattern grid with normal, 10-stitch grouping and centre guide line styles.
 - Footer navigation showing current page, total pages and left/right/above/below neighbours.
 - Lightly shaded overlap cells only where a continuation page repeats stitches from a previous page.
@@ -58,7 +58,7 @@ Generate a print-ready A4 landscape PDF for home stitching. The PDF is separate 
 
 - Currently generates a minimal browser-side PDF without adding a third-party PDF dependency.
 - Currently uses A4 landscape dimensions in points.
-- Currently prints pattern dimensions on each page.
+- Currently prints pattern dimensions on each page using the dark stitch colour so the label remains visible on the cream page background.
 - Currently shades only continuation-page overlap cells grey.
 - Currently draws normal grid lines, darker 10-stitch grouping lines and blue centre guide lines.
 
@@ -84,3 +84,5 @@ Generate a print-ready A4 landscape PDF for home stitching. The PDF is separate 
 - [ ] Assumptions are accepted or corrected.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into browser tests.
+
+
