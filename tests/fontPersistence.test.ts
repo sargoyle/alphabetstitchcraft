@@ -103,10 +103,8 @@ assert.equal(
 );
 
 assert.ok(
-  fontPersistenceSource.includes("const { data: existingFont, error: findError } = await defaultFontsTable") &&
-    fontPersistenceSource.includes("if (findError) throw findError;") &&
-    fontPersistenceSource.includes("if (!existingFont) throw new Error") &&
-    fontPersistenceSource.includes('.update({ is_public: false })'),
-  "Default/shared font deletes should pre-check the public row, archive it, and avoid post-archive select visibility issues."
+  fontPersistenceSource.includes('.rpc("archive_default_font", { font_id: fontId })') &&
+    !fontPersistenceSource.includes('.update({ is_public: false })'),
+  "Default/shared font deletes should use the archive RPC instead of browser-side table updates."
 );
 console.log("fontPersistence tests passed.");

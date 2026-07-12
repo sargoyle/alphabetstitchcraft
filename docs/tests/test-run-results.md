@@ -1807,3 +1807,15 @@ Updates:
 
 Validation:
 - Pending this run.
+
+## 2026-07-12 - Default font archive RPC
+
+Updates:
+- Added the approved `archive_default_font(font_id text)` Supabase RPC for shared/default font archive-delete.
+- Changed the app to call the RPC instead of browser-side `default_fonts` update queries.
+- The RPC migration revokes the earlier direct `update (is_public)` grant and grants only function execution.
+
+Validation:
+- App TypeScript compile: Pass.
+- Test TypeScript compile: Pass.
+- Utility test runner: Pass.

@@ -2024,6 +2024,7 @@ Acceptance checks:
 - [x] Keep physical default_fonts delete access unavailable.
 - [x] Add migration regression tests for the archive policy.
 - [x] Avoid post-archive select checks because RLS can hide rows immediately after is_public = false.
+- [x] Replace browser-side default font archive updates with the controlled archive_default_font RPC.
 
 Acceptance checks:
 - [x] Alphabet Pic Serif Sample can be removed from the app by archive update after the migration is run.

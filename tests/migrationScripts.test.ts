@@ -9,6 +9,7 @@ const variantCleanupSql = readFileSync(
 const punctuationSql = readFileSync("supabase/migrations/202607070001_add_default_punctuation_characters.sql", "utf8");
 const defaultFontArchiveSql = readFileSync("supabase/migrations/202607110002_allow_default_font_archive.sql", "utf8");
 const defaultFontArchiveGrantSql = readFileSync("supabase/migrations/202607110003_grant_default_font_archive_update.sql", "utf8");
+const defaultFontArchiveRpcSql = readFileSync("supabase/migrations/202607120001_archive_default_font_rpc.sql", "utf8");
 
 assert.match(
   cleanupSql,
@@ -103,5 +104,41 @@ assert.doesNotMatch(
   defaultFontArchiveGrantSql,
   /grant delete/i,
   "Default font archive grant should not allow physical deletes."
+);
+
+assert.match(
+  defaultFontArchiveRpcSql,
+  /create or replace function public\.archive_default_font\(font_id text\)/i,
+  "Default font archive RPC migration should create archive_default_font."
+);
+
+assert.match(
+  defaultFontArchiveRpcSql,
+  /security definer/i,
+  "Default font archive RPC should use security definer so the controlled function performs the archive."
+);
+
+assert.match(
+  defaultFontArchiveRpcSql,
+  /set is_public = false[\s\S]*where id = font_id[\s\S]*and is_public = true/i,
+  "Default font archive RPC should only hide the requested currently-public row."
+);
+
+assert.match(
+  defaultFontArchiveRpcSql,
+  /revoke update \(is_public\) on public\.default_fonts from anon, authenticated/i,
+  "Default font archive RPC migration should remove the earlier direct browser table update grant."
+);
+
+assert.match(
+  defaultFontArchiveRpcSql,
+  /grant execute on function public\.archive_default_font\(text\) to anon, authenticated/i,
+  "Default font archive RPC should be executable by the browser client."
+);
+
+assert.doesNotMatch(
+  defaultFontArchiveRpcSql,
+  /grant delete/i,
+  "Default font archive RPC migration should not allow physical deletes."
 );
 console.log("migration script tests passed.");
