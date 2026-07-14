@@ -124,7 +124,7 @@ Expected output:
 10. Restore actions map a validated backup snapshot back into the same `StitchFont` data model and save path.
 11. Custom font saves that reference bundled default fonts confirm the base default id exists in Supabase before writing `custom_fonts`.
 12. Saves for non-UUID bundled default font IDs update `default_fonts`.
-13. Saves for UUID custom/shared font IDs upsert `custom_fonts` and replace the related character rows.
+13. Saves for UUID custom/shared font IDs upsert `custom_fonts` and upsert related character rows by `font_id,character_key` without deleting existing character rows first.
 14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
 15. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
 16. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs archive default_fonts.is_public = false after first confirming the public row exists.
@@ -156,6 +156,7 @@ Expected output:
 | Custom font saves with `base_default_font_id` must show a clear error if the referenced default font is missing. | Confirmed | Implemented | `ensureBaseDefaultFontExists()` checks Supabase before the custom font upsert. |
 | Editing a bundled default/shared font must update the existing `default_fonts` record. | Confirmed | Implemented | `getRemoteFontSaveTarget()` sends non-UUID font IDs to `default_fonts` update. |
 | Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
+| Custom font character saves must be non-destructive. | Confirmed | Implemented | `custom_font_characters` rows are upserted by `font_id,character_key`; the save flow must not delete all character rows before inserting replacements. |
 | Duplicate-name validation must ignore the record currently being edited. | Confirmed | Implemented | `hasSharedFontNameConflict()` compares IDs before reporting a conflict. |
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
 | Font slugs must not be sent to UUID database fields. | Confirmed | Implemented | Custom duplicate-name exclusion only applies `.neq("id", ...)` when the current ID is a UUID. |
@@ -176,6 +177,7 @@ Expected output:
 - Must not silently skip invalid remote fonts.
 - Must not allow invalid hidden font rows to accumulate in the database without user-visible attention.
 - Must not save a custom font with a `base_default_font_id` that is missing from `default_fonts`.
+- Must not delete all custom font character rows before inserting saved character replacements.
 - Must not remove the `custom_fonts.base_default_font_id` foreign key to bypass missing seed data.
 - Must not convert a default font edit into a new UUID custom font create operation.
 - Must not report the current edited record as a duplicate of itself.

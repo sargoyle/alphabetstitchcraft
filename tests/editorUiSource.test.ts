@@ -198,6 +198,14 @@ assert.ok(
     editorClientSource.includes("targetFont.category = nextCategory"),
   "EDITOR-UI-027: Font Editor should allow choosing, creating and saving font categories."
 );
+
+assert.ok(
+  editorClientSource.includes("function filledCharacterCount") &&
+    editorClientSource.includes("filledCharacterCount(currentFont) > filledCharacterCount(selectedFont)") &&
+    editorClientSource.includes("const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;") &&
+    editorClientSource.includes("const targetFont = cloneFont(baseFont);"),
+  "EDITOR-UI-028: Character saves should use the latest local font state and ignore stale refresh data with fewer created characters."
+);
 console.log("editor UI source tests passed.");
 
 assert.ok(

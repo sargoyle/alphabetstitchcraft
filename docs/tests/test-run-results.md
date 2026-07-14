@@ -1,3 +1,19 @@
+## 2026-07-14 - Character Save Data-Loss Protection
+
+Updates:
+- Investigated font character loss after changing font height and continuing to save letters.
+- Changed custom font character persistence from delete-then-insert to non-destructive upsert by `font_id,character_key`.
+- Changed Font Editor character saves to use the latest local font state for the selected font ID instead of stale selected-font snapshots.
+- Added a guard so stale refresh data with fewer filled character designs does not replace the active editor working copy.
+- Updated source regression tests and function documentation.
+
+Validation:
+- App TypeScript compile: Pass.
+- Test TypeScript compile: Pass.
+- Utility/source test runner: Pass.
+
+Finding:
+- This prevents future saves from wiping previously saved character rows. Existing already-corrupted database rows may still need recovery from backups or manual recreation.
 # Test Run Results
 
 This file records meaningful test runs for Alphabet Stitch.

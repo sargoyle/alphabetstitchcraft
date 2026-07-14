@@ -107,4 +107,11 @@ assert.ok(
     !fontPersistenceSource.includes('.update({ is_public: false })'),
   "Default/shared font deletes should use the archive RPC instead of browser-side table updates."
 );
+
+assert.ok(
+  fontPersistenceSource.includes('customFontCharactersTable.upsert(characters, {') &&
+    fontPersistenceSource.includes('onConflict: "font_id,character_key"') &&
+    !fontPersistenceSource.includes('customFontCharactersTable\n    .delete()\n    .eq("font_id", font.id)'),
+  "Custom font character saves should upsert by font_id and character_key instead of deleting all rows before insert."
+);
 console.log("fontPersistence tests passed.");

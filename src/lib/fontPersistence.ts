@@ -526,12 +526,6 @@ export async function saveRemoteFont(
 
   if (fontError) throw fontError;
 
-  const { error: deleteError } = await customFontCharactersTable
-    .delete()
-    .eq("font_id", font.id);
-
-  if (deleteError) throw deleteError;
-
   const characters = Object.entries(font.characters).map(([key, character]) => ({
     font_id: font.id,
     owner_id: null,
@@ -543,7 +537,9 @@ export async function saveRemoteFont(
 
   if (!characters.length) return true;
 
-  const { error: characterError } = await customFontCharactersTable.insert(characters);
+  const { error: characterError } = await customFontCharactersTable.upsert(characters, {
+    onConflict: "font_id,character_key"
+  });
   if (characterError) throw characterError;
 
   return true;

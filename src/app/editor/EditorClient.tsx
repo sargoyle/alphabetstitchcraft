@@ -6,7 +6,7 @@ import { Copy, Save, Trash2, X } from "lucide-react";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import { defaultEditableCharacterKeys, lowercaseCharacters, numberCharacters, punctuationCharacters, uppercaseCharacters } from "@/lib/characterSets";
 import { getFontCategoryDescription, mergeFontCategories, normaliseFontCategory } from "@/lib/fontCategories";
-import type { StitchCharacter } from "@/lib/fontTypes";
+import type { StitchCharacter, StitchFont } from "@/lib/fontTypes";
 import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
 import { useFonts } from "@/lib/useFonts";
 
@@ -29,6 +29,10 @@ function firstCharacter(value: string) {
 
 function hasFilledStitches(character: StitchCharacter | undefined) {
   return Boolean(character?.grid.some((row) => row.includes("1")));
+}
+
+function filledCharacterCount(font: StitchFont | undefined) {
+  return Object.values(font?.characters ?? {}).filter(hasFilledStitches).length;
 }
 
 const orderedBaseCharacters = new Set(defaultEditableCharacterKeys);
@@ -98,6 +102,10 @@ export function EditorClient() {
   );
 
   useEffect(() => {
+    const currentFont = latestFontRef.current;
+    if (currentFont?.id === selectedFont?.id && filledCharacterCount(currentFont) > filledCharacterCount(selectedFont)) {
+      return;
+    }
     latestFontRef.current = selectedFont;
   }, [selectedFont]);
 
@@ -188,7 +196,8 @@ export function EditorClient() {
     if (!targetKey) return false;
     if (creatingCharacter && destinationExists && !replaceExistingCharacter) return false;
 
-    const targetFont = cloneFont(selectedFont);
+    const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;
+    const targetFont = cloneFont(baseFont);
     targetFont.characters[targetKey] = resizeCharacter(updated, updated.width, targetFont.defaultHeight);
     setSavingCharacter(true);
     let saved = false;

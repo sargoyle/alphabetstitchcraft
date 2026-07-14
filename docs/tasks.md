@@ -2029,3 +2029,21 @@ Acceptance checks:
 Acceptance checks:
 - [x] Alphabet Pic Serif Sample can be removed from the app by archive update after the migration is run.
 - [x] The migration does not create a default_fonts delete policy.
+## Phase 49: Character Save Data-Loss Protection
+
+### 49.1 Make Character Persistence Non-Destructive
+
+- [x] Investigate character loss after changing font height and continuing to save letters.
+- [x] Replace custom-font character delete-then-insert persistence with keyed upsert by `font_id,character_key`.
+- [x] Make Font Editor character saves use the latest local font state instead of stale refreshed state.
+- [x] Preserve the most complete active font reference when remote refresh briefly returns fewer created characters.
+- [x] Add regression source tests for safer persistence and stale-refresh protection.
+- [x] Update function documentation and test run notes.
+
+Acceptance checks:
+
+- [x] Saving one character no longer deletes all existing custom-font character rows before rewriting them.
+- [x] Saving a later character cannot overwrite earlier created characters from stale selected-font state.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility/source tests pass.

@@ -55,6 +55,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Exists, not-created and selected tile states.
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
 - Stable duplicate draft state that remains attached to the destination character during save and font refresh.
+- Protection against stale font refreshes overwriting newly saved character work with older or less-complete font data.
 - Duplicate source picker ordered the same as the main character picker and limited to characters with filled stitch designs.
 - Compact dimension controls below the editable grid.
 - Editable font name and font-level height controls in the editor sidebar.
@@ -74,10 +75,11 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 8. User may edit the font name or font height in the sidebar and save font settings.
 9. Font height save resizes every character in the font to the selected height.
 10. Character save either updates an existing character or writes a new destination character at the current font height.
-11. Updated font is saved through `useFonts().saveFont()`.
+11. Updated font is saved through `useFonts().saveFont()` using the latest local font reference for the same font ID.
 12. Save success is returned only after the database save and font refresh complete.
 13. As soon as save starts, the editor shows `Saving character...`, changes the button label to `Saving...`, marks it busy, and prevents repeat clicks.
 14. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
+15. After save, if a later refresh returns a version with fewer filled character designs for the same font, the editor keeps the more complete local font state instead of downgrading the active working copy.
 14. Editor shows an inline success message when save succeeds or a local failure status when save fails.
 15. Editor returns to normal character-editing mode after saving a new character.
 
@@ -122,6 +124,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | The editor must not briefly fall back to another font while the requested font is loading or refreshing. | Confirmed | Implemented | The editor now shows a loading state for unresolved requested fonts rather than rendering the first font. |
 | Duplicate-created characters must not flash back to the source character during save. | Confirmed | Implemented | The duplicate source is copied into a stable destination draft and the editor key is based on the destination, not the source. |
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
+| Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
+| Remote refreshes must not downgrade the active editor font to a version with fewer created characters. | Confirmed | Implemented | The editor compares filled-character counts and keeps the more complete local working copy for the active font. |
 
 ## Negative Rules
 
@@ -144,6 +148,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not save a blank font name.
 - Must not flash to the first available font while a routed or selected font is still loading.
 - Must not flash from a duplicate-created destination back to the duplicated source character while saving.
+- Must not overwrite newly saved character designs with an older selected-font snapshot during refresh.
 - Must not show a transient `character already exists` warning during a successful duplicate-created character save.
 - Must not leave Save Character visually unchanged while a save is in progress.
 - Must not allow repeat Save Character clicks while a save is in progress.
@@ -181,6 +186,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given the editor screen is open, when the user changes the font name and saves font settings, then the font is saved with the new name.
 - Given the editor screen is open, when the user changes font height and saves font settings, then every character in the font is resized to the selected height.
 - Given a character is edited and saved, when the character is written to the font, then its height matches the font height.
+- Given characters A through I have already been saved and a user saves J, when a remote refresh returns stale data, then the editor must not replace the active font with a less-complete version that drops A through I.
 - Given the character editor is shown, when dimension controls render, then only character width is editable in the character panel.
 - Given the Font Editor opens on desktop, when the layout renders, then Font panel, Character panel and Character editor panel appear as separate side-by-side areas.
 - Given the Font panel renders, when the user reviews destructive actions, then Delete Font appears only in the Danger Zone and explains that it deletes the full font and all characters.
