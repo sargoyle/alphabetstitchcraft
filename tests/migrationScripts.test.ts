@@ -10,6 +10,7 @@ const punctuationSql = readFileSync("supabase/migrations/202607070001_add_defaul
 const defaultFontArchiveSql = readFileSync("supabase/migrations/202607110002_allow_default_font_archive.sql", "utf8");
 const defaultFontArchiveGrantSql = readFileSync("supabase/migrations/202607110003_grant_default_font_archive_update.sql", "utf8");
 const defaultFontArchiveRpcSql = readFileSync("supabase/migrations/202607120001_archive_default_font_rpc.sql", "utf8");
+const defaultWidthSql = readFileSync("supabase/migrations/202607140001_add_font_default_width.sql", "utf8");
 
 assert.match(
   cleanupSql,
@@ -142,3 +143,21 @@ assert.doesNotMatch(
   "Default font archive RPC migration should not allow physical deletes."
 );
 console.log("migration script tests passed.");
+
+assert.match(
+  defaultWidthSql,
+  /alter table public.default_fonts[\s\S]*add column if not exists default_width integer/i,
+  "Default width migration should add default_width to default_fonts."
+);
+
+assert.match(
+  defaultWidthSql,
+  /alter table public.custom_fonts[\s\S]*add column if not exists default_width integer/i,
+  "Default width migration should add default_width to custom_fonts."
+);
+
+assert.match(
+  defaultWidthSql,
+  /set default_width = default_height/i,
+  "Default width migration should backfill existing fonts from their current font height."
+);

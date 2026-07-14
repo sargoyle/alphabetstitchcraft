@@ -36,6 +36,7 @@ const customFont = createBlankFont("Test Blank Font");
 assert.equal(customFont.name, "Test Blank Font");
 assert.equal(customFont.isCustom, true);
 assert.equal(customFont.defaultHeight, 10);
+assert.equal(customFont.defaultWidth, 10);
 assert.equal(validateFont(customFont).valid, true);
 assert.deepEqual(
   new Set(Object.keys(customFont.characters)),
@@ -44,6 +45,14 @@ assert.deepEqual(
 );
 for (const key of punctuationCharacters) {
   assert.ok(customFont.characters[key], `Blank font should include editable punctuation character ${key}.`);
+}
+
+const customWideFont = createBlankFont("Wide Blank Font", { height: 9, width: 14 });
+assert.equal(customWideFont.defaultHeight, 9);
+assert.equal(customWideFont.defaultWidth, 14);
+for (const character of Object.values(customWideFont.characters)) {
+  assert.equal(character.height, 9, "Blank font characters should use the font-level height.");
+  assert.equal(character.width, 14, "Blank font characters should use the font-level default width.");
 }
 
 const resizedFont = resizeFontCharactersHeight(customFont, 12);

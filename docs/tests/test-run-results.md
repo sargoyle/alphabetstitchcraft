@@ -1835,3 +1835,17 @@ Validation:
 - App TypeScript compile: Pass.
 - Test TypeScript compile: Pass.
 - Utility test runner: Pass.
+
+## 2026-07-14 Default Width and Alphabet Detail Test Update
+
+### Tests Added/Updated
+- Added source coverage for Alphabet detail hiding uncreated characters.
+- Added source coverage for editor blank dimension validation and default-width setting.
+- Added data coverage for blank font default-width starter grids.
+- Added persistence coverage for default_width load/save mapping.
+- Added migration coverage for Supabase default_width schema changes.
+
+### Commands
+- App TypeScript compile: `tsc --noEmit` - Passed.
+- Test TypeScript compile: `tsc -p tsconfig.tests.json` - Passed.
+- Utility/source tests: `.test-build/tests/runTests.js` - Passed.

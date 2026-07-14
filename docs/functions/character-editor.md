@@ -361,7 +361,23 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
 
+## 2026-07-14 Update: Default Width and Blank Dimension Inputs
 
+- Confirmed behaviour: each font has a font-level default character width.
+- Default width controls the starting grid width for newly created blank characters only.
+- Character width remains editable per character after creation.
+- Font height remains a required font-level value and applies to every character in the font.
+- Font height and default width inputs may be temporarily blank while the user is editing, but saving must be blocked until both values are valid whole numbers between 1 and 60.
+- Blank height input must not coerce immediately to 0, because that causes accidental values like 012 while typing.
 
+### Added Acceptance Criteria
 
+- Given the user clears the Font height field, when they type a new value, then the field does not force a leading 0.
+- Given the Font height field is blank, when Save font settings is clicked, then saving is blocked with a clear required-field message.
+- Given the Default character width is set to 14 and Font height is 9, when a new blank character is created, then the draft grid starts as 14 x 9.
+- Given a new blank character starts from the font default width, when the user edits that character width, then only that character width changes.
 
+### Related Tests
+
+- EDITOR-UI-029 in tests/editorUiSource.test.ts.
+- fontData.test.ts blank font default-width coverage.

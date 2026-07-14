@@ -25,6 +25,7 @@ assert.equal(
 
 const fontGridPreviewSource = readFileSync("src/components/FontGridPreview.tsx", "utf8");
 const fontsPageSource = readFileSync("src/app/fonts/page.tsx", "utf8");
+const fontDetailSource = readFileSync("src/app/fonts/[id]/page.tsx", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 assert.ok(
   fontGridPreviewSource.includes("buildFontPreviewSample"),
@@ -47,7 +48,15 @@ assert.ok(
   fontsPageSource.includes("createOpen") &&
     fontsPageSource.includes("New category...") &&
     fontsPageSource.includes("fontCategoryDefinitions") &&
-    fontsPageSource.includes("createBlankFont(name, { category: categoryName, height: heightValue })"),
-  "FONT-BROWSER-007: Create New Font should use an in-app form with category, new-category and height controls."
+    fontsPageSource.includes("newFontWidth") &&
+    fontsPageSource.includes("createBlankFont(name, { category: categoryName, height: heightValue, width: widthValue })"),
+  "FONT-BROWSER-007: Create New Font should use an in-app form with category, new-category, height and default-width controls."
 );
 console.log("fontBrowserSource tests passed.");
+
+assert.ok(
+  fontDetailSource.includes('function hasFilledStitches') &&
+    fontDetailSource.includes('keys.filter((key) => hasFilledStitches(font.characters[key]))') &&
+    fontDetailSource.includes('No characters have been created for this font yet.'),
+  "FONT-DETAIL-001: Alphabet detail should hide characters that have no created stitch design."
+);

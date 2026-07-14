@@ -115,3 +115,10 @@ assert.ok(
   "Custom font character saves should upsert by font_id and character_key instead of deleting all rows before insert."
 );
 console.log("fontPersistence tests passed.");
+
+assert.ok(
+  fontPersistenceSource.includes('default_width?: number | null') &&
+    fontPersistenceSource.includes('defaultWidth: font.default_width ?? font.default_height') &&
+    fontPersistenceSource.includes('default_width: font.defaultWidth ?? font.defaultHeight'),
+  "FONT-PERSISTENCE-001: Remote font persistence should load and save font-level default width with height fallback."
+);

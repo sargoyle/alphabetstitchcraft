@@ -180,3 +180,20 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+
+## 2026-07-14 Update: Uncreated Character Visibility
+
+- Confirmed behaviour: Alphabet detail previews must only show characters that have actually been created for the font.
+- A character is considered created when its grid contains at least one filled stitch cell.
+- Blank starter grids must not appear on the Alphabet Page, even if the character key exists in the font data.
+- If a font has no created characters, the page should show an empty state rather than a wall of blank character cards.
+
+### Added Acceptance Criteria
+
+- Given a font contains blank starter-grid characters, when the Alphabet Page renders, then those blank characters are hidden.
+- Given a font contains created and uncreated characters, when the Alphabet Page renders, then only created characters are shown.
+- Given a font has no created characters, when the Alphabet Page renders, then an empty state is shown.
+
+### Related Tests
+
+- FONT-DETAIL-001 in tests/fontBrowserSource.test.ts.

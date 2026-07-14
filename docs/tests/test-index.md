@@ -71,3 +71,11 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 - `EDITOR-UI-028`: Character saves use the latest local font state and ignore stale refresh data with fewer created characters.
 - `fontPersistence.test.ts`: Custom font characters are upserted by `font_id,character_key` rather than deleted and reinserted as a batch.
 - `fontPersistence.test.ts`: Shared/default slug deletes route to `default_fonts`; UUID custom font deletes route to `custom_fonts`.
+
+## 2026-07-14 Default Width and Alphabet Detail Coverage
+
+- FONT-DETAIL-001: Alphabet detail hides uncreated/blank starter characters and shows an empty state when none are created.
+- EDITOR-UI-029: Font settings allow temporary blank dimension inputs but block saving without valid height/default width.
+- FONT-PERSISTENCE-001: Remote persistence loads and saves default_width with a height fallback.
+- fontData.test.ts: Blank fonts created with default width use that width for starter grids.
+- migrationScripts.test.ts: Supabase migration adds and backfills default_width on font tables.

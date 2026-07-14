@@ -20,7 +20,8 @@ export default function FontsPage() {
   const [newFontName, setNewFontName] = useState("New stitch alphabet");
   const [newFontCategory, setNewFontCategory] = useState("Block");
   const [newFontCustomCategory, setNewFontCustomCategory] = useState("");
-  const [newFontHeight, setNewFontHeight] = useState(10);
+  const [newFontHeight, setNewFontHeight] = useState("10");
+  const [newFontWidth, setNewFontWidth] = useState("10");
   const isLoadingFonts = persistence.mode === "loading";
   const categories = useMemo(() => ["All", ...mergeFontCategories(fonts.map((font) => font.category))], [fonts]);
   const categoryOptions = useMemo(() => mergeFontCategories(fonts.map((font) => font.category)), [fonts]);
@@ -45,7 +46,8 @@ export default function FontsPage() {
     setNewFontName("New stitch alphabet");
     setNewFontCategory(category !== "All" ? category : "Block");
     setNewFontCustomCategory("");
-    setNewFontHeight(10);
+    setNewFontHeight("10");
+    setNewFontWidth("10");
     setCreateOpen(true);
   }
 
@@ -58,7 +60,8 @@ export default function FontsPage() {
 
     const name = newFontName.trim();
     const categoryName = resolvedNewFontCategory;
-    const heightValue = Math.max(1, Math.min(60, Math.round(newFontHeight)));
+    const heightValue = Number(newFontHeight);
+    const widthValue = Number(newFontWidth);
 
     if (!name) {
       setActionStatus({ type: "error", message: "Font name is required." });
@@ -68,12 +71,20 @@ export default function FontsPage() {
       setActionStatus({ type: "error", message: "Choose or create a font category." });
       return;
     }
+    if (!newFontHeight.trim() || !Number.isInteger(heightValue) || heightValue < 1 || heightValue > 60) {
+      setActionStatus({ type: "error", message: "Font height must be a whole number between 1 and 60." });
+      return;
+    }
+    if (!newFontWidth.trim() || !Number.isInteger(widthValue) || widthValue < 1 || widthValue > 60) {
+      setActionStatus({ type: "error", message: "Default character width must be a whole number between 1 and 60." });
+      return;
+    }
     if (fonts.some((font) => font.name.trim().toLowerCase() === name.toLowerCase())) {
       setActionStatus({ type: "error", message: "A font with this name already exists." });
       return;
     }
 
-    const saved = await saveFont(createBlankFont(name, { category: categoryName, height: heightValue }));
+    const saved = await saveFont(createBlankFont(name, { category: categoryName, height: heightValue, width: widthValue }));
     setActionStatus(
       saved
         ? { type: "success", message: "Font changes saved successfully." }
@@ -215,7 +226,17 @@ export default function FontsPage() {
                 min={1}
                 max={60}
                 value={newFontHeight}
-                onChange={(event) => setNewFontHeight(Number(event.target.value))}
+                onChange={(event) => setNewFontHeight(event.target.value)}
+              />
+            </label>
+            <label>
+              Default character width
+              <input
+                type="number"
+                min={1}
+                max={60}
+                value={newFontWidth}
+                onChange={(event) => setNewFontWidth(event.target.value)}
               />
             </label>
             <div className="button-row">

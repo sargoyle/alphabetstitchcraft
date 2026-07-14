@@ -12,6 +12,7 @@ export type StitchFont = {
   description: string;
   category: FontCategory;
   defaultHeight: number;
+  defaultWidth?: number;
   recommendedUse: string;
   licence: string;
   characters: Record<string, StitchCharacter>;

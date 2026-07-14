@@ -91,23 +91,8 @@ This file is the single source of truth for all project-wide decisions. Update i
 
 Keep entries concise. One line per decision when possible.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Font Dimension Rules
+- Font height is required and applies to every character in the font.
+- Font default width is a soft starter value for new blank characters; individual character widths remain editable.
+- Font height/default-width inputs may be temporarily blank while typing, but saves must be blocked until valid values are provided.
+- Alphabet detail pages show only characters with at least one filled stitch; blank starter grids are treated as not created.

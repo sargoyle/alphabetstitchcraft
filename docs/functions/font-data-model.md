@@ -316,3 +316,24 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+
+## 2026-07-14 Update: Font Default Width
+
+- StitchFont.defaultWidth is now a soft font-level starter width for newly created blank characters.
+- defaultWidth is not a hard character constraint; individual characters can still have their own width.
+- defaultHeight remains a hard font-level height: every character in the font must share that height.
+- Supabase stores the field as default_width on both default_fonts and custom_fonts.
+- Existing database rows are backfilled from default_height by migration 202607140001_add_font_default_width.sql.
+- Remote font loading falls back to default_height when default_width is missing or null, so older data remains readable.
+
+### Added Acceptance Criteria
+
+- Given a blank font is created with height 9 and width 14, then every starter character is 14 x 9.
+- Given a remote font row has no default_width, when loaded, then the app uses the font height as the default width fallback.
+- Given a font is saved to Supabase, then default_width is included in the default/custom font payload.
+
+### Related Tests
+
+- fontData.test.ts validates blank-font default width.
+- fontPersistence.test.ts validates remote load/save source mapping.
+- migrationScripts.test.ts validates the default-width migration.

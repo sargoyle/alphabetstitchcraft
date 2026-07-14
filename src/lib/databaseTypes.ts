@@ -69,6 +69,7 @@ export type Database = {
           description: string;
           category: string;
           default_height: number;
+          default_width: number | null;
           recommended_use: string;
           licence: string;
           characters: Json;
@@ -82,6 +83,7 @@ export type Database = {
           description: string;
           category: string;
           default_height: number;
+          default_width: number | null;
           recommended_use: string;
           licence: string;
           characters: Json;
@@ -94,6 +96,7 @@ export type Database = {
           description?: string;
           category?: string;
           default_height?: number;
+          default_width?: number | null;
           recommended_use?: string;
           licence?: string;
           characters?: Json;
@@ -112,6 +115,7 @@ export type Database = {
           description: string;
           category: string;
           default_height: number;
+          default_width: number | null;
           recommended_use: string;
           licence: string;
           created_at: string;
@@ -127,6 +131,7 @@ export type Database = {
           description?: string;
           category: string;
           default_height: number;
+          default_width?: number | null;
           recommended_use?: string;
           licence?: string;
           created_at?: string;
@@ -138,6 +143,7 @@ export type Database = {
           description?: string;
           category?: string;
           default_height?: number;
+          default_width?: number | null;
           recommended_use?: string;
           licence?: string;
           updated_at?: string;

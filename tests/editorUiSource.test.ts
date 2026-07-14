@@ -215,3 +215,11 @@ assert.ok(
     characterSetSource.includes('"\\\\"'),
   "EDITOR-UI-016: Shared character set should include the required printable punctuation characters."
 );
+
+assert.ok(
+  editorClientSource.includes('function parseFontDimension') &&
+    editorClientSource.includes('Font height is required.') &&
+    editorClientSource.includes('Default character width is required.') &&
+    editorClientSource.includes('targetFont.defaultWidth = nextWidth'),
+  "EDITOR-UI-029: Font settings should allow temporary blank dimension fields but reject saving without valid height and default width."
+);

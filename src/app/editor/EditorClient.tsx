@@ -31,6 +31,16 @@ function hasFilledStitches(character: StitchCharacter | undefined) {
   return Boolean(character?.grid.some((row) => row.includes("1")));
 }
 
+function parseFontDimension(value: string, label: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return { value: null, error: `${label} is required.` };
+  const numeric = Number(trimmed);
+  if (!Number.isFinite(numeric) || !Number.isInteger(numeric) || numeric < 1 || numeric > 60) {
+    return { value: null, error: `${label} must be a whole number between 1 and 60.` };
+  }
+  return { value: numeric, error: null };
+}
+
 function filledCharacterCount(font: StitchFont | undefined) {
   return Object.values(font?.characters ?? {}).filter(hasFilledStitches).length;
 }
@@ -57,7 +67,8 @@ export function EditorClient() {
   const [replaceExistingCharacter, setReplaceExistingCharacter] = useState(false);
   const [newCharacterOpen, setNewCharacterOpen] = useState(false);
   const [fontNameDraft, setFontNameDraft] = useState("");
-  const [fontHeightDraft, setFontHeightDraft] = useState(10);
+  const [fontHeightDraft, setFontHeightDraft] = useState("10");
+  const [fontWidthDraft, setFontWidthDraft] = useState("10");
   const [fontCategoryDraft, setFontCategoryDraft] = useState("Block");
   const [customFontCategoryDraft, setCustomFontCategoryDraft] = useState("");
   const [fontSettingsStatus, setFontSettingsStatus] = useState<{ type: "success" | "error"; message: string } | null>(
@@ -79,7 +90,7 @@ export function EditorClient() {
     if (sourceCharacter) return JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter;
     const fontHeight = Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10));
     return blankCharacter(fontHeight, fontHeight);
-  }, [selectedFont?.defaultHeight, sourceCharacter]);
+  }, [selectedFont?.defaultHeight, selectedFont?.defaultWidth, sourceCharacter]);
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
   const character = creatingCharacter ? newCharacterDraft ?? newCharacter : selectedCharacter ?? newCharacter;
   const saveDisabledReason = creatingCharacter
@@ -113,7 +124,8 @@ export function EditorClient() {
     if (!selectedFont) return;
     const nextCategory = normaliseFontCategory(selectedFont.category);
     setFontNameDraft(selectedFont.name);
-    setFontHeightDraft(selectedFont.defaultHeight);
+    setFontHeightDraft(String(selectedFont.defaultHeight));
+    setFontWidthDraft(String(selectedFont.defaultWidth ?? selectedFont.defaultHeight));
     setFontCategoryDraft(fontCategoryOptions.includes(nextCategory) ? nextCategory : CUSTOM_CATEGORY_VALUE);
     setCustomFontCategoryDraft(fontCategoryOptions.includes(nextCategory) ? "" : nextCategory);
     setFontSettingsStatus(null);
@@ -152,7 +164,10 @@ export function EditorClient() {
     if (!selectedFont) return;
 
     const nextName = fontNameDraft.trim();
-    const nextHeight = Math.max(1, Math.min(60, Math.round(fontHeightDraft)));
+    const parsedHeight = parseFontDimension(fontHeightDraft, "Font height");
+    const parsedWidth = parseFontDimension(fontWidthDraft, "Default character width");
+    const nextHeight = parsedHeight.value;
+    const nextWidth = parsedWidth.value;
     const nextCategory = resolvedFontCategory;
 
     if (!nextName) {
@@ -165,10 +180,21 @@ export function EditorClient() {
       return;
     }
 
+    if (parsedHeight.error || nextHeight === null) {
+      setFontSettingsStatus({ type: "error", message: parsedHeight.error ?? "Font height is required." });
+      return;
+    }
+
+    if (parsedWidth.error || nextWidth === null) {
+      setFontSettingsStatus({ type: "error", message: parsedWidth.error ?? "Default character width is required." });
+      return;
+    }
+
     const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;
     const targetFont = resizeFontCharactersHeight(cloneFont(baseFont), nextHeight);
     targetFont.name = nextName;
     targetFont.category = nextCategory;
+    targetFont.defaultWidth = nextWidth;
     targetFont.updatedAt = new Date().toISOString();
 
     const saved = await saveFont(targetFont);
@@ -307,7 +333,20 @@ export function EditorClient() {
               max={60}
               value={fontHeightDraft}
               onChange={(event) => {
-                setFontHeightDraft(Number(event.target.value));
+                setFontHeightDraft(event.target.value);
+                setFontSettingsStatus(null);
+              }}
+            />
+          </label>
+          <label>
+            Default character width
+            <input
+              type="number"
+              min={1}
+              max={60}
+              value={fontWidthDraft}
+              onChange={(event) => {
+                setFontWidthDraft(event.target.value);
                 setFontSettingsStatus(null);
               }}
             />
@@ -341,7 +380,7 @@ export function EditorClient() {
             </label>
           ) : null}
           <p className="form-hint">{getFontCategoryDescription(resolvedFontCategory)}</p>
-          <p className="form-hint">Height applies to every character in this font.</p>
+          <p className="form-hint">Height applies to every character. Default width sets the starting grid for new characters only.</p>
           <button className="button secondary" type="button" onClick={saveFontSettings}>
             <Save aria-hidden="true" size={17} />
             Save font settings
@@ -460,7 +499,7 @@ export function EditorClient() {
                   onClick={() => {
                     setSourceCharacterKey("");
                     setDestinationCharacterKey(activeKey);
-                    setNewCharacterDraft(blankCharacter(selectedFont.defaultHeight, selectedFont.defaultHeight));
+                    setNewCharacterDraft(blankCharacter(selectedFont.defaultWidth ?? selectedFont.defaultHeight, selectedFont.defaultHeight));
                     setCreatingCharacter(true);
                     setNewCharacterOpen(false);
                   }}

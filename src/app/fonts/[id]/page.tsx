@@ -7,6 +7,10 @@ import { getCharacterGroups } from "@/lib/fonts";
 import { saveSelectedFontId } from "@/lib/localStorageUtils";
 import { useFonts } from "@/lib/useFonts";
 
+function hasFilledStitches(character: { grid: string[] } | undefined) {
+  return Boolean(character?.grid.some((row) => row.includes("1")));
+}
+
 function getPreviewCellSize(width: number, height: number) {
   const maxCells = Math.max(width, height);
   const availableCellPixels = 112;
@@ -31,7 +35,13 @@ export default function FontDetailPage() {
     );
   }
 
-  const groups = getCharacterGroups(font);
+  const groups = Object.fromEntries(
+    Object.entries(getCharacterGroups(font)).map(([groupName, keys]) => [
+      groupName,
+      keys.filter((key) => hasFilledStitches(font.characters[key]))
+    ])
+  );
+  const hasCreatedCharacters = Object.values(groups).some((keys) => keys.length > 0);
 
   return (
     <section className="page-stack">
@@ -48,6 +58,10 @@ export default function FontDetailPage() {
           </Link>
         </div>
       </div>
+
+      {!hasCreatedCharacters ? (
+        <div className="empty-preview">No characters have been created for this font yet.</div>
+      ) : null}
 
       {Object.entries(groups).map(([groupName, keys]) =>
         keys.length ? (

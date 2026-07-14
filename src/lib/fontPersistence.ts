@@ -33,6 +33,7 @@ type RemoteFontRow = {
   description: string;
   category: StitchFont["category"];
   default_height: number;
+  default_width?: number | null;
   recommended_use: string;
   licence: string;
   created_at: string;
@@ -45,6 +46,7 @@ type RemoteDefaultFontRow = {
   description: string;
   category: StitchFont["category"];
   default_height: number;
+  default_width?: number | null;
   recommended_use: string;
   licence: string;
   characters: unknown;
@@ -134,6 +136,7 @@ function toDefaultStitchFont(font: RemoteDefaultFontRow): { font: StitchFont | n
     description: font.description,
     category: font.category,
     defaultHeight: font.default_height,
+    defaultWidth: font.default_width ?? font.default_height,
     recommendedUse: font.recommended_use,
     licence: font.licence,
     canEdit: true,
@@ -170,6 +173,7 @@ function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { 
     description: font.description,
     category: font.category,
     defaultHeight: font.default_height,
+    defaultWidth: font.default_width ?? font.default_height,
     recommendedUse: font.recommended_use,
     licence: font.licence,
     isCustom: true,
@@ -478,7 +482,8 @@ export async function saveRemoteFont(
         description: font.description,
         category: font.category,
         default_height: font.defaultHeight,
-        recommended_use: font.recommendedUse,
+        default_width: font.defaultWidth ?? font.defaultHeight,
+    recommended_use: font.recommendedUse,
         licence: font.licence,
         characters: font.characters,
         is_public: true,
@@ -519,7 +524,8 @@ export async function saveRemoteFont(
     description: font.description,
     category: font.category,
     default_height: font.defaultHeight,
-    recommended_use: font.recommendedUse,
+    default_width: font.defaultWidth ?? font.defaultHeight,
+        recommended_use: font.recommendedUse,
     licence: font.licence,
     updated_at: new Date().toISOString()
   });

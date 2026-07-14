@@ -2047,3 +2047,13 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility/source tests pass.
+
+## Phase 50: Font Default Width and Alphabet Detail Cleanup
+
+- [x] Hide uncreated blank starter characters from the Alphabet detail page.
+- [x] Add a font-level default character width for newly created blank characters.
+- [x] Keep per-character width editable after character creation.
+- [x] Allow font height/default-width fields to be temporarily blank while typing, but block saving invalid or missing values.
+- [x] Add Supabase migration for default_width on default and custom fonts.
+- [x] Update function documentation and test documentation.
+- [x] Add/update automated source and utility tests.

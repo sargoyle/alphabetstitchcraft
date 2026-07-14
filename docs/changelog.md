@@ -198,3 +198,6 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - 2026-07-14: Fixed custom font character save data-loss risk by upserting character rows instead of deleting all rows before insert, and protected Font Editor saves from stale refresh state with fewer created characters. Files affected: `src/lib/fontPersistence.ts`, `src/app/editor/EditorClient.tsx`, `tests/fontPersistence.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - Fixed Create Pattern warnings for characters whose key exists in the font but whose grid has no filled stitches. These blank/uncreated characters are now skipped and reported as unavailable. Files affected: `src/lib/renderTextToGrid.ts`, `tests/renderTextToGrid.test.ts`.
+
+### Changed
+- 2026-07-14 - Added font-level default character width for new blank characters and hid uncreated characters from Alphabet detail previews. Files affected: src/lib/fontTypes.ts, src/lib/fontFactory.ts, src/lib/fontPersistence.ts, src/app/editor/EditorClient.tsx, src/app/fonts/page.tsx, src/app/fonts/[id]/page.tsx, supabase/migrations/202607140001_add_font_default_width.sql.
