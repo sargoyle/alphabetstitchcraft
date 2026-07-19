@@ -1887,3 +1887,16 @@ Validation:
 ### Coverage Updated
 - `FONT-REFRESH-002`: Confirms successful saves reapply the saved font after refresh.
 - `EDITOR-UI-030`: Confirms saved character grids are protected from stale blank refresh data.
+
+## 2026-07-19 Default Width Draft Fix
+
+### Commands
+- App TypeScript compile: `tsc --noEmit` - Passed.
+- Test TypeScript compile: `tsc -p tsconfig.tests.json` - Passed.
+- Utility/source tests: `.test-build/tests/runTests.js` - Passed.
+
+### Result
+- All utility/source tests passed after changing uncreated character drafts to use font default width.
+
+### Coverage Updated
+- `EDITOR-UI-031`: Confirms uncreated character drafts use `defaultWidth x defaultHeight` and ignore stale blank placeholder widths.

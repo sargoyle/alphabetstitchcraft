@@ -401,3 +401,23 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 
 - FONT-REFRESH-002 in `tests/fontRefreshSource.test.ts`.
 - EDITOR-UI-030 in `tests/editorUiSource.test.ts`.
+
+## 2026-07-19 Bug Fix Update: Default Width For Uncreated Characters
+
+### Added Requirements
+
+| Rule | Product Status | Implementation Status | Notes |
+|---|---|---|---|
+| Selecting an uncreated character must open a blank draft using the font-level default width. | Confirmed | Implemented | The editor now builds uncreated drafts from `defaultWidth x defaultHeight`. |
+| Existing created characters must keep their character-specific width. | Confirmed | Implemented | Only characters with filled stitches use their saved character object directly. |
+| Old blank placeholder widths must not override the current font default width. | Confirmed | Implemented | Blank/uncreated placeholders are ignored when building the active draft. |
+
+### Added Acceptance Criteria
+
+- Given a font default width is changed from 8 to 12, when the user selects an uncreated character, then the editable grid opens at 12 stitches wide.
+- Given an existing character was previously saved at 7 stitches wide, when the font default width changes, then that existing character remains 7 stitches wide unless edited.
+- Given a blank placeholder character exists with an old width, when that character has no filled stitches, then the editor uses the current font default width instead.
+
+### Related Tests
+
+- EDITOR-UI-031 in `tests/editorUiSource.test.ts`.

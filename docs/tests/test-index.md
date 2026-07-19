@@ -90,3 +90,7 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 
 - FONT-REFRESH-002: Successful saves keep the just-saved font in local state before and after remote refresh.
 - EDITOR-UI-030: Character/font saves preserve the saved font after refresh so stale remote data cannot blank the editor grid.
+
+## 2026-07-19 Default Width Draft Coverage
+
+- EDITOR-UI-031: Uncreated character drafts use font default width and ignore old blank placeholder widths.

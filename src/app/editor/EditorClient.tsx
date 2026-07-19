@@ -89,10 +89,15 @@ export function EditorClient() {
   const newCharacter = useMemo(() => {
     if (sourceCharacter) return JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter;
     const fontHeight = Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10));
-    return blankCharacter(fontHeight, fontHeight);
+    const fontWidth = Math.max(1, Math.min(60, selectedFont?.defaultWidth ?? fontHeight));
+    return blankCharacter(fontWidth, fontHeight);
   }, [selectedFont?.defaultHeight, selectedFont?.defaultWidth, sourceCharacter]);
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
-  const character = creatingCharacter ? newCharacterDraft ?? newCharacter : selectedCharacter ?? newCharacter;
+  const character = creatingCharacter
+    ? newCharacterDraft ?? newCharacter
+    : selectedCharacter && hasFilledStitches(selectedCharacter)
+      ? selectedCharacter
+      : newCharacter;
   const saveDisabledReason = creatingCharacter
     ? !destinationKey
       ? "Choose a new character before saving."
@@ -602,4 +607,5 @@ export function EditorClient() {
     </section>
   );
 }
+
 

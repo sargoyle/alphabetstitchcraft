@@ -97,6 +97,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Made the Font Library heading more compact and kept the Create New Font action on one row. Files affected: `src/app/fonts/page.tsx`, `src/app/globals.css`, `docs/tasks.md`.
 
 ### Fixed
+- 2026-07-19: Fixed uncreated Font Editor characters so their draft grid uses the current font default width instead of font height or old blank placeholder widths. Files affected: `src/app/editor/EditorClient.tsx`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-19: Fixed saved character grids being replaced by stale blank remote data immediately after a successful save. Files affected: `src/lib/useFonts.ts`, `tests/fontRefreshSource.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-19: Fixed Create Font failure feedback so the modal shows the current Supabase save error instead of stale fallback text, and broadened save-error normalisation for Supabase details/hints. Files affected: `src/lib/useFonts.ts`, `src/app/fonts/page.tsx`, `src/lib/fontPersistence.ts`, `tests/fontBrowserSource.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/font-library.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-14: Fixed custom font character save data-loss risk by upserting character rows instead of deleting all rows before insert, and protected Font Editor saves from stale refresh state with fewer created characters. Files affected: `src/lib/fontPersistence.ts`, `src/app/editor/EditorClient.tsx`, `tests/fontPersistence.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
@@ -206,6 +207,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - 2026-07-19 - Improved Create Font save feedback so the modal shows Creating... while saving and displays save/database setup errors inside the modal. Files affected: src/app/fonts/page.tsx, src/lib/fontPersistence.ts, src/lib/useFonts.ts, docs/functions/font-library.md, docs/functions/font-data-model.md, tests/fontBrowserSource.test.ts, tests/fontPersistence.test.ts.
+
+
 
 
 

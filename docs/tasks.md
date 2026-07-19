@@ -2098,3 +2098,17 @@ Acceptance checks:
 - [x] App TypeScript compile passes.
 - [x] Test TypeScript compile passes.
 - [x] Utility/source tests pass.
+
+## Phase 53: Default Width Draft Behaviour
+
+### 53.1 Use Font Default Width For Uncreated Characters
+
+- [x] Fix uncreated character selection to build a new blank draft using the font-level default width.
+- [x] Ignore old blank placeholder widths for characters that have not been created yet.
+- [x] Add source regression coverage.
+- [x] Update function documentation and test notes.
+
+Acceptance checks:
+- [x] Changing Font default width affects the grid width shown for newly selected uncreated characters.
+- [x] Existing created characters keep their own editable width.
+- [x] TypeScript and utility/source tests pass.
