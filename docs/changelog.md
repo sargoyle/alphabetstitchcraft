@@ -201,3 +201,6 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - 2026-07-14 - Added font-level default character width for new blank characters and hid uncreated characters from Alphabet detail previews. Files affected: src/lib/fontTypes.ts, src/lib/fontFactory.ts, src/lib/fontPersistence.ts, src/app/editor/EditorClient.tsx, src/app/fonts/page.tsx, src/app/fonts/[id]/page.tsx, supabase/migrations/202607140001_add_font_default_width.sql.
+
+### Fixed
+- 2026-07-19 - Improved Create Font save feedback so the modal shows Creating... while saving and displays save/database setup errors inside the modal. Files affected: src/app/fonts/page.tsx, src/lib/fontPersistence.ts, src/lib/useFonts.ts, docs/functions/font-library.md, docs/functions/font-data-model.md, tests/fontBrowserSource.test.ts, tests/fontPersistence.test.ts.

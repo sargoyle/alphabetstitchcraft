@@ -58,7 +58,7 @@ This file is the single source of truth for all project-wide decisions. Update i
 - Font Detail hides height metadata.
 - Invalid remote fonts must be shown as errors needing attention, not silently skipped.
 - Font categories should be user-editable.
-- Font `defaultHeight` is a baseline/display value, not a strict height for every character.
+- Font `defaultHeight` is the required font-level character height; every character in that font must use it.
 - Font character keys are single characters in v1.
 - New editor characters require a destination mapping before save and protect existing mappings unless replacement is explicitly confirmed.
 - PNG export uses a fixed export cell size for v1.

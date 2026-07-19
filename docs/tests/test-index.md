@@ -79,3 +79,8 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 - FONT-PERSISTENCE-001: Remote persistence loads and saves default_width with a height fallback.
 - fontData.test.ts: Blank fonts created with default width use that width for starter grids.
 - migrationScripts.test.ts: Supabase migration adds and backfills default_width on font tables.
+
+## 2026-07-19 Create Font Save Feedback Coverage
+
+- FONT-BROWSER-008: Create Font modal shows Creating... and in-modal failure feedback.
+- FONT-PERSISTENCE-002: Missing default_width schema errors are converted to a clear migration message.

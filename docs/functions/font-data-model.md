@@ -337,3 +337,13 @@ Expected output:
 - fontData.test.ts validates blank-font default width.
 - fontPersistence.test.ts validates remote load/save source mapping.
 - migrationScripts.test.ts validates the default-width migration.
+
+## 2026-07-19 Update: Default Width Migration Error Handling
+
+- Supabase save errors caused by the missing default_width schema column are normalised into a user-actionable migration message.
+- The required migration is 202607140001_add_font_default_width.sql.
+- This keeps Create Font from appearing unresponsive when the database schema is behind the application code.
+
+### Related Tests
+
+- FONT-PERSISTENCE-002 in tests/fontPersistence.test.ts.

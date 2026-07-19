@@ -25,6 +25,7 @@ type PersistenceState = {
   message: string;
   canWrite: boolean;
   warnings: string[];
+  lastError?: string;
 };
 
 export function useFonts() {
@@ -92,7 +93,8 @@ export function useFonts() {
         mode: "unconfigured",
         message: "Database sync is not configured. Add Supabase environment values before creating or editing fonts.",
         canWrite: false,
-        warnings: []
+        warnings: [],
+        lastError: undefined
       });
       return;
     }
@@ -117,7 +119,8 @@ export function useFonts() {
           ? `Public fonts are saved to the database. ${warnings.length} invalid font record${warnings.length === 1 ? "" : "s"} need attention.`
           : "Public fonts are saved to the database. Anyone using the site can create, edit, rename or delete them.",
         canWrite: true,
-        warnings
+        warnings,
+        lastError: undefined
       });
     } catch (error) {
       setFontBackups({});
@@ -125,7 +128,8 @@ export function useFonts() {
         mode: "error",
         message: error instanceof Error ? error.message : "Database sync failed. Font changes are paused until it reconnects.",
         canWrite: false,
-        warnings: []
+        warnings: [],
+        lastError: error instanceof Error ? error.message : "Database sync failed. Font changes are paused until it reconnects."
       });
     }
   }, [refreshBackups]);
@@ -143,12 +147,12 @@ export function useFonts() {
       const savedRemotely = await saveRemoteFont(nextFont);
       if (!savedRemotely) {
         const message = "Add Supabase environment values before saving fonts to the database.";
-        setPersistence((current) => ({ ...current, message, canWrite: false }));
+        setPersistence((current) => ({ ...current, message, canWrite: false, lastError: message }));
         return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
-      setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false }));
+      setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false, lastError: message }));
       return false;
     }
 
@@ -161,7 +165,8 @@ export function useFonts() {
       ...current,
       mode: "remote",
       message: "Font changes saved successfully.",
-      canWrite: true
+      canWrite: true,
+      lastError: undefined
     }));
     return true;
   }

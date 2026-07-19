@@ -60,3 +60,11 @@ assert.ok(
     fontDetailSource.includes('No characters have been created for this font yet.'),
   "FONT-DETAIL-001: Alphabet detail should hide characters that have no created stitch design."
 );
+
+assert.ok(
+  fontsPageSource.includes('creatingFont') &&
+    fontsPageSource.includes('{creatingFont ? "Creating..." : "Create font"}') &&
+    fontsPageSource.includes('role={actionStatus.type === "success" ? "status" : "alert"}') &&
+    fontsPageSource.includes('default-width migration'),
+  "FONT-BROWSER-008: Create Font modal should show immediate saving state and in-modal save failure feedback."
+);

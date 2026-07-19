@@ -2057,3 +2057,16 @@ Acceptance checks:
 - [x] Add Supabase migration for default_width on default and custom fonts.
 - [x] Update function documentation and test documentation.
 - [x] Add/update automated source and utility tests.
+
+## Phase 51: Create Font Save Feedback
+
+- [x] Show an immediate Creating... state on the Create Font modal button.
+- [x] Show Create Font save failures inside the modal.
+- [x] Add a clear error message when the Supabase default_width migration is missing.
+- [x] Update function documentation and test documentation.
+- [x] Add regression source tests.
+
+Acceptance checks:
+- [x] Create Font no longer appears to do nothing during save.
+- [x] Save failures are visible in the modal.
+- [x] TypeScript and utility/source tests pass.

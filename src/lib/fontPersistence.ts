@@ -113,6 +113,16 @@ function withTimeout<T>(promise: Promise<T>, message: string, timeoutMs = 6000):
   ]);
 }
 
+function normaliseRemoteFontSaveError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  if (message.includes("default_width") || message.includes("Could not find") && message.includes("column")) {
+    return new Error(
+      "Database setup is missing the font default width column. Run Supabase migration 202607140001_add_font_default_width.sql, then try again."
+    );
+  }
+  return error;
+}
+
 function validateSharedFont(font: StitchFont) {
   const result = validateFont(font);
   const errors = [...result.errors];
@@ -199,7 +209,7 @@ async function loadRemoteFontSnapshot(fontId: string): Promise<StitchFont | null
     .eq("id", fontId)
     .maybeSingle();
 
-  if (fontError) throw fontError;
+  if (fontError) throw normaliseRemoteFontSaveError(fontError);
   if (!fontRow) return null;
 
   const { data: characterRows, error: characterError } = await supabase
@@ -359,7 +369,7 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
     .select("*")
     .order("updated_at", { ascending: false });
 
-  if (fontError) throw fontError;
+  if (fontError) throw normaliseRemoteFontSaveError(fontError);
   if (!fontRows?.length) return { fonts: remoteDefaultFonts, invalidFonts };
 
   const remoteFontRows = fontRows as unknown as RemoteFontRow[];
@@ -493,7 +503,7 @@ export async function saveRemoteFont(
       .select("id")
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) throw normaliseRemoteFontSaveError(error);
     if (!data) {
       throw new Error(`Default font "${font.id}" was not found in the database. Run the default font seed migration before saving changes.`);
     }
@@ -525,12 +535,12 @@ export async function saveRemoteFont(
     category: font.category,
     default_height: font.defaultHeight,
     default_width: font.defaultWidth ?? font.defaultHeight,
-        recommended_use: font.recommendedUse,
+    recommended_use: font.recommendedUse,
     licence: font.licence,
     updated_at: new Date().toISOString()
   });
 
-  if (fontError) throw fontError;
+  if (fontError) throw normaliseRemoteFontSaveError(fontError);
 
   const characters = Object.entries(font.characters).map(([key, character]) => ({
     font_id: font.id,

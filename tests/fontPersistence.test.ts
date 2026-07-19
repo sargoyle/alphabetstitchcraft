@@ -122,3 +122,10 @@ assert.ok(
     fontPersistenceSource.includes('default_width: font.defaultWidth ?? font.defaultHeight'),
   "FONT-PERSISTENCE-001: Remote font persistence should load and save font-level default width with height fallback."
 );
+
+assert.ok(
+  fontPersistenceSource.includes('function normaliseRemoteFontSaveError') &&
+    fontPersistenceSource.includes('202607140001_add_font_default_width.sql') &&
+    fontPersistenceSource.includes('if (fontError) throw normaliseRemoteFontSaveError(fontError)'),
+  "FONT-PERSISTENCE-002: Missing default_width schema errors should produce a clear migration message."
+);

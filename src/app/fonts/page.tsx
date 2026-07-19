@@ -22,6 +22,7 @@ export default function FontsPage() {
   const [newFontCustomCategory, setNewFontCustomCategory] = useState("");
   const [newFontHeight, setNewFontHeight] = useState("10");
   const [newFontWidth, setNewFontWidth] = useState("10");
+  const [creatingFont, setCreatingFont] = useState(false);
   const isLoadingFonts = persistence.mode === "loading";
   const categories = useMemo(() => ["All", ...mergeFontCategories(fonts.map((font) => font.category))], [fonts]);
   const categoryOptions = useMemo(() => mergeFontCategories(fonts.map((font) => font.category)), [fonts]);
@@ -53,8 +54,10 @@ export default function FontsPage() {
 
   async function createFont() {
     setActionStatus(null);
+    setCreatingFont(true);
     if (!persistence.canWrite) {
       setActionStatus({ type: "error", message: persistence.message });
+      setCreatingFont(false);
       return;
     }
 
@@ -65,30 +68,36 @@ export default function FontsPage() {
 
     if (!name) {
       setActionStatus({ type: "error", message: "Font name is required." });
+      setCreatingFont(false);
       return;
     }
     if (!categoryName) {
       setActionStatus({ type: "error", message: "Choose or create a font category." });
+      setCreatingFont(false);
       return;
     }
     if (!newFontHeight.trim() || !Number.isInteger(heightValue) || heightValue < 1 || heightValue > 60) {
       setActionStatus({ type: "error", message: "Font height must be a whole number between 1 and 60." });
+      setCreatingFont(false);
       return;
     }
     if (!newFontWidth.trim() || !Number.isInteger(widthValue) || widthValue < 1 || widthValue > 60) {
       setActionStatus({ type: "error", message: "Default character width must be a whole number between 1 and 60." });
+      setCreatingFont(false);
       return;
     }
     if (fonts.some((font) => font.name.trim().toLowerCase() === name.toLowerCase())) {
       setActionStatus({ type: "error", message: "A font with this name already exists." });
+      setCreatingFont(false);
       return;
     }
 
     const saved = await saveFont(createBlankFont(name, { category: categoryName, height: heightValue, width: widthValue }));
+    setCreatingFont(false);
     setActionStatus(
       saved
         ? { type: "success", message: "Font changes saved successfully." }
-        : { type: "error", message: persistence.message || "Font was not saved." }
+        : { type: "error", message: persistence.lastError || "Font was not saved. Check the database setup, including the default-width migration, and try again." }
     );
     if (saved) setCreateOpen(false);
   }
@@ -239,9 +248,18 @@ export default function FontsPage() {
                 onChange={(event) => setNewFontWidth(event.target.value)}
               />
             </label>
+            {actionStatus ? (
+              <p
+                className={actionStatus.type === "success" ? "success-message compact-status" : "warning compact-status"}
+                role={actionStatus.type === "success" ? "status" : "alert"}
+                aria-live={actionStatus.type === "success" ? "polite" : "assertive"}
+              >
+                {actionStatus.message}
+              </p>
+            ) : null}
             <div className="button-row">
-              <button className="button primary" type="button" onClick={createFont}>
-                Create font
+              <button className="button primary" type="button" onClick={createFont} disabled={creatingFont}>
+                {creatingFont ? "Creating..." : "Create font"}
               </button>
               <button className="button secondary" type="button" onClick={() => setCreateOpen(false)}>
                 Cancel

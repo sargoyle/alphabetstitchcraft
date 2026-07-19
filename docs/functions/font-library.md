@@ -213,3 +213,14 @@ Expected output:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+
+## 2026-07-19 Update: Create Font Save Feedback
+
+- Create Font now shows an immediate Creating... button state while the database save is running.
+- Create Font save errors are shown inside the modal as an alert so the user does not have to look behind the dialog.
+- If Supabase is missing the default_width column, the save path reports the required migration: 202607140001_add_font_default_width.sql.
+
+### Related Tests
+
+- FONT-BROWSER-008 in tests/fontBrowserSource.test.ts.
+- FONT-PERSISTENCE-002 in tests/fontPersistence.test.ts.
