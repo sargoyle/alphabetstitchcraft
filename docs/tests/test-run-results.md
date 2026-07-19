@@ -1859,3 +1859,17 @@ Validation:
 
 ### Result
 - All utility/source tests passed after adding create-font modal feedback and default_width migration error handling.
+
+## 2026-07-19 Create Font Failure Detail Follow-up
+
+### Commands
+- App TypeScript compile: `tsc --noEmit` - Passed.
+- Test TypeScript compile: `tsc -p tsconfig.tests.json` - Passed.
+- Utility/source tests: `.test-build/tests/runTests.js` - Passed.
+
+### Result
+- All utility/source tests passed after routing failed Create Font saves through `getLastSaveError()` and broadening Supabase save error normalisation.
+
+### Coverage Updated
+- `FONT-BROWSER-008`: Confirms Create Font failure feedback reads the latest save error instead of stale React state.
+- `FONT-PERSISTENCE-002`: Confirms save error normalisation inspects Supabase message, details and hint text.

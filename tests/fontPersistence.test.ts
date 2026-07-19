@@ -125,7 +125,11 @@ assert.ok(
 
 assert.ok(
   fontPersistenceSource.includes('function normaliseRemoteFontSaveError') &&
+    fontPersistenceSource.includes('function getRemoteErrorMessage') &&
+    fontPersistenceSource.includes('details') &&
+    fontPersistenceSource.includes('hint') &&
     fontPersistenceSource.includes('202607140001_add_font_default_width.sql') &&
     fontPersistenceSource.includes('if (fontError) throw normaliseRemoteFontSaveError(fontError)'),
   "FONT-PERSISTENCE-002: Missing default_width schema errors should produce a clear migration message."
 );
+

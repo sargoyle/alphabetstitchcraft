@@ -2070,3 +2070,15 @@ Acceptance checks:
 - [x] Create Font no longer appears to do nothing during save.
 - [x] Save failures are visible in the modal.
 - [x] TypeScript and utility/source tests pass.
+
+### 51.1 Create Font Failure Detail Follow-up
+
+- [x] Preserve the latest save failure synchronously in `useFonts()`.
+- [x] Show the real Create Font database error in the modal instead of stale fallback text.
+- [x] Harden Supabase save error normalisation to include error details and hints.
+- [x] Update function documentation and source tests.
+
+Acceptance checks:
+- [x] Failed Create Font saves keep the dialog open and show the current failure reason.
+- [x] Missing `default_width` schema errors still show the migration to run.
+- [x] TypeScript and utility/source tests pass.

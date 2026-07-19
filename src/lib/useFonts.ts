@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   deleteRemoteFont,
@@ -32,6 +32,7 @@ export function useFonts() {
   const [savedFonts, setSavedFonts] = useState<StitchFont[]>([]);
   const [deletedFontIds, setDeletedFontIds] = useState<string[]>([]);
   const [fontBackups, setFontBackups] = useState<Record<string, RemoteFontBackup[]>>({});
+  const lastSaveErrorRef = useRef<string | null>(null);
   const [persistence, setPersistence] = useState<PersistenceState>({
     mode: "loading",
     message: "Checking font storage...",
@@ -141,21 +142,25 @@ export function useFonts() {
   }, [refresh]);
 
   async function saveEditableFont(font: StitchFont): Promise<boolean> {
+    lastSaveErrorRef.current = null;
     const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });
 
     try {
       const savedRemotely = await saveRemoteFont(nextFont);
       if (!savedRemotely) {
         const message = "Add Supabase environment values before saving fonts to the database.";
+        lastSaveErrorRef.current = message;
         setPersistence((current) => ({ ...current, message, canWrite: false, lastError: message }));
         return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
+      lastSaveErrorRef.current = message;
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false, lastError: message }));
       return false;
     }
 
+    lastSaveErrorRef.current = null;
     setSavedFonts((current) => {
       const nextFonts = current.filter((savedFont) => savedFont.id !== nextFont.id);
       return [...nextFonts, nextFont];
@@ -242,6 +247,7 @@ export function useFonts() {
     fontBackups,
     refresh,
     saveFont: saveEditableFont,
+    getLastSaveError: () => lastSaveErrorRef.current,
     deleteFont: deleteEditableFont,
     restoreFontBackup,
     restoreFont: restoreEditableFont,

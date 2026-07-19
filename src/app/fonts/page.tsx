@@ -11,7 +11,7 @@ import { useFonts } from "@/lib/useFonts";
 const CUSTOM_CATEGORY_VALUE = "__custom__";
 
 export default function FontsPage() {
-  const { fonts, saveFont, persistence } = useFonts();
+  const { fonts, saveFont, getLastSaveError, persistence } = useFonts();
   const [category, setCategory] = useState("All");
   const [height, setHeight] = useState("All");
   const [search, setSearch] = useState("");
@@ -97,7 +97,7 @@ export default function FontsPage() {
     setActionStatus(
       saved
         ? { type: "success", message: "Font changes saved successfully." }
-        : { type: "error", message: persistence.lastError || "Font was not saved. Check the database setup, including the default-width migration, and try again." }
+        : { type: "error", message: getLastSaveError() || persistence.lastError || "Font was not saved. Check the database setup, including the default-width migration, and try again." }
     );
     if (saved) setCreateOpen(false);
   }

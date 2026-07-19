@@ -11,6 +11,7 @@ Provide the primary browsing and management surface for stitch alphabets, includ
 - Component: `FontGridPreview` in `src/components/FontGridPreview.tsx`
 - Component: `TextPatternPreview` in `src/components/TextPatternPreview.tsx`
 - Hook: `useFonts()` in `src/lib/useFonts.ts`
+- Hook output: `getLastSaveError()` for immediate save-failure feedback
 - Function: `createBlankFont()` in `src/lib/fontFactory.ts`
 - Function: `saveSelectedFontId()` in `src/lib/localStorageUtils.ts`
 - Data source: default fonts from `src/data/fonts.json`
@@ -103,11 +104,12 @@ Expected output:
 | Fonts page is allowed to expose Edit actions for now. | Confirmed | Implemented | User confirmed this while there is no login/admin function. |
 | Users should be able to rename fonts from the Fonts page. | Confirmed | Unknown | User confirmed this; implementation status needs code verification. |
 | Users should be able to delete fonts from the Fonts page. | Confirmed | Unknown | User confirmed this; implementation status needs code verification. |
-| Users should be able to create a new font when persistence is available. | Confirmed | Implemented | Create button calls font creation flow. |
-| Create New Font should allow category and height selection before creation. | Confirmed | Implemented | Create New Font now uses an in-app dialog with name, category, new-category and height fields. |
-| Create must not proceed when persistence cannot write. | Assumed | Implemented | Disabled button and alert guard. |
+| Users should be able to create a new font when persistence is available. | Confirmed | Implemented | Create button opens the in-app Create Font dialog and saves through `saveFont()`. |
+| Create New Font should allow category, font height and default character width selection before creation. | Confirmed | Implemented | Create New Font uses an in-app dialog with name, category, new-category, height and default-width fields. |
+| Create must not proceed when persistence cannot write. | Assumed | Implemented | Disabled button and in-app status guard. |
 | Font cards should show a preview. | Confirmed | Implemented | `FontGridPreview` is used. |
 | Font card previews must not show pattern centre guide lines. | Confirmed | Implemented | Centre guides remain on Create Pattern but `FontGridPreview` passes `showCenterGuide={false}`. |
+| Create Font save failures must show the current save error inside the modal. | Confirmed | Implemented | `useFonts()` exposes `getLastSaveError()` so the page does not read stale React state after `saveFont()` fails. |
 | Future admin login should control who can create/edit/rename/delete fonts. | Confirmed | Not Implemented | Added to outstanding tasks as a future feature. |
 | Non-admin/general users should still be able to use other site features once admin permissions are added. | Confirmed | Not Implemented | Future permission model should preserve browse/use/generator access. |
 
@@ -132,6 +134,7 @@ Expected output:
 - Given search text matches only a category, when entered, then that category match alone does not need to keep the font visible.
 - Given persistence can write, when Create New Font is used, then the user can provide name, category and height before the blank font save is requested.
 - Given persistence cannot write, when Create New Font is used, then creation is blocked and the user sees a clear status/error.
+- Given Create Font save fails, when the save promise resolves false, then the modal shows the current database error and does not close.
 - Given Edit is clicked, when navigation occurs, then the selected font opens in the editor.
 - Given Rename is clicked, when the user confirms a new name, then the font rename is saved and the library updates.
 - Given Delete is clicked, when the user confirms deletion, then the font is removed from the library.
@@ -161,11 +164,12 @@ Expected output:
 - Currently derives category and height options from available fonts.
 - Currently filters by category, height and case-insensitive search over name and description.
 - Currently disables Create New Font when `persistence.canWrite` is false.
-- Currently uses an in-app Create Font dialog for name, category, new-category and height.
+- Currently uses an in-app Create Font dialog for name, category, new-category, height and default character width.
 - Currently shows View Alphabet, Use and Edit actions.
 - Rename and Delete are available from the Fonts page/editor management flow; shared/default deletes archive the row rather than physically deleting it.
 - Current Create New Font flow collects category and height before creation.
 - Currently there is no admin login/permission model.
+- Currently shows Create Font save failures inside the modal using the latest save error from `useFonts().getLastSaveError()` before falling back to persisted state.
 
 ## Known Gaps / Defects
 
@@ -217,10 +221,12 @@ Expected output:
 ## 2026-07-19 Update: Create Font Save Feedback
 
 - Create Font now shows an immediate Creating... button state while the database save is running.
-- Create Font save errors are shown inside the modal as an alert so the user does not have to look behind the dialog.
+- Create Font save errors are shown inside the modal as an alert so the user does not have to look behind the dialog. The page reads `getLastSaveError()` immediately after a failed save so it does not show stale fallback text.
 - If Supabase is missing the default_width column, the save path reports the required migration: 202607140001_add_font_default_width.sql.
 
 ### Related Tests
 
 - FONT-BROWSER-008 in tests/fontBrowserSource.test.ts.
 - FONT-PERSISTENCE-002 in tests/fontPersistence.test.ts.
+
+

@@ -113,14 +113,28 @@ function withTimeout<T>(promise: Promise<T>, message: string, timeoutMs = 6000):
   ]);
 }
 
+function getRemoteErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error) {
+    return [
+      "message" in error ? String((error as { message?: unknown }).message ?? "") : "",
+      "details" in error ? String((error as { details?: unknown }).details ?? "") : "",
+      "hint" in error ? String((error as { hint?: unknown }).hint ?? "") : "",
+      "code" in error ? String((error as { code?: unknown }).code ?? "") : ""
+    ].filter(Boolean).join(" ");
+  }
+  return String(error ?? "");
+}
+
 function normaliseRemoteFontSaveError(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error ?? "");
-  if (message.includes("default_width") || message.includes("Could not find") && message.includes("column")) {
+  const message = getRemoteErrorMessage(error);
+  const lowerMessage = message.toLowerCase();
+  if (lowerMessage.includes("default_width") || lowerMessage.includes("could not find") && lowerMessage.includes("column")) {
     return new Error(
       "Database setup is missing the font default width column. Run Supabase migration 202607140001_add_font_default_width.sql, then try again."
     );
   }
-  return error;
+  return error instanceof Error ? error : new Error(message || "Database save failed. Font changes were not saved.");
 }
 
 function validateSharedFont(font: StitchFont) {
@@ -593,3 +607,4 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+

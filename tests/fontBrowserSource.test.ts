@@ -65,6 +65,8 @@ assert.ok(
   fontsPageSource.includes('creatingFont') &&
     fontsPageSource.includes('{creatingFont ? "Creating..." : "Create font"}') &&
     fontsPageSource.includes('role={actionStatus.type === "success" ? "status" : "alert"}') &&
+    fontsPageSource.includes('getLastSaveError() || persistence.lastError') &&
     fontsPageSource.includes('default-width migration'),
   "FONT-BROWSER-008: Create Font modal should show immediate saving state and in-modal save failure feedback."
 );
+

@@ -82,5 +82,6 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 
 ## 2026-07-19 Create Font Save Feedback Coverage
 
-- FONT-BROWSER-008: Create Font modal shows Creating... and in-modal failure feedback.
-- FONT-PERSISTENCE-002: Missing default_width schema errors are converted to a clear migration message.
+- FONT-BROWSER-008: Create Font modal shows Creating... and in-modal failure feedback, including the current save error via `getLastSaveError()`.
+- FONT-PERSISTENCE-002: Missing default_width schema errors are converted to a clear migration message using Supabase message/details/hint text.
+
