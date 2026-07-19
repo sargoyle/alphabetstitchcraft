@@ -381,3 +381,23 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 
 - EDITOR-UI-029 in tests/editorUiSource.test.ts.
 - fontData.test.ts blank font default-width coverage.
+
+## 2026-07-19 Bug Fix Update: Save Refresh Stability
+
+### Added Requirements
+
+| Rule | Product Status | Implementation Status | Notes |
+|---|---|---|---|
+| Successful character saves must not be visually replaced by older or blank remote data during the follow-up refresh. | Confirmed | Implemented | `useFonts()` now reapplies the just-saved font after `refresh()` so the editor keeps the saved grid while remote data catches up. |
+| Save success messaging must only appear after `saveFont()` returns success. | Confirmed | Implemented | `CharacterEditor` already waits for the parent save result before showing success. |
+
+### Added Acceptance Criteria
+
+- Given a user edits a character grid, when Save character succeeds, then the edited grid remains visible after the remote refresh completes.
+- Given the remote refresh returns an older or blank version immediately after save, when the save has already succeeded, then the just-saved font remains the local editor source.
+- Given the save fails, when the parent save returns false or throws, then the success message is not displayed.
+
+### Related Tests
+
+- FONT-REFRESH-002 in `tests/fontRefreshSource.test.ts`.
+- EDITOR-UI-030 in `tests/editorUiSource.test.ts`.

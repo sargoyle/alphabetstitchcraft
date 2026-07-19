@@ -161,11 +161,13 @@ export function useFonts() {
     }
 
     lastSaveErrorRef.current = null;
-    setSavedFonts((current) => {
+    const keepSavedFontCurrent = (current: StitchFont[]) => {
       const nextFonts = current.filter((savedFont) => savedFont.id !== nextFont.id);
       return [...nextFonts, nextFont];
-    });
+    };
+    setSavedFonts(keepSavedFontCurrent);
     await refresh();
+    setSavedFonts(keepSavedFontCurrent);
     setPersistence((current) => ({
       ...current,
       mode: "remote",
@@ -254,4 +256,5 @@ export function useFonts() {
     resetFontEdits: resetEditableFont
   };
 }
+
 

@@ -223,3 +223,11 @@ assert.ok(
     editorClientSource.includes('targetFont.defaultWidth = nextWidth'),
   "EDITOR-UI-029: Font settings should allow temporary blank dimension fields but reject saving without valid height and default width."
 );
+const useFontsSource = readFileSync("src/lib/useFonts.ts", "utf8");
+assert.ok(
+  useFontsSource.includes("const keepSavedFontCurrent = (current: StitchFont[])") &&
+    useFontsSource.includes("await refresh();") &&
+    useFontsSource.includes("setSavedFonts(keepSavedFontCurrent);"),
+  "EDITOR-UI-030: Successful character/font saves should keep the just-saved font current after remote refresh so stale data cannot blank the editor grid."
+);
+

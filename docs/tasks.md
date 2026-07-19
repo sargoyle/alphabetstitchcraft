@@ -2082,3 +2082,19 @@ Acceptance checks:
 - [x] Failed Create Font saves keep the dialog open and show the current failure reason.
 - [x] Missing `default_width` schema errors still show the migration to run.
 - [x] TypeScript and utility/source tests pass.
+
+## Phase 52: Character Save Refresh Stability
+
+### 52.1 Prevent Saved Character Grid Wipe After Save
+
+- [x] Investigate character grids going blank immediately after a successful save.
+- [x] Keep the just-saved font in local state after the remote refresh completes.
+- [x] Add source regression coverage for post-refresh saved-font preservation.
+- [x] Update function documentation and test run notes.
+
+Acceptance checks:
+- [x] A successful character save does not replace the edited grid with a stale blank remote copy.
+- [x] Save success feedback only appears after `saveFont()` returns success.
+- [x] App TypeScript compile passes.
+- [x] Test TypeScript compile passes.
+- [x] Utility/source tests pass.

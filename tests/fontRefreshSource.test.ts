@@ -14,10 +14,14 @@ assert.equal(
 );
 
 assert.ok(
-  useFontsSource.includes("setSavedFonts((current) =>") &&
+  useFontsSource.includes("const keepSavedFontCurrent = (current: StitchFont[])") &&
     useFontsSource.includes("savedFont.id !== nextFont.id") &&
-    useFontsSource.includes("return [...nextFonts, nextFont]"),
-  "FONT-REFRESH-002: Successful saves should optimistically keep the saved font in local state during refresh."
+    useFontsSource.includes("return [...nextFonts, nextFont]") &&
+    (useFontsSource.match(/setSavedFonts\(keepSavedFontCurrent\)/g)?.length ?? 0) >= 2 &&
+    useFontsSource.includes("await refresh();"),
+  "FONT-REFRESH-002: Successful saves should keep the saved font in local state before and after refresh."
 );
 
 console.log("font refresh source tests passed.");
+
+

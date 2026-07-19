@@ -85,3 +85,8 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 - FONT-BROWSER-008: Create Font modal shows Creating... and in-modal failure feedback, including the current save error via `getLastSaveError()`.
 - FONT-PERSISTENCE-002: Missing default_width schema errors are converted to a clear migration message using Supabase message/details/hint text.
 
+
+## 2026-07-19 Character Save Refresh Stability Coverage
+
+- FONT-REFRESH-002: Successful saves keep the just-saved font in local state before and after remote refresh.
+- EDITOR-UI-030: Character/font saves preserve the saved font after refresh so stale remote data cannot blank the editor grid.
