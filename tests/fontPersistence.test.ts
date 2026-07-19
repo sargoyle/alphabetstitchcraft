@@ -133,3 +133,17 @@ assert.ok(
   "FONT-PERSISTENCE-002: Missing default_width schema errors should produce a clear migration message."
 );
 
+assert.ok(
+  fontPersistenceSource.includes('import { defaultEditableCharacterKeys } from "./characterSets"') &&
+    fontPersistenceSource.includes('defaultEditableCharacterKeys.map((key) => [key, createBlankCharacter(defaultWidth, defaultHeight)])') &&
+    fontPersistenceSource.includes('filter(([, character]) => hasFilledStitches(character))') &&
+    fontPersistenceSource.includes('.in("character_key", blankCharacterKeys)'),
+  "FONT-PERSISTENCE-003: Remote custom fonts should persist only filled character designs and rebuild blank starter characters on load."
+);
+
+assert.ok(
+  fontPersistenceSource.includes("async function verifyCustomFontCharactersSaved") &&
+    fontPersistenceSource.includes("202607190001_repair_public_custom_font_character_persistence.sql") &&
+    fontPersistenceSource.includes("await verifyCustomFontCharactersSaved(font.id, characters.map((character) => character.character_key));"),
+  "FONT-PERSISTENCE-004: Character saves should verify Supabase persisted filled character rows before reporting success."
+);

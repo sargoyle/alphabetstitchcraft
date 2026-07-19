@@ -1,5 +1,6 @@
 "use client";
 
+import { defaultEditableCharacterKeys } from "./characterSets";
 import type { StitchCharacter, StitchFont } from "./fontTypes";
 import { validateFont } from "./gridUtils";
 import { getSupabaseClient, isSupabaseConfigured } from "./supabaseClient";
@@ -73,6 +74,18 @@ type RemoteFontBackupRow = {
 
 function isStringGrid(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((row) => typeof row === "string");
+}
+
+function createBlankCharacter(width: number, height: number): StitchCharacter {
+  return {
+    width,
+    height,
+    grid: Array.from({ length: height }, () => "0".repeat(width))
+  };
+}
+
+function hasFilledStitches(character: StitchCharacter) {
+  return character.grid.some((row) => row.includes("1"));
 }
 
 function isUuid(value: string) {
@@ -174,6 +187,11 @@ function toDefaultStitchFont(font: RemoteDefaultFontRow): { font: StitchFont | n
 }
 
 function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { font: StitchFont | null; errors: string[] } {
+  const defaultHeight = font.default_height;
+  const defaultWidth = font.default_width ?? font.default_height;
+  const starterCharacters = Object.fromEntries(
+    defaultEditableCharacterKeys.map((key) => [key, createBlankCharacter(defaultWidth, defaultHeight)])
+  ) as Record<string, StitchCharacter>;
   const mappedCharacters = characters.reduce<Record<string, StitchCharacter>>((acc, character) => {
     if (!isStringGrid(character.grid)) {
       acc[character.character_key] = {
@@ -189,15 +207,15 @@ function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { 
       grid: character.grid
     };
     return acc;
-  }, {});
+  }, starterCharacters);
 
   const stitchFont: StitchFont = {
     id: font.id,
     name: font.name,
     description: font.description,
     category: font.category,
-    defaultHeight: font.default_height,
-    defaultWidth: font.default_width ?? font.default_height,
+    defaultHeight,
+    defaultWidth,
     recommendedUse: font.recommended_use,
     licence: font.licence,
     isCustom: true,
@@ -259,6 +277,29 @@ async function createRemoteFontBackup(fontId: string, action: RemoteFontBackup["
   });
 
   if (error) throw error;
+}
+
+async function verifyCustomFontCharactersSaved(fontId: string, expectedKeys: string[]) {
+  if (!expectedKeys.length) return;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+
+  const { data, error } = await (supabase.from("custom_font_characters") as any)
+    .select("character_key")
+    .eq("font_id", fontId)
+    .in("character_key", expectedKeys);
+
+  if (error) throw normaliseRemoteFontSaveError(error);
+
+  const savedKeys = new Set(((data ?? []) as Array<{ character_key: string }>).map((row) => row.character_key));
+  const missingKeys = expectedKeys.filter((key) => !savedKeys.has(key));
+
+  if (missingKeys.length) {
+    throw new Error(
+      "Character designs were not saved to the database. Run Supabase migration 202607190001_repair_public_custom_font_character_persistence.sql, then try saving again."
+    );
+  }
 }
 
 async function ensureBaseDefaultFontExists(baseDefaultFontId: string) {
@@ -507,7 +548,7 @@ export async function saveRemoteFont(
         category: font.category,
         default_height: font.defaultHeight,
         default_width: font.defaultWidth ?? font.defaultHeight,
-    recommended_use: font.recommendedUse,
+        recommended_use: font.recommendedUse,
         licence: font.licence,
         characters: font.characters,
         is_public: true,
@@ -556,21 +597,36 @@ export async function saveRemoteFont(
 
   if (fontError) throw normaliseRemoteFontSaveError(fontError);
 
-  const characters = Object.entries(font.characters).map(([key, character]) => ({
-    font_id: font.id,
-    owner_id: null,
-    character_key: key,
-    width: character.width,
-    height: character.height,
-    grid: character.grid
-  }));
+  const characterEntries = Object.entries(font.characters);
+  const characters = characterEntries
+    .filter(([, character]) => hasFilledStitches(character))
+    .map(([key, character]) => ({
+      font_id: font.id,
+      owner_id: null,
+      character_key: key,
+      width: character.width,
+      height: character.height,
+      grid: character.grid
+    }));
+  const blankCharacterKeys = characterEntries
+    .filter(([, character]) => !hasFilledStitches(character))
+    .map(([key]) => key);
 
-  if (!characters.length) return true;
+  if (characters.length) {
+    const { error: characterError } = await customFontCharactersTable.upsert(characters, {
+      onConflict: "font_id,character_key"
+    });
+    if (characterError) throw normaliseRemoteFontSaveError(characterError);
+    await verifyCustomFontCharactersSaved(font.id, characters.map((character) => character.character_key));
+  }
 
-  const { error: characterError } = await customFontCharactersTable.upsert(characters, {
-    onConflict: "font_id,character_key"
-  });
-  if (characterError) throw characterError;
+  if (blankCharacterKeys.length) {
+    const { error: blankDeleteError } = await customFontCharactersTable
+      .delete()
+      .eq("font_id", font.id)
+      .in("character_key", blankCharacterKeys);
+    if (blankDeleteError) throw normaliseRemoteFontSaveError(blankDeleteError);
+  }
 
   return true;
 }

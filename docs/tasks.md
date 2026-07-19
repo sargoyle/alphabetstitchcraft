@@ -2112,3 +2112,37 @@ Acceptance checks:
 - [x] Changing Font default width affects the grid width shown for newly selected uncreated characters.
 - [x] Existing created characters keep their own editable width.
 - [x] TypeScript and utility/source tests pass.
+
+## Phase 54: Duplicated Character Reload Persistence
+
+### 54.1 Persist Only Created Custom Font Characters
+
+- [x] Investigate duplicated characters disappearing after browser refresh.
+- [x] Update remote custom font loading to recreate blank starter characters from the standard editable character set.
+- [x] Update remote custom font saving to upsert only characters with filled stitches.
+- [x] Delete blank custom character rows during save so cleared characters return to not-created state.
+- [x] Add regression source coverage.
+- [x] Update function documentation and test notes.
+
+Acceptance checks:
+
+- [x] A duplicated character with stitches is saved as a real `custom_font_characters` row.
+- [x] Browser refresh can reload duplicated filled characters from the database.
+- [x] Blank starter characters are not stored as created designs.
+- [x] TypeScript and utility/source tests pass.
+
+## Phase 55: Custom Character Database Persistence Repair
+
+### 55.1 Repair Hand-Drawn And Duplicated Character Reload Saves
+
+- [x] Confirm character designs were disappearing after refresh because custom character rows were not reliably persisted/read from Supabase.
+- [x] Add a repeatable Supabase repair migration for public custom font character persistence.
+- [x] Add save verification so the app does not report success unless filled character rows can be read back.
+- [x] Add migration and persistence regression source coverage.
+- [x] Update function documentation and test notes.
+
+Acceptance checks:
+
+- [x] Hand-drawn custom characters should persist after browser refresh once the migration is run.
+- [x] Duplicated custom characters should persist after browser refresh once the migration is run.
+- [x] Save success is blocked if Supabase does not confirm persisted filled character rows.

@@ -1900,3 +1900,38 @@ Validation:
 
 ### Coverage Updated
 - `EDITOR-UI-031`: Confirms uncreated character drafts use `defaultWidth x defaultHeight` and ignore stale blank placeholder widths.
+
+## 2026-07-19 - Duplicated Character Reload Persistence
+
+**Commands run:**
+
+- `tsc --noEmit`
+- `tsc -p tsconfig.tests.json`
+- `node .test-build/tests/runTests.js`
+
+**Result:** Pass.
+
+**Tests added/updated:**
+
+- `FONT-PERSISTENCE-003`: Remote custom fonts persist only filled character designs and rebuild blank starter characters on load.
+
+**Failures found:** None.
+
+**Notes:** This covers the reload failure where duplicated characters appeared saved locally but disappeared after a browser refresh because blank starter-grid rows and real created rows were not clearly separated in persistence.
+
+## 2026-07-19 - Custom Character Database Persistence Repair
+
+**Commands run:**
+
+- `tsc --noEmit`
+- `tsc -p tsconfig.tests.json`
+- `node .test-build/tests/runTests.js`
+
+**Result:** Pass.
+
+**Tests added/updated:**
+
+- `FONT-PERSISTENCE-004`: Character saves verify Supabase persisted filled character rows before reporting success.
+- Migration source assertions for `202607190001_repair_public_custom_font_character_persistence.sql`.
+
+**Notes:** This repair requires running the new Supabase migration before browser testing against the live database.

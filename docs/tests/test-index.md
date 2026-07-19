@@ -94,3 +94,12 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 ## 2026-07-19 Default Width Draft Coverage
 
 - EDITOR-UI-031: Uncreated character drafts use font default width and ignore old blank placeholder widths.
+
+## 2026-07-19 Duplicated Character Persistence Coverage
+
+- FONT-PERSISTENCE-003: Remote custom fonts persist only filled character designs and rebuild blank starter characters on load, so duplicated characters remain after browser refresh.
+
+## 2026-07-19 Custom Character Save Verification Coverage
+
+- FONT-PERSISTENCE-004: Character saves verify Supabase persisted filled character rows before reporting success.
+- MIGRATION-CHARACTER-PERSISTENCE-001: The Supabase repair migration restores public/shared custom character row persistence.

@@ -10,6 +10,7 @@ const punctuationSql = readFileSync("supabase/migrations/202607070001_add_defaul
 const defaultFontArchiveSql = readFileSync("supabase/migrations/202607110002_allow_default_font_archive.sql", "utf8");
 const defaultFontArchiveGrantSql = readFileSync("supabase/migrations/202607110003_grant_default_font_archive_update.sql", "utf8");
 const defaultFontArchiveRpcSql = readFileSync("supabase/migrations/202607120001_archive_default_font_rpc.sql", "utf8");
+const characterPersistenceRepairSql = readFileSync("supabase/migrations/202607190001_repair_public_custom_font_character_persistence.sql", "utf8");
 const defaultWidthSql = readFileSync("supabase/migrations/202607140001_add_font_default_width.sql", "utf8");
 
 assert.match(
@@ -160,4 +161,19 @@ assert.match(
   defaultWidthSql,
   /set default_width = default_height/i,
   "Default width migration should backfill existing fonts from their current font height."
+);
+
+assert.ok(
+  characterPersistenceRepairSql.includes("alter table public.custom_font_characters") &&
+    characterPersistenceRepairSql.includes("alter column owner_id drop not null"),
+  "Character persistence repair migration should allow public/shared character rows without an owner."
+);
+assert.ok(
+  characterPersistenceRepairSql.includes('create policy "Anyone can create custom font characters"') &&
+    characterPersistenceRepairSql.includes("with check (true)"),
+  "Character persistence repair migration should recreate public insert policy."
+);
+assert.ok(
+  characterPersistenceRepairSql.includes("grant select, insert, update, delete on public.custom_font_characters to anon, authenticated"),
+  "Character persistence repair migration should grant browser roles character table write access."
 );
