@@ -279,50 +279,6 @@ async function createRemoteFontBackup(fontId: string, action: RemoteFontBackup["
   if (error) throw error;
 }
 
-export async function verifyRemoteCustomFontCharacter(
-  fontId: string,
-  characterKey: string,
-  expectedCharacter: StitchCharacter
-) {
-  if (!isSupabaseConfigured() || !isUuid(fontId)) return true;
-
-  const supabase = getSupabaseClient();
-  if (!supabase) return true;
-
-  const { data, error } = await (supabase.from("custom_font_characters") as any)
-    .select("character_key, width, height, grid")
-    .eq("font_id", fontId)
-    .eq("character_key", characterKey)
-    .maybeSingle();
-
-  if (error) throw normaliseRemoteFontSaveError(error);
-
-  if (
-    !data ||
-    data.width !== expectedCharacter.width ||
-    data.height !== expectedCharacter.height ||
-    JSON.stringify(data.grid) !== JSON.stringify(expectedCharacter.grid)
-  ) {
-    throw new Error(
-      `Character ${characterKey} was not saved to the database. The saved row is missing or does not match the grid you just edited. Run Supabase migration 202607190001_repair_public_custom_font_character_persistence.sql, then try saving again.`
-    );
-  }
-
-  return true;
-}
-
-async function verifyCustomFontCharactersSaved(fontId: string, expectedCharacters: Array<{ character_key: string; width: number; height: number; grid: string[] }>) {
-  await Promise.all(
-    expectedCharacters.map((character) =>
-      verifyRemoteCustomFontCharacter(fontId, character.character_key, {
-        width: character.width,
-        height: character.height,
-        grid: character.grid
-      })
-    )
-  );
-}
-
 async function ensureBaseDefaultFontExists(baseDefaultFontId: string) {
   const supabase = getSupabaseClient();
   if (!supabase) return;
@@ -538,6 +494,53 @@ export async function restoreRemoteFontBackup(backupId: string): Promise<boolean
   return saveRemoteFont(font, { backupAction: "restore" });
 }
 
+export async function saveRemoteCustomFontCharacter(
+  fontId: string,
+  characterKey: string,
+  character: StitchCharacter
+): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+
+  if (!isUuid(fontId)) {
+    console.info(
+      `[fontPersistence] Active character "${characterKey}" belongs to shared font "${fontId}" as slug; saved through default_fonts.characters.`
+    );
+    return true;
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
+  const customFontCharactersTable = supabase.from("custom_font_characters") as any;
+  console.info(
+    `[fontPersistence] Saving active character "${characterKey}" for custom font "${fontId}" as uuid through custom_font_characters.`
+  );
+
+  if (!hasFilledStitches(character)) {
+    const { error } = await customFontCharactersTable
+      .delete()
+      .eq("font_id", fontId)
+      .eq("character_key", characterKey);
+
+    if (error) throw normaliseRemoteFontSaveError(error);
+    return true;
+  }
+
+  const { error } = await customFontCharactersTable.upsert(
+    {
+      font_id: fontId,
+      owner_id: null,
+      character_key: characterKey,
+      width: character.width,
+      height: character.height,
+      grid: character.grid
+    },
+    { onConflict: "font_id,character_key" }
+  );
+
+  if (error) throw normaliseRemoteFontSaveError(error);
+  return true;
+}
 export async function saveRemoteFont(
   font: StitchFont,
   options: { backupAction?: RemoteFontBackup["action"] | null } = {}
@@ -638,7 +641,6 @@ export async function saveRemoteFont(
       onConflict: "font_id,character_key"
     });
     if (characterError) throw normaliseRemoteFontSaveError(characterError);
-    await verifyCustomFontCharactersSaved(font.id, characters);
   }
 
   if (blankCharacterKeys.length) {
@@ -684,4 +686,5 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+
 

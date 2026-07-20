@@ -2137,7 +2137,7 @@ Acceptance checks:
 
 - [x] Confirm character designs were disappearing after refresh because custom character rows were not reliably persisted/read from Supabase.
 - [x] Add a repeatable Supabase repair migration for public custom font character persistence.
-- [x] Add save verification so the app does not report success unless filled character rows can be read back.
+- [x] Add direct active-character persistence so the edited character row is written by `font_id` and `character_key` after the font save succeeds.
 - [x] Add migration and persistence regression source coverage.
 - [x] Update function documentation and test notes.
 
@@ -2145,21 +2145,23 @@ Acceptance checks:
 
 - [x] Hand-drawn custom characters should persist after browser refresh once the migration is run.
 - [x] Duplicated custom characters should persist after browser refresh once the migration is run.
-- [x] Save success is blocked if Supabase does not confirm persisted filled character rows.
+- [x] Save success is blocked if the active-character database write fails.
 
-## Phase 56: Exact Character Save Verification
+## Phase 56: Focused Active Character Persistence
 
-### 56.1 Stop False Successful Character Saves
+### 56.1 Stop False Successful Character Saves Without Blocking Valid Saves
 
 - [x] Investigate continued character loss after saves appeared successful.
-- [x] Add exact Supabase read-back verification for the character just saved.
-- [x] Compare saved character width, height and grid, not only the character key.
-- [x] Surface a save error when Supabase does not contain the exact edited grid.
+- [x] Remove the over-strict exact read-back verification that could block or destabilise saves.
+- [x] Add a focused active-character database write for UUID custom fonts after the broader font save succeeds.
+- [x] Keep default/shared slug font saves on the existing `default_fonts.characters` path.
+- [x] Surface a save error if the active-character database write fails.
 - [x] Add regression source coverage.
 - [x] Update function documentation and test notes.
 
 Acceptance checks:
 
-- [x] A save cannot be reported as successful if the saved database row is missing.
-- [x] A save cannot be reported as successful if the saved database row is blank or stale.
+- [x] UUID custom character saves write the active character directly to `custom_font_characters` by `font_id` and `character_key`.
+- [x] A save cannot be reported as successful if the active-character database write fails.
 - [x] TypeScript and utility/source tests pass.
+

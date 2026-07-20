@@ -76,12 +76,12 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 9. Font height save resizes every character in the font to the selected height.
 10. Character save either updates an existing character or writes a new destination character at the current font height.
 11. Updated font is saved through `useFonts().saveFont()` using the latest local font reference for the same font ID.
-12. Save success is returned only after the database save and font refresh complete.
+12. Save success is returned only after the database font save completes. For UUID custom fonts, the active edited character is then written directly to `custom_font_characters` by `font_id` and `character_key`.
 13. As soon as save starts, the editor shows `Saving character...`, changes the button label to `Saving...`, marks it busy, and prevents repeat clicks.
 14. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
 15. After save, if a later refresh returns a version with fewer filled character designs for the same font, the editor keeps the more complete local font state instead of downgrading the active working copy.
-14. Editor shows an inline success message when save succeeds or a local failure status when save fails.
-15. Editor returns to normal character-editing mode after saving a new character.
+16. Editor shows an inline success message when save succeeds or a local failure status when save fails.
+17. Editor returns to normal character-editing mode after saving a new character.
 
 ## Rules and Requirements
 
@@ -126,7 +126,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 | Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
 | Remote refreshes must not downgrade the active editor font to a version with fewer created characters. | Confirmed | Implemented | The editor compares filled-character counts and keeps the more complete local working copy for the active font. |
-| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows, then the editor reads the exact saved character row back from Supabase and compares width, height and grid before treating the save as successful. |
+| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. After the broader font save succeeds, the editor writes the active custom character row directly through `saveRemoteCustomFontCharacter()` before reporting success. |
 
 ## Negative Rules
 
@@ -423,3 +423,4 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 ### Related Tests
 
 - EDITOR-UI-031 in `tests/editorUiSource.test.ts`.
+

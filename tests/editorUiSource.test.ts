@@ -241,8 +241,9 @@ assert.ok(
 
 
 
+
 assert.ok(
-  editorClientSource.includes("verifyRemoteCustomFontCharacter") &&
-    editorClientSource.includes("await verifyRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);"),
-  "EDITOR-UI-032: Character saves should verify the exact saved character row before reporting success to the editor."
+  editorClientSource.includes("saveRemoteCustomFontCharacter") &&
+    editorClientSource.includes("await saveRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);"),
+  "EDITOR-UI-033: Font Editor should save the active character through a narrow single-character database write after the font save succeeds."
 );

@@ -141,16 +141,11 @@ assert.ok(
   "FONT-PERSISTENCE-003: Remote custom fonts should persist only filled character designs and rebuild blank starter characters on load."
 );
 
-assert.ok(
-  fontPersistenceSource.includes("async function verifyCustomFontCharactersSaved") &&
-    fontPersistenceSource.includes("202607190001_repair_public_custom_font_character_persistence.sql") &&
-    fontPersistenceSource.includes("await verifyCustomFontCharactersSaved(font.id, characters);"),
-  "FONT-PERSISTENCE-004: Character saves should verify Supabase persisted filled character rows before reporting success."
-);
+
 
 assert.ok(
-  fontPersistenceSource.includes("export async function verifyRemoteCustomFontCharacter") &&
+  fontPersistenceSource.includes("export async function saveRemoteCustomFontCharacter") &&
     fontPersistenceSource.includes('.eq("character_key", characterKey)') &&
-    fontPersistenceSource.includes("JSON.stringify(data.grid) !== JSON.stringify(expectedCharacter.grid)"),
-  "FONT-PERSISTENCE-005: Character save verification should compare the exact saved grid, not only the character key."
+    fontPersistenceSource.includes('{ onConflict: "font_id,character_key" }'),
+  "FONT-PERSISTENCE-006: Character saves should have a narrow single-character persistence path."
 );

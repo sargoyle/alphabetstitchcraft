@@ -158,7 +158,7 @@ Expected output:
 | Editing a bundled default/shared font must update the existing `default_fonts` record. | Confirmed | Implemented | `getRemoteFontSaveTarget()` sends non-UUID font IDs to `default_fonts` update. |
 | Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
 | Custom font character saves must be non-destructive. | Confirmed | Implemented | `custom_font_characters` rows are upserted by `font_id,character_key`; the save flow must not delete all character rows before inserting replacements. |
-| Custom font persistence must store only characters that contain filled stitches. | Confirmed | Implemented | Blank starter grids are synthesised from `defaultEditableCharacterKeys`, `defaultHeight` and `defaultWidth` when remote custom fonts load. Character saves verify the exact saved width, height and grid from Supabase before reporting success. |
+| Custom font persistence must store only characters that contain filled stitches. | Confirmed | Implemented | Blank starter grids are synthesised from `defaultEditableCharacterKeys`, `defaultHeight` and `defaultWidth` when remote custom fonts load. After a font save succeeds, the active edited UUID custom-font character is written directly to `custom_font_characters` by `font_id` and `character_key`. |
 | Clearing a custom character and saving should remove that character row from `custom_font_characters`. | Assumed | Implemented | Saving blank grids deletes those character keys so they return to a not-created starter state after reload. |
 | Duplicate-name validation must ignore the record currently being edited. | Confirmed | Implemented | `hasSharedFontNameConflict()` compares IDs before reporting a conflict. |
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
@@ -350,3 +350,4 @@ Expected output:
 ### Related Tests
 
 - FONT-PERSISTENCE-002 in tests/fontPersistence.test.ts.
+

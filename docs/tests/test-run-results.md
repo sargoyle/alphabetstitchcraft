@@ -1936,7 +1936,7 @@ Validation:
 
 **Notes:** This repair requires running the new Supabase migration before browser testing against the live database.
 
-## 2026-07-20 - Exact Character Save Verification
+## 2026-07-20 - Focused Active Character Persistence
 
 **Commands run:**
 
@@ -1948,9 +1948,13 @@ Validation:
 
 **Tests added/updated:**
 
-- `FONT-PERSISTENCE-005`: Exact saved grid verification.
-- `EDITOR-UI-032`: Editor-level verification before save success.
+- `FONT-PERSISTENCE-006`: Character saves have a narrow single-character persistence path.
+- `EDITOR-UI-033`: Font Editor saves the active character through that narrow database write after the font save succeeds.
 
 **Failures found:** None in utility/source validation.
 
-**Manual follow-up:** Run the Supabase migration `202607190001_repair_public_custom_font_character_persistence.sql`, then save G-J in a new font and hard-refresh to confirm persistence in the browser.
+**Live Supabase smoke test:** Pass. A temporary UUID custom font was created, character `A` was upserted into `custom_font_characters`, the saved width/height/grid was read back successfully, and the temporary test font was cleaned up.
+
+**Manual follow-up:** In the browser, save G-J in a new UUID custom font and hard-refresh to confirm the full editor journey against the live Supabase project.
+
+
