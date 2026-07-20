@@ -359,3 +359,13 @@ Expected output:
 - Browser-local custom font copies must not be automatically uploaded during remote refresh because stale local data can overwrite newer database character rows.
 - Blank custom character rows are stale/invalid persistence artefacts; uncreated characters should be rebuilt from the font-level default width and height instead of loaded as created designs.
 - A cleanup migration exists at `supabase/migrations/202607200001_remove_blank_custom_font_character_rows.sql` to remove stale blank custom character rows from the database.
+
+### 2026-07-20 Broad-save data protection
+- Whole-font saves for UUID custom fonts must never bulk-delete blank character keys.
+- Whole-font saves may upsert filled character rows, but clearing a character must use the narrow single-character save path that deletes only the active `font_id` plus `character_key` row.
+- This protects saved characters from stale font-setting saves and refresh races introduced around font-level height/default-width editing.
+
+### 2026-07-20 Character save read-back verification
+- Custom character saves must verify database read-back before returning success.
+- Filled character saves must read the saved `custom_font_characters` row and confirm `width`, `height`, and `grid` match the requested character.
+- Cleared character saves must confirm the active `font_id` plus `character_key` row no longer exists.

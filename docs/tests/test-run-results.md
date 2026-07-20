@@ -1979,3 +1979,40 @@ Validation complete after fix.
 - `npm run build`: Pass.
 - Live Supabase read/write/read-back check: Pass. Temporary verification row was removed after the check.
 
+
+## 2026-07-20 - Custom font broad-save data-loss guard
+
+Validation complete after fix.
+
+- Added regression check FONT-PERSISTENCE-011.
+- Root cause identified: the custom whole-font save path could bulk-delete blank character keys, which could wipe previously saved rows if a stale font object reached the save path.
+- Fix removed the broad blank-row delete from UUID custom whole-font saves. Clearing a character remains available through the narrow active-character delete path.
+- Live Supabase numeric-key checks: Pass. Temporary numeric test font saved/read  -9, and an existing blank numeric row was updated/read/restored successfully.
+- 
+ode .\node_modules\typescript\bin\tsc --noEmit: Pass.
+- 
+ode .\node_modules\typescript\bin\tsc -p tsconfig.tests.json: Pass.
+- 
+ode .test-build\tests\runTests.js: Pass.
+- 
+pm run lint: Pass.
+- 
+pm run build: Pass.
+
+## 2026-07-20 - Custom character save read-back verification
+
+Validation complete after fix.
+
+- Added regression check FONT-PERSISTENCE-012.
+- Custom character saves now verify the database row after save and custom character clears verify the row is gone before reporting success.
+- Live Supabase numeric-key read-back: Pass.
+- 
+ode .\node_modules\typescript\bin\tsc --noEmit: Pass.
+- 
+ode .\node_modules\typescript\bin\tsc -p tsconfig.tests.json: Pass.
+- 
+ode .test-build\tests\runTests.js: Pass.
+- 
+pm run lint: Pass.
+- 
+pm run build: Pass.

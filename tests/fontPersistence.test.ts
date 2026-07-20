@@ -111,7 +111,7 @@ assert.ok(
 assert.ok(
   fontPersistenceSource.includes('customFontCharactersTable.upsert(characters, {') &&
     fontPersistenceSource.includes('onConflict: "font_id,character_key"') &&
-    !fontPersistenceSource.includes('customFontCharactersTable\n    .delete()\n    .eq("font_id", font.id)'),
+    !fontPersistenceSource.includes('.in("character_key", blankCharacterKeys)'),
   "Custom font character saves should upsert by font_id and character_key instead of deleting all rows before insert."
 );
 console.log("fontPersistence tests passed.");
@@ -137,8 +137,8 @@ assert.ok(
   fontPersistenceSource.includes('import { defaultEditableCharacterKeys } from "./characterSets"') &&
     fontPersistenceSource.includes('defaultEditableCharacterKeys.map((key) => [key, createBlankCharacter(defaultWidth, defaultHeight)])') &&
     fontPersistenceSource.includes('filter(([, character]) => hasFilledStitches(character))') &&
-    fontPersistenceSource.includes('.in("character_key", blankCharacterKeys)'),
-  "FONT-PERSISTENCE-003: Remote custom fonts should persist only filled character designs and rebuild blank starter characters on load."
+    !fontPersistenceSource.includes('.in("character_key", blankCharacterKeys)'),
+  "FONT-PERSISTENCE-003: Remote custom fonts should persist filled character designs, rebuild blank starter characters on load, and avoid broad blank-row deletes."
 );
 
 
@@ -177,4 +177,21 @@ assert.ok(
 assert.ok(
   fontPersistenceSource.includes('if (!hasFilledStitches(loadedCharacter)) {\n      return acc;\n    }'),
   "FONT-PERSISTENCE-010: Remote custom font loading should ignore stale blank character rows and rebuild uncreated characters from font defaults."
+);
+
+assert.ok(
+  fontPersistenceSource.includes('export async function saveRemoteCustomFontCharacter') &&
+    fontPersistenceSource.includes('.delete()') &&
+    fontPersistenceSource.includes('.eq("character_key", characterKey)') &&
+    !fontPersistenceSource.includes('blankCharacterKeys'),
+  "FONT-PERSISTENCE-011: Clearing a custom character may delete only the active character row; broad whole-font saves must not delete blank character keys."
+);
+
+assert.ok(
+  fontPersistenceSource.includes('function characterMatchesSavedRow') &&
+    fontPersistenceSource.includes('Timed out verifying saved character') &&
+    fontPersistenceSource.includes('Character "${characterKey}" was not saved correctly in the database.') &&
+    fontPersistenceSource.includes('Timed out verifying cleared character') &&
+    fontPersistenceSource.includes('Character "${characterKey}" was not cleared in the database.'),
+  "FONT-PERSISTENCE-012: Custom character saves and clears should verify database read-back before reporting success."
 );

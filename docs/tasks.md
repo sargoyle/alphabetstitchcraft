@@ -2171,3 +2171,6 @@ Acceptance checks:
 - [x] Fix custom character persistence regression where stale browser-local font copies could overwrite Supabase data during refresh.
 - [x] Ignore stale blank custom character rows when loading database fonts so uncreated characters are rebuilt from font defaults.
 - [ ] Run `supabase/migrations/202607200001_remove_blank_custom_font_character_rows.sql` in Supabase to clean old blank character rows from the live database.
+
+- [x] Fix custom font persistence so whole-font save cannot bulk-delete blank custom character keys and wipe previously saved characters.
+

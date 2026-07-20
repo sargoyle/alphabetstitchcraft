@@ -88,6 +88,16 @@ function hasFilledStitches(character: StitchCharacter) {
   return character.grid.some((row) => row.includes("1"));
 }
 
+function characterMatchesSavedRow(character: StitchCharacter, row: RemoteCharacterRow | null | undefined) {
+  return Boolean(
+    row &&
+      row.width === character.width &&
+      row.height === character.height &&
+      isStringGrid(row.grid) &&
+      JSON.stringify(row.grid) === JSON.stringify(character.grid)
+  );
+}
+
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
@@ -577,6 +587,21 @@ export async function saveRemoteCustomFontCharacter(
     );
 
     if (error) throw normaliseRemoteFontSaveError(error);
+
+    const { data: clearedRow, error: readAfterClearError } = await withTimeout<any>(
+      customFontCharactersTable
+        .select("font_id")
+        .eq("font_id", fontId)
+        .eq("character_key", characterKey)
+        .maybeSingle(),
+      `Timed out verifying cleared character "${characterKey}". Check the database connection and try again.`
+    );
+
+    if (readAfterClearError) throw normaliseRemoteFontSaveError(readAfterClearError);
+    if (clearedRow) {
+      throw new Error(`Character "${characterKey}" was not cleared in the database. Try saving again.`);
+    }
+
     return true;
   }
 
@@ -596,6 +621,21 @@ export async function saveRemoteCustomFontCharacter(
   );
 
   if (error) throw normaliseRemoteFontSaveError(error);
+
+  const { data: savedRow, error: readAfterSaveError } = await withTimeout<any>(
+    customFontCharactersTable
+      .select("font_id, character_key, width, height, grid")
+      .eq("font_id", fontId)
+      .eq("character_key", characterKey)
+      .maybeSingle(),
+    `Timed out verifying saved character "${characterKey}". Check the database connection and try again.`
+  );
+
+  if (readAfterSaveError) throw normaliseRemoteFontSaveError(readAfterSaveError);
+  if (!characterMatchesSavedRow(character, savedRow as RemoteCharacterRow | null)) {
+    throw new Error(`Character "${characterKey}" was not saved correctly in the database. Try saving again.`);
+  }
+
   return true;
 }
 export async function saveRemoteFont(
@@ -689,23 +729,12 @@ export async function saveRemoteFont(
       height: character.height,
       grid: character.grid
     }));
-  const blankCharacterKeys = characterEntries
-    .filter(([, character]) => !hasFilledStitches(character))
-    .map(([key]) => key);
 
   if (characters.length) {
     const { error: characterError } = await customFontCharactersTable.upsert(characters, {
       onConflict: "font_id,character_key"
     });
     if (characterError) throw normaliseRemoteFontSaveError(characterError);
-  }
-
-  if (blankCharacterKeys.length) {
-    const { error: blankDeleteError } = await customFontCharactersTable
-      .delete()
-      .eq("font_id", font.id)
-      .in("character_key", blankCharacterKeys);
-    if (blankDeleteError) throw normaliseRemoteFontSaveError(blankDeleteError);
   }
 
   return true;
@@ -743,6 +772,8 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+
+
 
 
 

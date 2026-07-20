@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Fixed
+- 2026-07-20 - Added database read-back verification before custom character save success so the UI cannot report success unless the saved row matches the requested character grid. Files affected: src/lib/fontPersistence.ts, tests/fontPersistence.test.ts.
+
+### Fixed
+- 2026-07-20 - Removed broad blank-character deletes from custom whole-font saves so stale font-setting saves cannot wipe saved character rows. Files affected: src/lib/fontPersistence.ts, tests/fontPersistence.test.ts.
+
+### Fixed
 - 2026-07-20 - Stopped remote font refresh from uploading stale browser-local font copies over Supabase records; remote mode now treats Supabase as source of truth. Files affected: src/lib/useFonts.ts, src/lib/fontPersistence.ts, supabase/migrations/202607200001_remove_blank_custom_font_character_rows.sql, tests/fontPersistence.test.ts.
 
 
@@ -213,6 +219,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - 2026-07-19 - Improved Create Font save feedback so the modal shows Creating... while saving and displays save/database setup errors inside the modal. Files affected: src/app/fonts/page.tsx, src/lib/fontPersistence.ts, src/lib/useFonts.ts, docs/functions/font-library.md, docs/functions/font-data-model.md, tests/fontBrowserSource.test.ts, tests/fontPersistence.test.ts.
+
+
 
 
 
