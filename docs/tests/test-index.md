@@ -107,5 +107,6 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 ## 2026-07-20 Focused Active Character Persistence Coverage
 
 - FONT-PERSISTENCE-006: Character saves have a narrow single-character persistence path.
-- EDITOR-UI-033: Font Editor saves the active character through that narrow database write after the font save succeeds.
+- EDITOR-UI-033: Font Editor saves active characters through the character-only hook path instead of the broad whole-font save path.
+
 

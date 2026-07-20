@@ -7,6 +7,7 @@ import {
   loadRemoteFontBackups,
   loadRemoteFontResult,
   restoreRemoteFontBackup,
+  saveRemoteCustomFontCharacter,
   saveRemoteFont,
   type RemoteFontBackup
 } from "./fontPersistence";
@@ -141,6 +142,51 @@ export function useFonts() {
     return undefined;
   }, [refresh]);
 
+  async function saveEditableFontCharacter(font: StitchFont, characterKey: string): Promise<boolean> {
+    lastSaveErrorRef.current = null;
+    const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });
+
+    if (!nextFont.characters[characterKey]) {
+      const message = `Character "${characterKey}" was not found on the font and was not saved.`;
+      lastSaveErrorRef.current = message;
+      setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false, lastError: message }));
+      return false;
+    }
+
+    if (!isUuid(nextFont.id)) {
+      return saveEditableFont(nextFont);
+    }
+
+    try {
+      const savedRemotely = await saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey]);
+      if (!savedRemotely) {
+        const message = "Add Supabase environment values before saving fonts to the database.";
+        lastSaveErrorRef.current = message;
+        setPersistence((current) => ({ ...current, message, canWrite: false, lastError: message }));
+        return false;
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
+      lastSaveErrorRef.current = message;
+      setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false, lastError: message }));
+      return false;
+    }
+
+    lastSaveErrorRef.current = null;
+    const keepSavedFontCurrent = (current: StitchFont[]) => {
+      const nextFonts = current.filter((savedFont) => savedFont.id !== nextFont.id);
+      return [...nextFonts, nextFont];
+    };
+    setSavedFonts(keepSavedFontCurrent);
+    setPersistence((current) => ({
+      ...current,
+      mode: "remote",
+      message: "Font changes saved successfully.",
+      canWrite: true,
+      lastError: undefined
+    }));
+    return true;
+  }
   async function saveEditableFont(font: StitchFont): Promise<boolean> {
     lastSaveErrorRef.current = null;
     const nextFont = prepareDatabaseFont({ ...font, updatedAt: new Date().toISOString() });
@@ -249,6 +295,7 @@ export function useFonts() {
     fontBackups,
     refresh,
     saveFont: saveEditableFont,
+    saveFontCharacter: saveEditableFontCharacter,
     getLastSaveError: () => lastSaveErrorRef.current,
     deleteFont: deleteEditableFont,
     restoreFontBackup,
@@ -256,5 +303,8 @@ export function useFonts() {
     resetFontEdits: resetEditableFont
   };
 }
+
+
+
 
 

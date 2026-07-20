@@ -1949,12 +1949,14 @@ Validation:
 **Tests added/updated:**
 
 - `FONT-PERSISTENCE-006`: Character saves have a narrow single-character persistence path.
-- `EDITOR-UI-033`: Font Editor saves the active character through that narrow database write after the font save succeeds.
+- `EDITOR-UI-033`: Font Editor saves active characters through the character-only hook path instead of the broad whole-font save path.
 
 **Failures found:** None in utility/source validation.
 
-**Live Supabase smoke test:** Pass. A temporary UUID custom font was created, character `A` was upserted into `custom_font_characters`, the saved width/height/grid was read back successfully, and the temporary test font was cleaned up.
+**Live Supabase smoke tests:** Pass. A temporary UUID custom font was created, character `A` was upserted into `custom_font_characters`, the saved width/height/grid was read back successfully, and the temporary test font was cleaned up. A second temporary UUID custom font then saved and read back A-Z, confirming Supabase accepts at least 26 sequential character rows for one font.
 
-**Manual follow-up:** In the browser, save G-J in a new UUID custom font and hard-refresh to confirm the full editor journey against the live Supabase project.
+**Manual follow-up:** In the browser, save R-Z in the same editor journey and hard-refresh to confirm the full UI now follows the verified direct character-row save path.
+
+
 
 

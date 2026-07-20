@@ -8,7 +8,6 @@ import { defaultEditableCharacterKeys, lowercaseCharacters, numberCharacters, pu
 import { getFontCategoryDescription, mergeFontCategories, normaliseFontCategory } from "@/lib/fontCategories";
 import type { StitchCharacter, StitchFont } from "@/lib/fontTypes";
 import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
-import { saveRemoteCustomFontCharacter } from "@/lib/fontPersistence";
 import { useFonts } from "@/lib/useFonts";
 
 type EditorDraftActions = {
@@ -51,7 +50,7 @@ const CUSTOM_CATEGORY_VALUE = "__custom__";
 
 export function EditorClient() {
   const params = useSearchParams();
-  const { fonts, saveFont, deleteFont, persistence } = useFonts();
+  const { fonts, saveFont, saveFontCharacter, deleteFont, persistence } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const selectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
   const latestFontRef = useRef(selectedFont);
@@ -234,10 +233,7 @@ export function EditorClient() {
     setSavingCharacter(true);
     let saved = false;
     try {
-      saved = await saveFont(targetFont);
-      if (saved) {
-        await saveRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);
-      }
+      saved = await saveFontCharacter(targetFont, targetKey);
     } finally {
       setSavingCharacter(false);
     }
@@ -611,5 +607,7 @@ export function EditorClient() {
     </section>
   );
 }
+
+
 
 

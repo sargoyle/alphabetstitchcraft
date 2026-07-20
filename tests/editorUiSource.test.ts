@@ -243,7 +243,10 @@ assert.ok(
 
 
 assert.ok(
-  editorClientSource.includes("saveRemoteCustomFontCharacter") &&
-    editorClientSource.includes("await saveRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);"),
-  "EDITOR-UI-033: Font Editor should save the active character through a narrow single-character database write after the font save succeeds."
+  editorClientSource.includes("saveFontCharacter") &&
+    editorClientSource.includes("saved = await saveFontCharacter(targetFont, targetKey);") &&
+    editorClientSource.includes("const { fonts, saveFont, saveFontCharacter, deleteFont, persistence } = useFonts();"),
+  "EDITOR-UI-033: Font Editor should save active characters through the character-only hook path instead of the broad whole-font save path."
 );
+
+

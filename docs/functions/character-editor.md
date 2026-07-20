@@ -126,7 +126,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 | Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
 | Remote refreshes must not downgrade the active editor font to a version with fewer created characters. | Confirmed | Implemented | The editor compares filled-character counts and keeps the more complete local working copy for the active font. |
-| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. After the broader font save succeeds, the editor writes the active custom character row directly through `saveRemoteCustomFontCharacter()` before reporting success. |
+| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. UUID custom-font character saves bypass the broad whole-font save path and write the active custom character row directly through `useFonts().saveFontCharacter()`, which calls `saveRemoteCustomFontCharacter()` before reporting success. |
 
 ## Negative Rules
 
@@ -423,4 +423,5 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 ### Related Tests
 
 - EDITOR-UI-031 in `tests/editorUiSource.test.ts`.
+
 

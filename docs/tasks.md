@@ -2153,7 +2153,7 @@ Acceptance checks:
 
 - [x] Investigate continued character loss after saves appeared successful.
 - [x] Remove the over-strict exact read-back verification that could block or destabilise saves.
-- [x] Add a focused active-character database write for UUID custom fonts after the broader font save succeeds.
+- [x] Route UUID custom font character saves through a focused active-character database write instead of the broad whole-font save path.
 - [x] Keep default/shared slug font saves on the existing `default_fonts.characters` path.
 - [x] Surface a save error if the active-character database write fails.
 - [x] Add regression source coverage.
@@ -2164,4 +2164,5 @@ Acceptance checks:
 - [x] UUID custom character saves write the active character directly to `custom_font_characters` by `font_id` and `character_key`.
 - [x] A save cannot be reported as successful if the active-character database write fails.
 - [x] TypeScript and utility/source tests pass.
+
 

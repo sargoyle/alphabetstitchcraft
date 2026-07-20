@@ -149,3 +149,11 @@ assert.ok(
     fontPersistenceSource.includes('{ onConflict: "font_id,character_key" }'),
   "FONT-PERSISTENCE-006: Character saves should have a narrow single-character persistence path."
 );
+
+const useFontsSource = readFileSync("src/lib/useFonts.ts", "utf8");
+assert.ok(
+  useFontsSource.includes("async function saveEditableFontCharacter") &&
+    useFontsSource.includes("saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey])") &&
+    useFontsSource.includes("saveFontCharacter: saveEditableFontCharacter"),
+  "FONT-PERSISTENCE-007: UUID custom font character saves should bypass broad whole-font persistence and write only the active character row."
+);
