@@ -1964,3 +1964,18 @@ Validation:
 
 
 
+
+## 2026-07-20 - Custom character persistence regression
+
+Validation complete after fix.
+
+- Added regression checks FONT-PERSISTENCE-009 and FONT-PERSISTENCE-010.
+- Root cause identified: remote refresh uploaded stale browser-local font copies to Supabase before reading database fonts.
+- Fix changed remote mode to use Supabase as source of truth and ignore stale blank character rows on load.
+- `node .\node_modules\typescript\bin\tsc --noEmit`: Pass.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json`: Pass.
+- `node .test-build\tests\runTests.js`: Pass.
+- `npm run lint`: Pass.
+- `npm run build`: Pass.
+- Live Supabase read/write/read-back check: Pass. Temporary verification row was removed after the check.
+

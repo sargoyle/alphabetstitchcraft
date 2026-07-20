@@ -166,3 +166,15 @@ assert.ok(
     fontPersistenceSource.includes("Timed out clearing character"),
   "FONT-PERSISTENCE-008: Character save persistence should ensure metadata exists and time out stalled Supabase writes."
 );
+
+assert.ok(
+  useFontsSource.includes('if (persistence.mode === "remote") {\n      return savedFonts;\n    }') &&
+    !useFontsSource.includes('Promise.allSettled(localFonts.map((font) => saveRemoteFont(font)))') &&
+    useFontsSource.includes('setDeletedFontIds([]);'),
+  "FONT-PERSISTENCE-009: Remote font refresh must treat Supabase as the source of truth and must not upload stale browser-local fonts over database characters."
+);
+
+assert.ok(
+  fontPersistenceSource.includes('if (!hasFilledStitches(loadedCharacter)) {\n      return acc;\n    }'),
+  "FONT-PERSISTENCE-010: Remote custom font loading should ignore stale blank character rows and rebuild uncreated characters from font defaults."
+);

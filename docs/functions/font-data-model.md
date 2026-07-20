@@ -353,3 +353,9 @@ Expected output:
 
 
 
+
+### 2026-07-20 Persistence correction
+- Remote/Supabase mode must treat Supabase as the source of truth.
+- Browser-local custom font copies must not be automatically uploaded during remote refresh because stale local data can overwrite newer database character rows.
+- Blank custom character rows are stale/invalid persistence artefacts; uncreated characters should be rebuilt from the font-level default width and height instead of loaded as created designs.
+- A cleanup migration exists at `supabase/migrations/202607200001_remove_blank_custom_font_character_rows.sql` to remove stale blank custom character rows from the database.

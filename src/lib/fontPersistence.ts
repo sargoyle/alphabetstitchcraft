@@ -201,11 +201,18 @@ function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { 
       };
       return acc;
     }
-    acc[character.character_key] = {
+
+    const loadedCharacter = {
       width: character.width,
       height: character.height,
       grid: character.grid
     };
+
+    if (!hasFilledStitches(loadedCharacter)) {
+      return acc;
+    }
+
+    acc[character.character_key] = loadedCharacter;
     return acc;
   }, starterCharacters);
 
@@ -736,6 +743,7 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+
 
 
 

@@ -44,7 +44,7 @@ export function useFonts() {
 
   const fonts = useMemo(() => {
     if (persistence.mode === "remote") {
-      return savedFonts.filter((font) => !deletedFontIds.includes(font.id));
+      return savedFonts;
     }
 
     const savedById = new Map(savedFonts.map((font) => [font.id, font]));
@@ -92,6 +92,7 @@ export function useFonts() {
     setDeletedFontIds(localDeletedFontIds);
 
     if (!isSupabaseConfigured()) {
+      setSavedFonts(localFonts);
       setPersistence({
         mode: "unconfigured",
         message: "Database sync is not configured. Add Supabase environment values before creating or editing fonts.",
@@ -103,14 +104,10 @@ export function useFonts() {
     }
 
     try {
-      if (localFonts.length) {
-        await Promise.allSettled(localFonts.map((font) => saveRemoteFont(font)));
-      }
-
       const remoteResult = await loadRemoteFontResult();
       const remoteFonts = remoteResult?.fonts ?? [];
       setSavedFonts(remoteFonts);
-      setDeletedFontIds(localDeletedFontIds);
+      setDeletedFontIds([]);
       await refreshBackups(remoteFonts);
       const warnings =
         remoteResult?.invalidFonts.map(
@@ -312,6 +309,7 @@ export function useFonts() {
     resetFontEdits: resetEditableFont
   };
 }
+
 
 
 
