@@ -8,6 +8,7 @@ import { defaultEditableCharacterKeys, lowercaseCharacters, numberCharacters, pu
 import { getFontCategoryDescription, mergeFontCategories, normaliseFontCategory } from "@/lib/fontCategories";
 import type { StitchCharacter, StitchFont } from "@/lib/fontTypes";
 import { cloneFont, resizeCharacter, resizeFontCharactersHeight } from "@/lib/gridUtils";
+import { verifyRemoteCustomFontCharacter } from "@/lib/fontPersistence";
 import { useFonts } from "@/lib/useFonts";
 
 type EditorDraftActions = {
@@ -234,6 +235,9 @@ export function EditorClient() {
     let saved = false;
     try {
       saved = await saveFont(targetFont);
+      if (saved) {
+        await verifyRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);
+      }
     } finally {
       setSavingCharacter(false);
     }

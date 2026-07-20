@@ -144,6 +144,13 @@ assert.ok(
 assert.ok(
   fontPersistenceSource.includes("async function verifyCustomFontCharactersSaved") &&
     fontPersistenceSource.includes("202607190001_repair_public_custom_font_character_persistence.sql") &&
-    fontPersistenceSource.includes("await verifyCustomFontCharactersSaved(font.id, characters.map((character) => character.character_key));"),
+    fontPersistenceSource.includes("await verifyCustomFontCharactersSaved(font.id, characters);"),
   "FONT-PERSISTENCE-004: Character saves should verify Supabase persisted filled character rows before reporting success."
+);
+
+assert.ok(
+  fontPersistenceSource.includes("export async function verifyRemoteCustomFontCharacter") &&
+    fontPersistenceSource.includes('.eq("character_key", characterKey)') &&
+    fontPersistenceSource.includes("JSON.stringify(data.grid) !== JSON.stringify(expectedCharacter.grid)"),
+  "FONT-PERSISTENCE-005: Character save verification should compare the exact saved grid, not only the character key."
 );

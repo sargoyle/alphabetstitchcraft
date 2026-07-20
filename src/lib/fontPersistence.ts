@@ -279,27 +279,48 @@ async function createRemoteFontBackup(fontId: string, action: RemoteFontBackup["
   if (error) throw error;
 }
 
-async function verifyCustomFontCharactersSaved(fontId: string, expectedKeys: string[]) {
-  if (!expectedKeys.length) return;
+export async function verifyRemoteCustomFontCharacter(
+  fontId: string,
+  characterKey: string,
+  expectedCharacter: StitchCharacter
+) {
+  if (!isSupabaseConfigured() || !isUuid(fontId)) return true;
 
   const supabase = getSupabaseClient();
-  if (!supabase) return;
+  if (!supabase) return true;
 
   const { data, error } = await (supabase.from("custom_font_characters") as any)
-    .select("character_key")
+    .select("character_key, width, height, grid")
     .eq("font_id", fontId)
-    .in("character_key", expectedKeys);
+    .eq("character_key", characterKey)
+    .maybeSingle();
 
   if (error) throw normaliseRemoteFontSaveError(error);
 
-  const savedKeys = new Set(((data ?? []) as Array<{ character_key: string }>).map((row) => row.character_key));
-  const missingKeys = expectedKeys.filter((key) => !savedKeys.has(key));
-
-  if (missingKeys.length) {
+  if (
+    !data ||
+    data.width !== expectedCharacter.width ||
+    data.height !== expectedCharacter.height ||
+    JSON.stringify(data.grid) !== JSON.stringify(expectedCharacter.grid)
+  ) {
     throw new Error(
-      "Character designs were not saved to the database. Run Supabase migration 202607190001_repair_public_custom_font_character_persistence.sql, then try saving again."
+      `Character ${characterKey} was not saved to the database. The saved row is missing or does not match the grid you just edited. Run Supabase migration 202607190001_repair_public_custom_font_character_persistence.sql, then try saving again.`
     );
   }
+
+  return true;
+}
+
+async function verifyCustomFontCharactersSaved(fontId: string, expectedCharacters: Array<{ character_key: string; width: number; height: number; grid: string[] }>) {
+  await Promise.all(
+    expectedCharacters.map((character) =>
+      verifyRemoteCustomFontCharacter(fontId, character.character_key, {
+        width: character.width,
+        height: character.height,
+        grid: character.grid
+      })
+    )
+  );
 }
 
 async function ensureBaseDefaultFontExists(baseDefaultFontId: string) {
@@ -617,7 +638,7 @@ export async function saveRemoteFont(
       onConflict: "font_id,character_key"
     });
     if (characterError) throw normaliseRemoteFontSaveError(characterError);
-    await verifyCustomFontCharactersSaved(font.id, characters.map((character) => character.character_key));
+    await verifyCustomFontCharactersSaved(font.id, characters);
   }
 
   if (blankCharacterKeys.length) {

@@ -103,3 +103,8 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 
 - FONT-PERSISTENCE-004: Character saves verify Supabase persisted filled character rows before reporting success.
 - MIGRATION-CHARACTER-PERSISTENCE-001: The Supabase repair migration restores public/shared custom character row persistence.
+
+## 2026-07-20 Exact Character Save Verification Coverage
+
+- FONT-PERSISTENCE-005: Character save verification compares the exact saved grid, not only the character key.
+- EDITOR-UI-032: Font Editor verifies the exact saved character row before treating the save as successful.

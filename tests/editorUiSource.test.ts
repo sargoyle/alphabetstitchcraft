@@ -240,3 +240,9 @@ assert.ok(
 );
 
 
+
+assert.ok(
+  editorClientSource.includes("verifyRemoteCustomFontCharacter") &&
+    editorClientSource.includes("await verifyRemoteCustomFontCharacter(targetFont.id, targetKey, targetFont.characters[targetKey]);"),
+  "EDITOR-UI-032: Character saves should verify the exact saved character row before reporting success to the editor."
+);

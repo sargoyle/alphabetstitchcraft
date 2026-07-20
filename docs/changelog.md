@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-20: Added exact read-back verification for Font Editor character saves so the UI does not report success unless Supabase contains the edited width, height and grid. Files affected: `src/lib/fontPersistence.ts`, `src/app/editor/EditorClient.tsx`, `tests/fontPersistence.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-11: Fixed shared/default font archive-delete false failures by pre-checking the public row before archive update and avoiding post-archive select reads that RLS can hide. Files affected: src/lib/fontPersistence.ts, 	ests/fontPersistence.test.ts, docs/functions/font-data-model.md, docs/functions/font-library.md, docs/tasks.md, docs/tests/test-run-results.md.
 - 2026-07-08: Removed the visible Export JSON button from Create Pattern export controls while keeping Download PNG and Download Print PDF. Files affected: `src/components/ExportControls.tsx`, `tests/accessibilitySource.test.ts`, `docs/functions/export-json.md`, `docs/tests/export-json.test-plan.md`, `docs/tests/export-png.test-plan.md`, `docs/tests/test-index.md`, `docs/tasks.md`.
 

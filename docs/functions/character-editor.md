@@ -126,7 +126,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 | Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
 | Remote refreshes must not downgrade the active editor font to a version with fewer created characters. | Confirmed | Implemented | The editor compares filled-character counts and keeps the more complete local working copy for the active font. |
-| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows, verify those rows after save, and remote custom font loads recreate blank starter rows before overlaying persisted designs. |
+| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows, then the editor reads the exact saved character row back from Supabase and compares width, height and grid before treating the save as successful. |
 
 ## Negative Rules
 

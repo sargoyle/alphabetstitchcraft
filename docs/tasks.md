@@ -2146,3 +2146,20 @@ Acceptance checks:
 - [x] Hand-drawn custom characters should persist after browser refresh once the migration is run.
 - [x] Duplicated custom characters should persist after browser refresh once the migration is run.
 - [x] Save success is blocked if Supabase does not confirm persisted filled character rows.
+
+## Phase 56: Exact Character Save Verification
+
+### 56.1 Stop False Successful Character Saves
+
+- [x] Investigate continued character loss after saves appeared successful.
+- [x] Add exact Supabase read-back verification for the character just saved.
+- [x] Compare saved character width, height and grid, not only the character key.
+- [x] Surface a save error when Supabase does not contain the exact edited grid.
+- [x] Add regression source coverage.
+- [x] Update function documentation and test notes.
+
+Acceptance checks:
+
+- [x] A save cannot be reported as successful if the saved database row is missing.
+- [x] A save cannot be reported as successful if the saved database row is blank or stale.
+- [x] TypeScript and utility/source tests pass.

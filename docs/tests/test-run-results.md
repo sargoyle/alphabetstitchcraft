@@ -1935,3 +1935,22 @@ Validation:
 - Migration source assertions for `202607190001_repair_public_custom_font_character_persistence.sql`.
 
 **Notes:** This repair requires running the new Supabase migration before browser testing against the live database.
+
+## 2026-07-20 - Exact Character Save Verification
+
+**Commands run:**
+
+- `tsc --noEmit`
+- `tsc -p tsconfig.tests.json`
+- `node .test-build/tests/runTests.js`
+
+**Result:** Pass.
+
+**Tests added/updated:**
+
+- `FONT-PERSISTENCE-005`: Exact saved grid verification.
+- `EDITOR-UI-032`: Editor-level verification before save success.
+
+**Failures found:** None in utility/source validation.
+
+**Manual follow-up:** Run the Supabase migration `202607190001_repair_public_custom_font_character_persistence.sql`, then save G-J in a new font and hard-refresh to confirm persistence in the browser.
