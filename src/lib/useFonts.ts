@@ -8,6 +8,7 @@ import {
   loadRemoteFontResult,
   restoreRemoteFontBackup,
   saveRemoteCustomFontCharacter,
+  saveRemoteCustomFontMetadata,
   saveRemoteFont,
   type RemoteFontBackup
 } from "./fontPersistence";
@@ -158,6 +159,14 @@ export function useFonts() {
     }
 
     try {
+      const metadataSaved = await saveRemoteCustomFontMetadata(nextFont);
+      if (!metadataSaved) {
+        const message = "Add Supabase environment values before saving fonts to the database.";
+        lastSaveErrorRef.current = message;
+        setPersistence((current) => ({ ...current, message, canWrite: false, lastError: message }));
+        return false;
+      }
+
       const savedRemotely = await saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey]);
       if (!savedRemotely) {
         const message = "Add Supabase environment values before saving fonts to the database.";
@@ -303,6 +312,8 @@ export function useFonts() {
     resetFontEdits: resetEditableFont
   };
 }
+
+
 
 
 

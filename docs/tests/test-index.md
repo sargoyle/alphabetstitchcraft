@@ -108,5 +108,9 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 
 - FONT-PERSISTENCE-006: Character saves have a narrow single-character persistence path.
 - EDITOR-UI-033: Font Editor saves active characters through the character-only hook path instead of the broad whole-font save path.
+- EDITOR-UI-034: Same-character parent refreshes do not clear save success or failure status messages.
+- FONT-PERSISTENCE-008: Character save persistence ensures metadata exists and timeouts stalled Supabase writes.
+
+
 
 

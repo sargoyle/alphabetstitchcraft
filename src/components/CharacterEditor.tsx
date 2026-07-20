@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Eraser, RotateCcw, Save } from "lucide-react";
 import type { StitchCharacter } from "@/lib/fontTypes";
 import { clearCharacter, resizeCharacter, setGridCell, toggleGridCell, validateCharacter } from "@/lib/gridUtils";
@@ -47,11 +47,15 @@ export function CharacterEditor({
   const validation = useMemo(() => validateCharacter(draft, characterKey), [draft, characterKey]);
   const cannotSave = saveDisabled || !validation.valid || isSaving;
   const dirty = serialiseCharacter(draft) !== serialiseCharacter(baseline);
+  const previousCharacterKeyRef = useRef(characterKey);
 
   useEffect(() => {
     setDraft(character);
     setBaseline(character);
-    setSaveStatus(null);
+    if (previousCharacterKeyRef.current !== characterKey) {
+      setSaveStatus(null);
+      previousCharacterKeyRef.current = characterKey;
+    }
   }, [character, characterKey]);
 
   useEffect(() => {
@@ -187,3 +191,4 @@ export function CharacterEditor({
     </div>
   );
 }
+

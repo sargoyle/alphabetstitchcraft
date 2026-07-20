@@ -245,8 +245,15 @@ assert.ok(
 assert.ok(
   editorClientSource.includes("saveFontCharacter") &&
     editorClientSource.includes("saved = await saveFontCharacter(targetFont, targetKey);") &&
-    editorClientSource.includes("const { fonts, saveFont, saveFontCharacter, deleteFont, persistence } = useFonts();"),
+    editorClientSource.includes("const { fonts, saveFont, saveFontCharacter, getLastSaveError, deleteFont, persistence } = useFonts();"),
   "EDITOR-UI-033: Font Editor should save active characters through the character-only hook path instead of the broad whole-font save path."
 );
 
 
+
+assert.ok(
+  characterEditorSource.includes("previousCharacterKeyRef") &&
+    characterEditorSource.includes("previousCharacterKeyRef.current !== characterKey") &&
+    !characterEditorSource.includes("setSaveStatus(null);\n  }, [character, characterKey]);"),
+  "EDITOR-UI-034: Same-character parent refreshes should not clear save success or failure status messages."
+);

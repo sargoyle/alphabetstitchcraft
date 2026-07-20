@@ -121,7 +121,7 @@ function withTimeout<T>(promise: Promise<T>, message: string, timeoutMs = 6000):
   return Promise.race([
     promise,
     new Promise<T>((_resolve, reject) => {
-      window.setTimeout(() => reject(new Error(message)), timeoutMs);
+      globalThis.setTimeout(() => reject(new Error(message)), timeoutMs);
     })
   ]);
 }
@@ -494,6 +494,50 @@ export async function restoreRemoteFontBackup(backupId: string): Promise<boolean
   return saveRemoteFont(font, { backupAction: "restore" });
 }
 
+export async function saveRemoteCustomFontMetadata(font: StitchFont): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  if (!isUuid(font.id)) return true;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
+  const validation = validateSharedFont(font);
+  if (!validation.valid) {
+    throw new Error(`Font is invalid: ${validation.errors.join(" ")}`);
+  }
+
+  const trimmedName = font.name.trim();
+  await assertUniqueSharedFontName(trimmedName, font.id);
+
+  const baseDefaultFontId = font.baseFontId && !isUuid(font.baseFontId) ? font.baseFontId : null;
+  const baseCustomFontId = font.baseFontId && isUuid(font.baseFontId) ? font.baseFontId : null;
+
+  if (baseDefaultFontId) {
+    await ensureBaseDefaultFontExists(baseDefaultFontId);
+  }
+
+  const customFontsTable = supabase.from("custom_fonts") as any;
+  const { error } = await withTimeout<any>(
+    customFontsTable.upsert({
+      id: font.id,
+      owner_id: null,
+      base_default_font_id: baseDefaultFontId,
+      base_custom_font_id: baseCustomFontId,
+      name: trimmedName,
+      description: font.description,
+      category: font.category,
+      default_height: font.defaultHeight,
+      default_width: font.defaultWidth ?? font.defaultHeight,
+      recommended_use: font.recommendedUse,
+      licence: font.licence,
+      updated_at: new Date().toISOString()
+    }),
+    `Timed out saving font "${font.name}". Check the database connection and try again.`
+  );
+
+  if (error) throw normaliseRemoteFontSaveError(error);
+  return true;
+}
 export async function saveRemoteCustomFontCharacter(
   fontId: string,
   characterKey: string,
@@ -517,25 +561,31 @@ export async function saveRemoteCustomFontCharacter(
   );
 
   if (!hasFilledStitches(character)) {
-    const { error } = await customFontCharactersTable
-      .delete()
-      .eq("font_id", fontId)
-      .eq("character_key", characterKey);
+    const { error } = await withTimeout<any>(
+      customFontCharactersTable
+        .delete()
+        .eq("font_id", fontId)
+        .eq("character_key", characterKey),
+      `Timed out clearing character "${characterKey}". Check the database connection and try again.`
+    );
 
     if (error) throw normaliseRemoteFontSaveError(error);
     return true;
   }
 
-  const { error } = await customFontCharactersTable.upsert(
-    {
-      font_id: fontId,
-      owner_id: null,
-      character_key: characterKey,
-      width: character.width,
-      height: character.height,
-      grid: character.grid
-    },
-    { onConflict: "font_id,character_key" }
+  const { error } = await withTimeout<any>(
+    customFontCharactersTable.upsert(
+      {
+        font_id: fontId,
+        owner_id: null,
+        character_key: characterKey,
+        width: character.width,
+        height: character.height,
+        grid: character.grid
+      },
+      { onConflict: "font_id,character_key" }
+    ),
+    `Timed out saving character "${characterKey}". Check the database connection and try again.`
   );
 
   if (error) throw normaliseRemoteFontSaveError(error);
@@ -686,5 +736,8 @@ export async function deleteRemoteFont(fontId: string): Promise<boolean> {
   if (!data) throw new Error(`Custom font "${fontId}" was not found or could not be deleted.`);
   return true;
 }
+
+
+
 
 

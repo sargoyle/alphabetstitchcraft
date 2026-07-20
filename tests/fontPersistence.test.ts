@@ -153,7 +153,16 @@ assert.ok(
 const useFontsSource = readFileSync("src/lib/useFonts.ts", "utf8");
 assert.ok(
   useFontsSource.includes("async function saveEditableFontCharacter") &&
+    useFontsSource.includes("saveRemoteCustomFontMetadata(nextFont)") &&
     useFontsSource.includes("saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey])") &&
     useFontsSource.includes("saveFontCharacter: saveEditableFontCharacter"),
-  "FONT-PERSISTENCE-007: UUID custom font character saves should bypass broad whole-font persistence and write only the active character row."
+  "FONT-PERSISTENCE-007: UUID custom font character saves should save font metadata first, then write only the active character row."
+);
+
+assert.ok(
+  fontPersistenceSource.includes("export async function saveRemoteCustomFontMetadata") &&
+    fontPersistenceSource.includes("Timed out saving font") &&
+    fontPersistenceSource.includes("Timed out saving character") &&
+    fontPersistenceSource.includes("Timed out clearing character"),
+  "FONT-PERSISTENCE-008: Character save persistence should ensure metadata exists and time out stalled Supabase writes."
 );

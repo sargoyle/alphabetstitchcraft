@@ -50,7 +50,7 @@ const CUSTOM_CATEGORY_VALUE = "__custom__";
 
 export function EditorClient() {
   const params = useSearchParams();
-  const { fonts, saveFont, saveFontCharacter, deleteFont, persistence } = useFonts();
+  const { fonts, saveFont, saveFontCharacter, getLastSaveError, deleteFont, persistence } = useFonts();
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const selectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
   const latestFontRef = useRef(selectedFont);
@@ -237,7 +237,9 @@ export function EditorClient() {
     } finally {
       setSavingCharacter(false);
     }
-    if (!saved) return false;
+    if (!saved) {
+      throw new Error(getLastSaveError() ?? "Database save failed. Font changes were not saved.");
+    }
 
     latestFontRef.current = targetFont;
     setFontId(targetFont.id);
@@ -607,6 +609,7 @@ export function EditorClient() {
     </section>
   );
 }
+
 
 
 
