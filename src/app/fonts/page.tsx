@@ -10,6 +10,10 @@ import { useFonts } from "@/lib/useFonts";
 
 const CUSTOM_CATEGORY_VALUE = "__custom__";
 
+function sortFontsByName<T extends { name: string }>(fonts: T[]) {
+  return [...fonts].sort((first, second) => first.name.localeCompare(second.name, undefined, { sensitivity: "base" }));
+}
+
 export default function FontsPage() {
   const { fonts, saveFont, getLastSaveError, persistence } = useFonts();
   const [category, setCategory] = useState("All");
@@ -33,14 +37,14 @@ export default function FontsPage() {
   const resolvedNewFontCategory = newFontCategory === CUSTOM_CATEGORY_VALUE
     ? normaliseFontCategory(newFontCustomCategory)
     : normaliseFontCategory(newFontCategory);
-  const filtered = fonts.filter((font) => {
+  const filtered = useMemo(() => sortFontsByName(fonts.filter((font) => {
     const matchesCategory = category === "All" || font.category === category;
     const matchesHeight = height === "All" || font.defaultHeight === Number(height);
     const query = search.trim().toLowerCase();
     const matchesSearch =
       !query || font.name.toLowerCase().includes(query) || font.description.toLowerCase().includes(query);
     return matchesCategory && matchesHeight && matchesSearch;
-  });
+  })), [category, fonts, height, search]);
 
   function openCreateFont() {
     setActionStatus(null);
@@ -271,3 +275,4 @@ export default function FontsPage() {
     </section>
   );
 }
+

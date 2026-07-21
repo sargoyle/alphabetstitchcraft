@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file.
 - 2026-05-13: Added Create New Font and Edit actions to the Font Library using the shared blank-font factory. Files affected: `src/app/fonts/page.tsx`, `src/components/FontCard.tsx`, `src/app/custom-fonts/page.tsx`, `src/lib/fontFactory.ts`, `docs/tasks.md`.
 
 ### Changed
+- 2026-07-21: Sorted Alphabet Library and Font Editor font lists A-Z, removed Tiny/Sampler from visible category choices and help text, and fixed the Alphabet Library card preview C/D spacing by using an unbroken uppercase sample. Files affected: `src/app/fonts/page.tsx`, `src/app/editor/EditorClient.tsx`, `src/lib/fontCategories.ts`, `src/lib/fontPreviewSample.ts`, `tests/fontBrowserSource.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/font-browser.md`, `docs/tasks.md`.
 - 2026-07-20: Replaced the over-strict character save verification and broad editor character-save route with a focused metadata-plus-active-character database write so UUID custom font character saves ensure the parent row exists and then write only the edited row by `font_id` and `character_key`; same-character refreshes no longer clear save status messages. Files affected: `src/lib/fontPersistence.ts`, `src/app/editor/EditorClient.tsx`, `tests/fontPersistence.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/character-editor.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-11: Fixed shared/default font archive-delete false failures by pre-checking the public row before archive update and avoiding post-archive select reads that RLS can hide. Files affected: src/lib/fontPersistence.ts, 	ests/fontPersistence.test.ts, docs/functions/font-data-model.md, docs/functions/font-library.md, docs/tasks.md, docs/tests/test-run-results.md.
 - 2026-07-08: Removed the visible Export JSON button from Create Pattern export controls while keeping Download PNG and Download Print PDF. Files affected: `src/components/ExportControls.tsx`, `tests/accessibilitySource.test.ts`, `docs/functions/export-json.md`, `docs/tests/export-json.test-plan.md`, `docs/tests/export-png.test-plan.md`, `docs/tests/test-index.md`, `docs/tasks.md`.
@@ -219,6 +220,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - 2026-07-19 - Improved Create Font save feedback so the modal shows Creating... while saving and displays save/database setup errors inside the modal. Files affected: src/app/fonts/page.tsx, src/lib/fontPersistence.ts, src/lib/useFonts.ts, docs/functions/font-library.md, docs/functions/font-data-model.md, tests/fontBrowserSource.test.ts, tests/fontPersistence.test.ts.
+
+
 
 
 

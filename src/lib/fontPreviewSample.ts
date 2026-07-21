@@ -1,6 +1,6 @@
 import type { StitchFont } from "./fontTypes";
 
-const UPPERCASE_SAMPLE = "ABC DEF GHI";
+const UPPERCASE_SAMPLE = "ABCDEFGHI";
 const LOWERCASE_SAMPLE = "abc";
 const NUMBER_SAMPLE = "123";
 

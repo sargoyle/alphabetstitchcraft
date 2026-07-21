@@ -48,6 +48,10 @@ function filledCharacterCount(font: StitchFont | undefined) {
 const orderedBaseCharacters = new Set(defaultEditableCharacterKeys);
 const CUSTOM_CATEGORY_VALUE = "__custom__";
 
+function sortFontsByName<T extends { name: string }>(fonts: T[]) {
+  return [...fonts].sort((first, second) => first.name.localeCompare(second.name, undefined, { sensitivity: "base" }));
+}
+
 export function EditorClient() {
   const params = useSearchParams();
   const { fonts, saveFont, saveFontCharacter, getLastSaveError, deleteFont, persistence } = useFonts();
@@ -58,6 +62,7 @@ export function EditorClient() {
   const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
   const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
   const duplicateSourceKeys = displayedCharacterKeys.filter((key) => hasFilledStitches(selectedFont?.characters[key]));
+  const sortedFonts = useMemo(() => sortFontsByName(fonts), [fonts]);
   const fontCategoryOptions = useMemo(() => mergeFontCategories(fonts.map((font) => font.category)), [fonts]);
   const [characterKey, setCharacterKey] = useState("A");
   const [creatingCharacter, setCreatingCharacter] = useState(false);
@@ -311,7 +316,7 @@ export function EditorClient() {
               });
             }}
           >
-            {fonts.map((font) => (
+            {sortedFonts.map((font) => (
               <option key={font.id} value={font.id}>
                 {font.name}
               </option>
@@ -609,6 +614,8 @@ export function EditorClient() {
     </section>
   );
 }
+
+
 
 
 

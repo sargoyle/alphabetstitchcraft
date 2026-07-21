@@ -2173,4 +2173,20 @@ Acceptance checks:
 - [ ] Run `supabase/migrations/202607200001_remove_blank_custom_font_character_rows.sql` in Supabase to clean old blank character rows from the live database.
 
 - [x] Fix custom font persistence so whole-font save cannot bulk-delete blank custom character keys and wipe previously saved characters.
+## Phase 57: Alphabet Library Category And Sorting Polish
+
+### 57.1 Targeted Library And Editor List Updates
+
+- [x] Sort Alphabet Library font cards A-Z by display name after search and filters.
+- [x] Sort Font Editor font dropdown A-Z by display name.
+- [x] Remove Tiny and Sampler from visible category options and category help text.
+- [x] Remove unintended C/D sample gap in Alphabet Library card previews.
+- [x] Update source tests, function documentation, changelog and test run notes.
+
+Acceptance checks:
+- [x] Alphabet Library cards are sorted A-Z.
+- [x] Font Editor dropdown is sorted A-Z.
+- [x] Tiny and Sampler do not appear as category options or help entries.
+- [x] Alphabet card previews no longer insert an extra gap between C and D.
+- [x] TypeScript, utility/source tests and lint pass.
 

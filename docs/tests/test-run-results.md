@@ -17,6 +17,33 @@ Finding:
 # Test Run Results
 
 This file records meaningful test runs for Alphabet Stitch.
+## 2026-07-21
+
+### Alphabet Library Sorting, Category Exclusions And Preview Spacing
+
+#### Scope
+
+- Sorted Alphabet Library cards A-Z by display name after filtering/search.
+- Sorted Font Editor font dropdown A-Z by display name.
+- Removed Tiny and Sampler from visible category options and category help text.
+- Fixed the Alphabet Library preview sample so C and D are adjacent with normal letter spacing.
+
+#### Commands
+
+```powershell
+node .\node_modules\typescript\bin\tsc --noEmit
+node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json
+node .test-build\tests\runTests.js
+npm run lint
+```
+
+#### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- ESLint: passed.
 
 ## 2026-07-08
 
@@ -2016,3 +2043,5 @@ ode .test-build\tests\runTests.js: Pass.
 pm run lint: Pass.
 - 
 pm run build: Pass.
+
+

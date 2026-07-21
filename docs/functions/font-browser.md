@@ -31,7 +31,7 @@ Allow users to scan stitch alphabet options quickly by showing readable metadata
 - `onUse(fontId)` callback.
 - Font metadata.
 - Font character data for sample preview.
-- Standard sample baseline: uppercase stitch text, expanded to `ABC DEF GHI` for card previews to use preview space more efficiently.
+- Standard sample baseline: uppercase stitch text, expanded to `ABCDEFGHI` for card previews to use preview space efficiently without inserting an extra C/D gap.
 - Lowercase sample characters when the font supports lowercase.
 - User clicks on View Alphabet, Use or Edit.
 - Font persistence/loading state from `useFonts()`.
@@ -102,6 +102,9 @@ Confirmed behaviour:
 | Font cards must provide a way to use the font. | Confirmed | Implemented | Use link saves font id. |
 | Font cards may provide editing when requested by page context. | Assumed | Implemented | `showEdit` controls Edit link. |
 | Alphabet Library must not briefly show stale bundled/default cards while database fonts are still loading. | Confirmed | Implemented | `src/app/fonts/page.tsx` shows a loading status when `persistence.mode === "loading"`. |
+| Alphabet Library cards must be sorted A-Z by display name after search and filters. | Confirmed | Implemented | `src/app/fonts/page.tsx` sorts the filtered list with case-insensitive `localeCompare()`. |
+| Category filter options and help text must not show Tiny or Sampler. | Confirmed | Implemented | `src/lib/fontCategories.ts` excludes Tiny and Sampler from merged category options and definitions. |
+| Card preview spacing must not include an unintended extra gap between C and D. | Confirmed | Implemented | `src/lib/fontPreviewSample.ts` uses `ABCDEFGHI` rather than adding a sample-space after C. |
 
 ## Negative Rules
 
@@ -125,6 +128,10 @@ Confirmed behaviour:
 - Given `showEdit` is true, when rendered, then Edit links to the editor with that font id.
 - Given database fonts are still loading, when the Alphabet Library renders, then a loading status is shown instead of font cards.
 - Given database loading completes, when the Alphabet Library renders, then the resolved font list is shown.
+- Given the Alphabet Library renders with search or filters, when cards are displayed, then the cards remain sorted A-Z by font name.
+- Given category options are shown, when the dropdown opens, then Tiny and Sampler are not available as options.
+- Given category help is shown, when the user reads the category definitions, then Tiny and Sampler are not listed.
+- Given a card preview renders uppercase sample text, when C and D are displayed, then there is no extra sample-space column between them.
 
 ## Edge Cases
 
@@ -142,7 +149,7 @@ Confirmed behaviour:
 
 ## Current Code Behaviour
 
-- Currently uses `FontGridPreview` with `buildFontPreviewSample()` to create a fuller supported sample such as `ABC DEF GHI`, plus lowercase and numbers when drawable.
+- Currently uses `FontGridPreview` with `buildFontPreviewSample()` to create a fuller supported sample such as `ABCDEFGHI`, plus lowercase and numbers when drawable.
 - Currently shows View Alphabet, Use and optional Edit actions.
 - Currently uses Lucide icons in actions.
 - Currently does not show duplicate or delete actions on Font Library cards.
@@ -171,6 +178,10 @@ Confirmed behaviour:
 - Lowercase sample rendering when supported.
 - Uppercase-only sample rendering.
 - Adaptive supported sample generation.
+- Alphabet Library A-Z sorting after filters/search.
+- Category option exclusions for Tiny and Sampler.
+- Category help text exclusions for Tiny and Sampler.
+- Card preview spacing between C and D.
 - Loading state before database fonts resolve.
 - Use action.
 - View action.
@@ -183,5 +194,7 @@ Confirmed behaviour:
 - [ ] Decisions required have been answered.
 - [ ] Known gaps have been triaged.
 - [ ] Acceptance criteria are ready to convert into tests.
+
+
 
 

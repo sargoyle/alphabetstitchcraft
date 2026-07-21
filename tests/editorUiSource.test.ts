@@ -206,6 +206,14 @@ assert.ok(
     editorClientSource.includes("const targetFont = cloneFont(baseFont);"),
   "EDITOR-UI-028: Character saves should use the latest local font state and ignore stale refresh data with fewer created characters."
 );
+
+assert.ok(
+  editorClientSource.includes("function sortFontsByName") &&
+    editorClientSource.includes("localeCompare") &&
+    editorClientSource.includes("const sortedFonts = useMemo(() => sortFontsByName(fonts), [fonts]);") &&
+    editorClientSource.includes("{sortedFonts.map((font) => ("),
+  "EDITOR-UI-035: Font Editor font dropdown should be sorted A-Z by display name."
+);
 console.log("editor UI source tests passed.");
 
 assert.ok(
@@ -257,3 +265,6 @@ assert.ok(
     !characterEditorSource.includes("setSaveStatus(null);\n  }, [character, characterKey]);"),
   "EDITOR-UI-034: Same-character parent refreshes should not clear save success or failure status messages."
 );
+
+
+

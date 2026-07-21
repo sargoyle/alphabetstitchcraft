@@ -9,7 +9,7 @@ const blockFont = fonts.find((font) => font.id === "block-needle-5x7");
 assert.ok(blockFont, "Font browser source test needs Block Needle 5x7.");
 
 const sample = buildFontPreviewSample(blockFont);
-assert.ok(sample.includes("ABC DEF GHI"), "FONT-BROWSER-001: card preview should use a fuller uppercase sample.");
+assert.ok(sample.includes("ABCDEFGHI"), "FONT-BROWSER-001: card preview should use a fuller uppercase sample without an extra C/D gap.");
 assert.ok(sample.includes("123"), "FONT-BROWSER-002: card preview should include numbers when supported.");
 
 const uppercaseOnlyFont: StitchFont = {
@@ -19,13 +19,14 @@ const uppercaseOnlyFont: StitchFont = {
 const uppercaseOnlySample = buildFontPreviewSample(uppercaseOnlyFont);
 assert.equal(
   uppercaseOnlySample,
-  "ABC DEF GHI",
+  "ABCDEFGHI",
   "FONT-BROWSER-003: card preview should avoid unsupported lowercase and number characters."
 );
 
 const fontGridPreviewSource = readFileSync("src/components/FontGridPreview.tsx", "utf8");
 const fontsPageSource = readFileSync("src/app/fonts/page.tsx", "utf8");
 const fontDetailSource = readFileSync("src/app/fonts/[id]/page.tsx", "utf8");
+const fontCategoriesSource = readFileSync("src/lib/fontCategories.ts", "utf8");
 const globalCssSource = readFileSync("src/app/globals.css", "utf8");
 assert.ok(
   fontGridPreviewSource.includes("buildFontPreviewSample"),
@@ -43,7 +44,6 @@ assert.ok(
     fontsPageSource.includes('aria-busy="true"'),
   "FONT-BROWSER-006: Alphabet Library should show a loading state instead of stale default font cards while database fonts load."
 );
-
 assert.ok(
   fontsPageSource.includes("createOpen") &&
     fontsPageSource.includes("New category...") &&
@@ -52,15 +52,12 @@ assert.ok(
     fontsPageSource.includes("createBlankFont(name, { category: categoryName, height: heightValue, width: widthValue })"),
   "FONT-BROWSER-007: Create New Font should use an in-app form with category, new-category, height and default-width controls."
 );
-console.log("fontBrowserSource tests passed.");
-
 assert.ok(
   fontDetailSource.includes('function hasFilledStitches') &&
     fontDetailSource.includes('keys.filter((key) => hasFilledStitches(font.characters[key]))') &&
     fontDetailSource.includes('No characters have been created for this font yet.'),
   "FONT-DETAIL-001: Alphabet detail should hide characters that have no created stitch design."
 );
-
 assert.ok(
   fontsPageSource.includes('creatingFont') &&
     fontsPageSource.includes('{creatingFont ? "Creating..." : "Create font"}') &&
@@ -69,4 +66,18 @@ assert.ok(
     fontsPageSource.includes('default-width migration'),
   "FONT-BROWSER-008: Create Font modal should show immediate saving state and in-modal save failure feedback."
 );
-
+assert.ok(
+  fontsPageSource.includes("function sortFontsByName") &&
+    fontsPageSource.includes("localeCompare") &&
+    fontsPageSource.includes("const filtered = useMemo(() => sortFontsByName"),
+  "FONT-BROWSER-009: Alphabet Library cards should be sorted A-Z by display name after search and filters."
+);
+assert.ok(
+  !fontCategoriesSource.includes('name: "Tiny"') &&
+    !fontCategoriesSource.includes('name: "Sampler"') &&
+    fontCategoriesSource.includes("hiddenCategories") &&
+    fontCategoriesSource.includes('"Tiny"') &&
+    fontCategoriesSource.includes('"Sampler"'),
+  "FONT-BROWSER-010: Tiny and Sampler should be hidden from category options and category help text."
+);
+console.log("fontBrowserSource tests passed.");
