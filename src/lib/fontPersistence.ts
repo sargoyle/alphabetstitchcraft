@@ -266,6 +266,33 @@ function normaliseRemoteFontSaveError(error: unknown) {
   return error instanceof Error ? error : new Error(message || "Database save failed. Font changes were not saved.");
 }
 
+async function loadRemoteCustomFontCharacterRows(fontIds: string[]): Promise<RemoteCharacterRow[]> {
+  if (!fontIds.length) return [];
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
+  const pageSize = 1000;
+  const rows: RemoteCharacterRow[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("custom_font_characters")
+      .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
+      .in("font_id", fontIds)
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    const pageRows = (data ?? []) as unknown as RemoteCharacterRow[];
+    rows.push(...pageRows);
+
+    if (pageRows.length < pageSize) break;
+  }
+
+  return rows;
+}
+
 function validateSharedFont(font: StitchFont) {
   const result = validateFont(font);
   const errors = [...result.errors];
@@ -471,12 +498,7 @@ async function loadRemoteFontSnapshot(fontId: string): Promise<StitchFont | null
   if (fontError) throw normaliseRemoteFontSaveError(fontError);
   if (!fontRow) return null;
 
-  const { data: characterRows, error: characterError } = await supabase
-    .from("custom_font_characters")
-    .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
-    .eq("font_id", fontId);
-
-  if (characterError) throw characterError;
+  const characterRows = await loadRemoteCustomFontCharacterRows([fontId]);
 
   const result = hydrateRemoteCustomFont(fontRow as unknown as RemoteFontRow, (characterRows ?? []) as RemoteCharacterRow[]);
   if (result.errors.length) {
@@ -633,18 +655,13 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
 
   const remoteFontRows = fontRows as unknown as RemoteFontRow[];
   const ids = remoteFontRows.map((font) => font.id);
-  const { data: characterRows, error: characterError } = await supabase
-    .from("custom_font_characters")
-    .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
-    .in("font_id", ids);
-
-  if (characterError) throw characterError;
+  const characterRows = await loadRemoteCustomFontCharacterRows(ids);
 
   const fonts = remoteFontRows
     .map((font) => {
       const result = hydrateRemoteCustomFont(
         font,
-        ((characterRows ?? []) as RemoteCharacterRow[]).filter((character) => character.font_id === font.id)
+        characterRows.filter((character) => character.font_id === font.id)
       );
 
       if (result.errors.length) {
@@ -707,16 +724,7 @@ export async function loadFontHydrationDiagnostics(fontNames: string[] = []): Pr
 
   const customRows = ((customFontRows ?? []) as unknown as RemoteFontRow[]).filter((font) => includeFontName(font.name));
   const customIds = customRows.map((font) => font.id);
-  const { data: characterRows, error: characterError } = customIds.length
-    ? await supabase
-        .from("custom_font_characters")
-        .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
-        .in("font_id", customIds)
-    : { data: [], error: null };
-
-  if (characterError) throw characterError;
-
-  const allCharacterRows = (characterRows ?? []) as unknown as RemoteCharacterRow[];
+  const allCharacterRows = await loadRemoteCustomFontCharacterRows(customIds);
   const customDiagnostics = customRows.map((font) => {
     const result = hydrateRemoteCustomFont(
       font,

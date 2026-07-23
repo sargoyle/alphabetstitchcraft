@@ -20,6 +20,7 @@ Define the data structures used to describe stitch alphabets, individual charact
 - Function: `validateFont()` in `src/lib/gridUtils.ts`
 - Function: `resizeCharacter()` in `src/lib/gridUtils.ts`
 - File: `src/lib/fontPersistence.ts`
+- Function: `loadRemoteCustomFontCharacterRows()` in `src/lib/fontPersistence.ts`
 - Function: `hydrateRemoteCustomFont()` in `src/lib/fontPersistence.ts`
 - Function: `loadFontHydrationDiagnostics()` in `src/lib/fontPersistence.ts`
 - Function: `saveRemoteCustomFontCharacter()` in `src/lib/fontPersistence.ts`
@@ -129,11 +130,12 @@ Expected output:
 12. Saves for non-UUID bundled default font IDs update `default_fonts`.
 13. Saves for UUID custom/shared font IDs upsert `custom_fonts`, upsert only filled character rows by `font_id,character_key`, and remove blank saved character rows only for the active character.
 14. Remote custom-font loads rebuild blank starter characters from the standard editable character set and the font-level default height/width, then overlay persisted filled character rows from `custom_font_characters`.
-15. Persisted character rows from an older font height are normalised to the current font-level height during hydration so saved stitches are preserved after font-height changes.
-16. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
-17. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
-18. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs archive default_fonts.is_public = false after first confirming the public row exists.
-19. Duplicate `Block Needle 5x7` and `Block Needle 5 x 7` shared rows are cleaned by retaining `block-needle-5x7`, repointing related custom base references, backing up accidental custom duplicates, and removing accidental duplicate records.
+15. Remote custom-font character rows are loaded in paginated 1,000-row batches so Supabase's default response cap cannot hide saved characters after the table grows beyond 1,000 rows.
+16. Persisted character rows from an older font height are normalised to the current font-level height during hydration so saved stitches are preserved after font-height changes.
+17. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
+18. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
+19. Delete requests for UUID custom/shared fonts target `custom_fonts`; delete requests for default/shared slugs archive default_fonts.is_public = false after first confirming the public row exists.
+20. Duplicate `Block Needle 5x7` and `Block Needle 5 x 7` shared rows are cleaned by retaining `block-needle-5x7`, repointing related custom base references, backing up accidental custom duplicates, and removing accidental duplicate records.
 
 ## Rules and Requirements
 
@@ -164,6 +166,7 @@ Expected output:
 | Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
 | Custom font character saves must be non-destructive. | Confirmed | Implemented | `custom_font_characters` rows are upserted by `font_id,character_key`; the save flow must not delete all character rows before inserting replacements. |
 | Custom font persistence must store only characters that contain filled stitches. | Confirmed | Implemented | Blank starter grids are synthesised from `defaultEditableCharacterKeys`, `defaultHeight` and `defaultWidth` when remote custom fonts load. UUID custom-font character saves bypass broad whole-font persistence, upsert the parent `custom_fonts` metadata row first, then write and verify the active edited character directly to `custom_font_characters` by `font_id` and `character_key`. App state merges preserve filled character rows from both current and just-saved snapshots so a stale whole-font object cannot hide existing saved characters. |
+| Remote custom font loading must fetch all matching `custom_font_characters` rows, not only Supabase's first 1,000 rows. | Confirmed | Implemented | `loadRemoteCustomFontCharacterRows()` pages through `.range()` batches and is used by normal font loading, single-font snapshots and hydration diagnostics. |
 | Filled saved database characters must win over blank starter grids during hydration. | Confirmed | Implemented | `hydrateRemoteCustomFont()` starts with generated starter grids, then overlays valid filled database rows. |
 | Saved rows from an older font height must be resized to the current font-level height during hydration. | Confirmed | Implemented | This prevents height changes from making existing saved characters disappear as invalid while still enforcing one height per font. |
 | Duplicate saved character rows must be reported and hydrated deterministically. | Confirmed | Implemented | The diagnostic reports duplicates; hydration chooses a filled row over blank rows and the most recently updated row when multiple filled rows exist. |
@@ -260,6 +263,7 @@ Expected output:
 - Currently loads default font data from JSON without runtime validation in the loading function.
 - Currently validates remote mapped fonts before returning them.
 - Currently `hydrateRemoteCustomFont()` starts custom fonts with blank starter grids, overlays valid filled `custom_font_characters` rows, normalises older saved row heights to the current font height, reports duplicate/invalid rows through diagnostics and returns warning details for user attention.
+- Currently `loadRemoteCustomFontCharacterRows()` fetches `custom_font_characters` in paginated 1,000-row batches so saved characters beyond Supabase's default response cap are available to the same hydration path.
 - Currently database TypeScript types reflect nullable public custom font owners and include `custom_font_backups`.
 - Currently remote font backup rows store a `font_snapshot` JSON value that is validated as a `StitchFont` before being exposed to restore UI.
 - Currently `useFonts().refresh()` keeps existing `savedFonts` in state while remote data reloads.

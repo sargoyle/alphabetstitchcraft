@@ -186,6 +186,15 @@ assert.ok(
 );
 
 assert.ok(
+  fontPersistenceSource.includes("async function loadRemoteCustomFontCharacterRows") &&
+    fontPersistenceSource.includes("const pageSize = 1000") &&
+    fontPersistenceSource.includes(".range(from, from + pageSize - 1)") &&
+    fontPersistenceSource.includes("if (pageRows.length < pageSize) break") &&
+    !fontPersistenceSource.includes('.select("id, font_id, character_key, width, height, grid, created_at, updated_at")\n    .in("font_id", ids);'),
+  "FONT-PERSISTENCE-010B: Remote custom font loading and diagnostics should page through all custom_font_characters rows instead of stopping at Supabase's first 1,000 rows."
+);
+
+assert.ok(
   fontPersistenceSource.includes('export async function saveRemoteCustomFontCharacter') &&
     fontPersistenceSource.includes('.delete()') &&
     fontPersistenceSource.includes('.eq("character_key", characterKey)') &&

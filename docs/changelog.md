@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Fixed
+- 2026-07-23 - Fixed remote custom font loading so `custom_font_characters` rows are fetched in paginated batches instead of stopping at Supabase's first 1,000 rows; confirmed Deco `G` now hydrates through the compiled app loader. Files affected: `src/lib/fontPersistence.ts`, `tests/fontPersistence.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/font-hydration-diagnostics.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
+
 ### Changed
 - 2026-07-23 - Added a temporary font hydration diagnostic page and fixed canonical font hydration so valid saved character rows from older font heights are resized to the current font-level height instead of causing saved letters to disappear from the UI model. Files affected: `src/lib/fontPersistence.ts`, `src/app/diagnostics/font-hydration/page.tsx`, `tests/fontPersistence.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/font-hydration-diagnostics.md`, `docs/tests/test-index.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-23 - Re-investigated Deco `G` through the database and app load path, then changed Font Editor and `useFonts()` state updates to merge filled characters from loaded database snapshots and latest local snapshots so stale blank starter grids cannot hide saved custom character rows. Files affected: `src/app/editor/EditorClient.tsx`, `src/lib/useFonts.ts`, `tests/editorUiSource.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/character-editor.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`, `docs/tests/test-run-results.md`.

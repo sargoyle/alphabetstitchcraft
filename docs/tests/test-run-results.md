@@ -2145,4 +2145,17 @@ pm run lint: Pass.
 - 
 pm run build: Pass.
 
+## 2026-07-23 - Supabase character row pagination fix
+
+Validation complete after fix.
+
+- Added regression check `FONT-PERSISTENCE-010B`.
+- Root cause confirmed: `custom_font_characters` contained 1,093 rows, but the unpaged Supabase load returned only the first 1,000 rows.
+- Fix changed normal font loading, single-font snapshots and hydration diagnostics to fetch character rows in paginated 1,000-row batches.
+- Live read-only verification using the compiled app loader: Pass. Deco `G` hydrates as filled, Deco has `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ`, and the Deco diagnostic reports no missing, blank or not-created mismatches.
+- `node .\node_modules\typescript\bin\tsc --noEmit`: Pass.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json`: Pass.
+- `node .test-build\tests\runTests.js`: Pass.
+- `npm run lint`: Pass.
+
 
