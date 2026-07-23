@@ -1930,6 +1930,31 @@ Validation:
 
 ## 2026-07-19 - Duplicated Character Reload Persistence
 
+## 2026-07-23 - Custom character save stability repair
+
+Validation complete after targeted save-flow fix.
+
+**Commands run:**
+
+- `npm run typecheck`
+- `npm run test:renderer`
+- `npm run lint`
+
+**Result:** Pass.
+
+**Tests added/updated:**
+
+- `gridUtils.test.ts`: confirms character resize clamps to the confirmed 1-60 range instead of the old 24-stitch cap.
+- `FONT-PERSISTENCE-007`: confirms UUID custom character saves pass font context into the active-character save path.
+- `FONT-PERSISTENCE-012`: confirms save debug/read-back logic remains present for custom character saves.
+- `EDITOR-UI-028`: confirms the editor keeps the latest local font snapshot when loaded data is fewer or older.
+
+**Live Supabase diagnostics:** Pass. Deco currently has a valid saved `G` row in `custom_font_characters`. A temporary UUID custom font was created, character `G` was upserted into `custom_font_characters`, the saved width/height/grid was read back successfully, and the temporary test font was cleaned up.
+
+**Failures found:** None during validation.
+
+**Notes:** Font-save diagnostics are gated behind `NEXT_PUBLIC_FONT_SAVE_DEBUG=true` or browser localStorage key `alphabet-stitch-debug-font-save=1`, so normal users do not receive noisy console output. Actual save failures now log font id, font name and character key context.
+
 **Commands run:**
 
 - `tsc --noEmit`

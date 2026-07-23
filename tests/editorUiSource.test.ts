@@ -200,11 +200,12 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes("function filledCharacterCount") &&
-    editorClientSource.includes("filledCharacterCount(currentFont) > filledCharacterCount(selectedFont)") &&
+  editorClientSource.includes("function shouldUseLatestFontSnapshot") &&
+    editorClientSource.includes("filledCharacterCount(latestFont) > filledCharacterCount(loadedFont)") &&
+    editorClientSource.includes("const loadedSelectedFont = fonts.find") &&
     editorClientSource.includes("const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;") &&
     editorClientSource.includes("const targetFont = cloneFont(baseFont);"),
-  "EDITOR-UI-028: Character saves should use the latest local font state and ignore stale refresh data with fewer created characters."
+  "EDITOR-UI-028: Character saves should use the latest local font state and ignore stale refresh data with fewer or older created characters."
 );
 
 assert.ok(

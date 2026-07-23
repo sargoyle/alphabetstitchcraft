@@ -2165,6 +2165,26 @@ Acceptance checks:
 - [x] A save cannot be reported as successful if the active-character database write fails.
 - [x] TypeScript and utility/source tests pass.
 
+### 56.2 Repair Character Save Verification And Active Editor Snapshot
+
+- [x] Investigate Deco `G` and direct `custom_font_characters` Supabase save behaviour.
+- [x] Confirm Supabase accepts a temporary UUID font and `G` character row using the same `font_id,character_key` upsert shape.
+- [x] Align grid resizing with the confirmed 1-60 editor/database dimension range.
+- [x] Keep the active editor on the latest saved font snapshot while stale or older loaded data catches up.
+- [x] Add gated font-save debug logging for targeted character save diagnosis.
+- [x] Add regression test coverage for the 60-stitch clamp, active snapshot guard and character save debug/read-back path.
+- [x] Update function documentation, test run notes and changelog.
+
+Acceptance checks:
+
+- [x] Deco `G` exists in Supabase as a valid custom character row.
+- [x] A temporary UUID font can save and read back character `G` through `custom_font_characters`.
+- [x] Character dimensions up to 60 are not silently reduced to 24 before save.
+- [x] Character save failures are logged with font and character context.
+- [x] App TypeScript compile passes.
+- [x] Utility/source tests pass.
+- [x] ESLint passes.
+
 
 
 

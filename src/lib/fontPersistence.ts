@@ -88,6 +88,33 @@ function hasFilledStitches(character: StitchCharacter) {
   return character.grid.some((row) => row.includes("1"));
 }
 
+function isFontSaveDebugEnabled() {
+  if (process.env.NEXT_PUBLIC_FONT_SAVE_DEBUG === "true") return true;
+
+  if (typeof window === "undefined") return false;
+
+  try {
+    return window.localStorage.getItem("alphabet-stitch-debug-font-save") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function getCharacterDebugShape(character: StitchCharacter) {
+  return {
+    width: character.width,
+    height: character.height,
+    gridRowCount: character.grid.length,
+    gridColumnCounts: [...new Set(character.grid.map((row) => row.length))],
+    isEmpty: !hasFilledStitches(character)
+  };
+}
+
+function logFontSaveDebug(label: string, payload: unknown) {
+  if (!isFontSaveDebugEnabled()) return;
+  console.info(`[font-save-debug] ${label}`, payload);
+}
+
 function characterMatchesSavedRow(character: StitchCharacter, row: RemoteCharacterRow | null | undefined) {
   return Boolean(
     row &&
@@ -558,14 +585,22 @@ export async function saveRemoteCustomFontMetadata(font: StitchFont): Promise<bo
 export async function saveRemoteCustomFontCharacter(
   fontId: string,
   characterKey: string,
-  character: StitchCharacter
+  character: StitchCharacter,
+  context: { fontName?: string; fontType?: "custom" | "default" } = {}
 ): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
 
   if (!isUuid(fontId)) {
-    console.info(
-      `[fontPersistence] Active character "${characterKey}" belongs to shared font "${fontId}" as slug; saved through default_fonts.characters.`
-    );
+    logFontSaveDebug("shared-font-character-save-skipped", {
+      fontId,
+      fontName: context.fontName,
+      fontType: context.fontType ?? "default",
+      characterKey,
+      characterKeyType: typeof characterKey,
+      method: "default_fonts.characters",
+      table: "default_fonts",
+      ...getCharacterDebugShape(character)
+    });
     return true;
   }
 
@@ -573,18 +608,41 @@ export async function saveRemoteCustomFontCharacter(
   if (!supabase) return false;
 
   const customFontCharactersTable = supabase.from("custom_font_characters") as any;
-  console.info(
-    `[fontPersistence] Saving active character "${characterKey}" for custom font "${fontId}" as uuid through custom_font_characters.`
-  );
+  const debugPayload = {
+    fontId,
+    fontName: context.fontName,
+    fontType: context.fontType ?? "custom",
+    characterKey,
+    characterKeyType: typeof characterKey,
+    method: hasFilledStitches(character) ? "upsert" : "delete",
+    table: "custom_font_characters",
+    ...getCharacterDebugShape(character)
+  };
+  logFontSaveDebug("character-save-attempt", debugPayload);
+  if (context.fontName === "Deco" && characterKey === "G") {
+    logFontSaveDebug("deco-g-character-save-full-payload", {
+      ...debugPayload,
+      payload: {
+        font_id: fontId,
+        owner_id: null,
+        character_key: characterKey,
+        width: character.width,
+        height: character.height,
+        grid: character.grid
+      }
+    });
+  }
 
   if (!hasFilledStitches(character)) {
-    const { error } = await withTimeout<any>(
+    const { data, error } = await withTimeout<any>(
       customFontCharactersTable
         .delete()
         .eq("font_id", fontId)
-        .eq("character_key", characterKey),
+        .eq("character_key", characterKey)
+        .select("font_id, character_key"),
       `Timed out clearing character "${characterKey}". Check the database connection and try again.`
     );
+    logFontSaveDebug("character-clear-response", { data, error });
 
     if (error) throw normaliseRemoteFontSaveError(error);
 
@@ -605,7 +663,7 @@ export async function saveRemoteCustomFontCharacter(
     return true;
   }
 
-  const { error } = await withTimeout<any>(
+  const { data, error } = await withTimeout<any>(
     customFontCharactersTable.upsert(
       {
         font_id: fontId,
@@ -616,9 +674,10 @@ export async function saveRemoteCustomFontCharacter(
         grid: character.grid
       },
       { onConflict: "font_id,character_key" }
-    ),
+    ).select("font_id, character_key, width, height, grid"),
     `Timed out saving character "${characterKey}". Check the database connection and try again.`
   );
+  logFontSaveDebug("character-upsert-response", { data, error });
 
   if (error) throw normaliseRemoteFontSaveError(error);
 

@@ -164,7 +164,10 @@ export function useFonts() {
         return false;
       }
 
-      const savedRemotely = await saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey]);
+      const savedRemotely = await saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey], {
+        fontName: nextFont.name,
+        fontType: "custom"
+      });
       if (!savedRemotely) {
         const message = "Add Supabase environment values before saving fonts to the database.";
         lastSaveErrorRef.current = message;
@@ -173,6 +176,12 @@ export function useFonts() {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Database save failed. Font changes were not saved.";
+      console.error("[useFonts] Character save failed", {
+        fontId: nextFont.id,
+        fontName: nextFont.name,
+        characterKey,
+        error
+      });
       lastSaveErrorRef.current = message;
       setPersistence((current) => ({ ...current, mode: "error", message, canWrite: false, lastError: message }));
       return false;

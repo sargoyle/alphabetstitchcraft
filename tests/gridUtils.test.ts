@@ -34,7 +34,7 @@ assert.equal(resized.height, 3);
 assert.deepEqual(resized.grid, ["10100", "01000", "00000"]);
 
 const clamped = resizeCharacter(character, 99, -10);
-assert.equal(clamped.width, 24);
+assert.equal(clamped.width, 60);
 assert.equal(clamped.height, 1);
 
 assert.deepEqual(setGridCell(character, 0, 1, true).grid, ["111", "010"]);

@@ -66,9 +66,11 @@ export function clearCharacter(character: StitchCharacter): StitchCharacter {
   };
 }
 
+const MAX_GRID_DIMENSION = 60;
+
 function clampGridDimension(value: number, fallback = 1) {
   const nextValue = Number.isFinite(value) ? value : fallback;
-  return Math.max(1, Math.min(24, Math.round(nextValue)));
+  return Math.max(1, Math.min(MAX_GRID_DIMENSION, Math.round(nextValue)));
 }
 
 export function resizeCharacter(character: StitchCharacter, width: number, height: number): StitchCharacter {

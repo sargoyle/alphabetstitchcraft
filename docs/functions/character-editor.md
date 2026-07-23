@@ -75,8 +75,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 8. User may edit the font name or font height in the sidebar and save font settings.
 9. Font height save resizes every character in the font to the selected height.
 10. Character save either updates an existing character or writes a new destination character at the current font height.
-11. Updated font is saved through `useFonts().saveFont()` using the latest local font reference for the same font ID.
-12. Save success is returned only after the database font save completes. For UUID custom fonts, the active edited character is then written directly to `custom_font_characters` by `font_id` and `character_key`.
+11. Updated character grids are saved through `useFonts().saveFontCharacter()` using the latest local font reference for the same font ID.
+12. Save success is returned only after the parent font metadata save and the active-character database write complete. For UUID custom fonts, the active edited character is written directly to `custom_font_characters` by `font_id` and `character_key`.
 13. As soon as save starts, the editor shows `Saving character...`, changes the button label to `Saving...`, marks it busy, and prevents repeat clicks.
 14. While a character save is in progress, the editor suppresses transient duplicate-destination warnings caused by refreshed font data.
 15. After save, if a later refresh returns a version with fewer filled character designs for the same font, the editor keeps the more complete local font state instead of downgrading the active working copy.
@@ -125,8 +125,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Duplicate-created characters must not flash back to the source character during save. | Confirmed | Implemented | The duplicate source is copied into a stable destination draft and the editor key is based on the destination, not the source. |
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 | Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
-| Remote refreshes must not downgrade the active editor font to a version with fewer created characters. | Confirmed | Implemented | The editor compares filled-character counts and keeps the more complete local working copy for the active font. |
-| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. UUID custom-font character saves bypass the broad whole-font save path. `useFonts().saveFontCharacter()` first saves lightweight font metadata so the parent row exists, then writes the active custom character row through `saveRemoteCustomFontCharacter()` before reporting success. Same-character refreshes must not clear success or failure messages. |
+| Remote refreshes must not downgrade the active editor font to a version with fewer or older created characters. | Confirmed | Implemented | The editor compares filled-character counts and update timestamps, then keeps the newest more complete local working copy for the active font while Supabase state catches up. |
+| Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. UUID custom-font character saves bypass the broad whole-font save path. `useFonts().saveFontCharacter()` first saves lightweight font metadata so the parent row exists, then writes and verifies the active custom character row through `saveRemoteCustomFontCharacter()` before reporting success. Same-character refreshes must not clear success or failure messages. |
 
 ## Negative Rules
 
@@ -162,7 +162,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Given a selected character, when a cell is toggled and saved, then the font is saved with the updated grid.
 - Given Clear is clicked, then all draft cells become `0`.
 - Given Reset is clicked, then draft returns to the original character passed into the editor.
-- Given width is changed, then the grid resizes within the 1-24 limit.
+- Given width is changed, then the grid resizes within the confirmed 1-60 limit.
 - Given duplicate mode without a destination, then Save is disabled or blocked.
 - Given destination already exists, then Save is blocked until Replace existing is checked.
 - Given a new destination is saved, then it appears in future previews and generator rendering.
@@ -225,7 +225,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Currently derives initial font from query parameter or first font.
 - Currently defaults selected character to `A`.
 - Currently takes the first character of destination input.
-- Currently creates blank new characters at a size based on selected font default height, clamped to 1-24.
+- Currently creates blank new characters at a size based on selected font default height/default width, clamped to 1-60.
 - Currently clones the selected font before writing edited characters.
 - Currently waits for `saveFont()` to return success before resetting editor state.
 - Currently shows `Saving character...` immediately when a character save begins.
@@ -341,7 +341,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Saving font settings after character edits must use the latest saved character data. | Confirmed | Implemented | The editor keeps a latest-font reference after character save to avoid overwriting edits. |
 | Duplicate source selection must apply the chosen source to the selected character draft. | Confirmed | Implemented | Source tiles now apply the duplicate draft directly and close the picker. |
 | The floating save message must not cover the Save Character button. | Confirmed | Implemented | The floating notification is positioned near the upper-right of the editor panel. |
-| Character width and font height are currently clamped to 1-24 stitches. | Assumed | Implemented | This is an implementation safety limit to prevent oversized editor grids; it is not a confirmed craft/domain limit. |
+| Character width and font height are clamped to 1-60 stitches. | Confirmed | Implemented | The UI, grid resize helper, validation and database constraints now align on the same 1-60 range. |
 
 ### Added Acceptance Criteria
 
@@ -353,7 +353,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 
 ### Open Product Question
 
-- Should the 24-stitch maximum width/height remain, be raised, or become user-configurable for larger alphabets?
+- Should the 60-stitch maximum width/height eventually become user-configurable for larger alphabets?
 
 ## Review Checklist
 

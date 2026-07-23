@@ -154,7 +154,7 @@ const useFontsSource = readFileSync("src/lib/useFonts.ts", "utf8");
 assert.ok(
   useFontsSource.includes("async function saveEditableFontCharacter") &&
     useFontsSource.includes("saveRemoteCustomFontMetadata(nextFont)") &&
-    useFontsSource.includes("saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey])") &&
+    useFontsSource.includes("saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey], {") &&
     useFontsSource.includes("saveFontCharacter: saveEditableFontCharacter"),
   "FONT-PERSISTENCE-007: UUID custom font character saves should save font metadata first, then write only the active character row."
 );
@@ -189,6 +189,8 @@ assert.ok(
 
 assert.ok(
   fontPersistenceSource.includes('function characterMatchesSavedRow') &&
+    fontPersistenceSource.includes('logFontSaveDebug("character-save-attempt"') &&
+    fontPersistenceSource.includes('logFontSaveDebug("character-upsert-response"') &&
     fontPersistenceSource.includes('Timed out verifying saved character') &&
     fontPersistenceSource.includes('Character "${characterKey}" was not saved correctly in the database.') &&
     fontPersistenceSource.includes('Timed out verifying cleared character') &&

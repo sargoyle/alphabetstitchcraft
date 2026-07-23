@@ -18,8 +18,10 @@ Define the data structures used to describe stitch alphabets, individual charact
 - File: `src/lib/gridUtils.ts`
 - Function: `validateCharacter()` in `src/lib/gridUtils.ts`
 - Function: `validateFont()` in `src/lib/gridUtils.ts`
+- Function: `resizeCharacter()` in `src/lib/gridUtils.ts`
 - File: `src/lib/fontPersistence.ts`
 - Function: `toStitchFont()` in `src/lib/fontPersistence.ts`
+- Function: `saveRemoteCustomFontCharacter()` in `src/lib/fontPersistence.ts`
 - Function: `loadRemoteFontBackups()` in `src/lib/fontPersistence.ts`
 - Function: `restoreRemoteFontBackup()` in `src/lib/fontPersistence.ts`
 - File: `src/lib/databaseTypes.ts`
@@ -124,7 +126,7 @@ Expected output:
 10. Restore actions map a validated backup snapshot back into the same `StitchFont` data model and save path.
 11. Custom font saves that reference bundled default fonts confirm the base default id exists in Supabase before writing `custom_fonts`.
 12. Saves for non-UUID bundled default font IDs update `default_fonts`.
-13. Saves for UUID custom/shared font IDs upsert `custom_fonts`, upsert only filled character rows by `font_id,character_key`, and remove blank saved character rows for the current font.
+13. Saves for UUID custom/shared font IDs upsert `custom_fonts`, upsert only filled character rows by `font_id,character_key`, and remove blank saved character rows only for the active character.
 14. Remote custom-font loads rebuild blank starter characters from the standard editable character set and the font-level default height/width, then overlay persisted filled character rows from `custom_font_characters`.
 14. Duplicate-name validation ignores the current record and only rejects different records with the same normalised name.
 15. Duplicate-name validation must not apply a slug ID such as `tiny-serif-7x9` to UUID fields such as `custom_fonts.id`.
@@ -141,6 +143,7 @@ Expected output:
 | Character keys must be single characters in v1. | Confirmed | Implemented | Font data tests assert single-character keys for bundled fonts. |
 | `defaultHeight` is the font-level character height. | Confirmed | Implemented | User confirmed every character in a font must have this height. |
 | Every character in a font must have the same height as `defaultHeight`. | Confirmed | Implemented | `validateFont()` reports mismatched character heights and editor font settings resize all characters. |
+| Character width and font height must use the same 1-60 range across UI, utilities and database constraints. | Confirmed | Implemented | `resizeCharacter()` now clamps to 60 so valid editor/database dimensions are not silently reduced to 24 before save. |
 | Font height must remain user-selectable at the font level. | Confirmed | Implemented | Font Editor exposes a font-height input and saves it through the font save path. |
 | Font name must be editable from the editor screen. | Confirmed | Implemented | Font Editor exposes a font-name input and saves it through the font save path. |
 | Font refresh must not clear the current saved font list before replacement remote data has loaded. | Confirmed | Implemented | Prevents the UI from flashing back to older bundled/default font versions during save/load refreshes. |
@@ -158,7 +161,8 @@ Expected output:
 | Editing a bundled default/shared font must update the existing `default_fonts` record. | Confirmed | Implemented | `getRemoteFontSaveTarget()` sends non-UUID font IDs to `default_fonts` update. |
 | Editing a UUID custom/shared font must update the existing `custom_fonts` record rather than create a duplicate. | Confirmed | Implemented | UUID IDs continue through the custom-font upsert path and duplicate checks ignore the current ID. |
 | Custom font character saves must be non-destructive. | Confirmed | Implemented | `custom_font_characters` rows are upserted by `font_id,character_key`; the save flow must not delete all character rows before inserting replacements. |
-| Custom font persistence must store only characters that contain filled stitches. | Confirmed | Implemented | Blank starter grids are synthesised from `defaultEditableCharacterKeys`, `defaultHeight` and `defaultWidth` when remote custom fonts load. UUID custom-font character saves bypass broad whole-font persistence, upsert the parent `custom_fonts` metadata row first, then write the active edited character directly to `custom_font_characters` by `font_id` and `character_key`. |
+| Custom font persistence must store only characters that contain filled stitches. | Confirmed | Implemented | Blank starter grids are synthesised from `defaultEditableCharacterKeys`, `defaultHeight` and `defaultWidth` when remote custom fonts load. UUID custom-font character saves bypass broad whole-font persistence, upsert the parent `custom_fonts` metadata row first, then write and verify the active edited character directly to `custom_font_characters` by `font_id` and `character_key`. |
+| Character save debug logging must be available without permanently noisy console output. | Confirmed | Implemented | Character save attempts and Supabase responses are gated by `NEXT_PUBLIC_FONT_SAVE_DEBUG=true` or browser localStorage key `alphabet-stitch-debug-font-save=1`. Save failures still log errors. |
 | Clearing a custom character and saving should remove that character row from `custom_font_characters`. | Assumed | Implemented | Saving blank grids deletes those character keys so they return to a not-created starter state after reload. |
 | Duplicate-name validation must ignore the record currently being edited. | Confirmed | Implemented | `hasSharedFontNameConflict()` compares IDs before reporting a conflict. |
 | Renaming a font to another shared font's name must be blocked. | Confirmed | Implemented | Duplicate-name checks compare against both default and custom/shared font rows. |
