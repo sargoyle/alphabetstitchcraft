@@ -2158,4 +2158,18 @@ Validation complete after fix.
 - `node .test-build\tests\runTests.js`: Pass.
 - `npm run lint`: Pass.
 
+## 2026-07-23 - Supabase character loading go-live safety check
+
+Validation complete after safety check.
+
+- Added regression checks `FONT-PERSISTENCE-010C` and `FONT-PERSISTENCE-010D`.
+- Added exact-count comparison for `custom_font_characters` loads.
+- Added a diagnostic-page warning when loaded rows are fewer than the exact database count.
+- Added a development console error for detected partial loads.
+- Live read-only full diagnostic verification: Pass. `custom_font_characters` exact database count was 1,093, loaded row count was 1,093, and `partialLoad` was false.
+- `node .\node_modules\typescript\bin\tsc --noEmit`: Pass.
+- `node .\node_modules\typescript\bin\tsc -p tsconfig.tests.json`: Pass.
+- `node .test-build\tests\runTests.js`: Pass.
+- `npm run lint`: Pass.
+
 

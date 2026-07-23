@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Fixed
+- 2026-07-23 - Added a go-live safety check for `custom_font_characters` loading, including exact-count comparison, diagnostic warning, development partial-load logging and >1,000-row regression coverage. Files affected: `src/lib/fontPersistence.ts`, `src/app/diagnostics/font-hydration/page.tsx`, `tests/fontPersistence.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/font-hydration-diagnostics.md`, `docs/rules.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 - 2026-07-23 - Fixed remote custom font loading so `custom_font_characters` rows are fetched in paginated batches instead of stopping at Supabase's first 1,000 rows; confirmed Deco `G` now hydrates through the compiled app loader. Files affected: `src/lib/fontPersistence.ts`, `tests/fontPersistence.test.ts`, `docs/functions/font-data-model.md`, `docs/functions/font-hydration-diagnostics.md`, `docs/tests/test-run-results.md`, `docs/tasks.md`.
 
 ### Changed

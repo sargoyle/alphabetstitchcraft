@@ -37,6 +37,8 @@ Provide a temporary, public diagnostic page that compares saved Supabase font ch
 ## Outputs
 
 - Supabase host name, without secret keys.
+- Exact database row count versus loaded row count for `custom_font_characters`.
+- Visible partial-load warning when loaded custom character rows are fewer than the exact Supabase count.
 - Duplicate font records by normalised name.
 - Invalid remote font summaries.
 - Per-font Supabase filled character keys.
@@ -64,6 +66,7 @@ Provide a temporary, public diagnostic page that compares saved Supabase font ch
 | Diagnostics must not expose secret keys. | Confirmed | Implemented | The report shows only the Supabase host, not the publishable key. |
 | Diagnostics must compare Supabase rows with the hydrated app model. | Confirmed | Implemented | Custom fonts use `hydrateRemoteCustomFont()`. |
 | Diagnostics must include all matching `custom_font_characters` rows, not only the first 1,000 rows. | Confirmed | Implemented | `loadFontHydrationDiagnostics()` uses `loadRemoteCustomFontCharacterRows()` so diagnostic results match the normal paginated font loader. |
+| Diagnostics must visibly warn if loaded custom character rows are fewer than the exact database count. | Confirmed | Implemented | The environment card displays loaded count versus exact count and shows an alert warning if `partialLoad` is true. |
 | Filled saved rows must not be hidden by blank starter grids. | Confirmed | Implemented | The diagnostic reports blank/missing hydrated rows and the hydrator overlays filled rows. |
 | Duplicate custom character rows must be reported. | Confirmed | Implemented | Duplicate rows are grouped by `character_key` per font. |
 | Older-height saved rows should hydrate at the current font height. | Confirmed | Implemented | Hydration normalises valid saved characters to the current font height before validation. |
@@ -83,6 +86,7 @@ Provide a temporary, public diagnostic page that compares saved Supabase font ch
 - Given duplicate rows exist for the same `font_id` and `character_key`, when diagnostics run, then they are reported without deleting anything.
 - Given a saved character row has an older height but valid grid data, when diagnostics run, then hydration normalises it to the current font height and does not mark it missing.
 - Given more than 1,000 custom font character rows exist, when diagnostics run, then rows beyond Supabase's default first-page response are included in per-font counts and key comparisons.
+- Given the exact Supabase count is higher than the loaded row count, when the diagnostic report renders, then a visible warning is shown.
 
 ## Edge Cases
 
@@ -103,6 +107,7 @@ Provide a temporary, public diagnostic page that compares saved Supabase font ch
 - Currently calls `loadFontHydrationDiagnostics()` on page load.
 - Currently compares default and custom font data from Supabase against the hydrated app model.
 - Currently fetches custom font character rows in paginated 1,000-row batches before comparing database rows with the UI model.
+- Currently displays exact `custom_font_characters` count versus loaded count and warns if the loader ever returns a partial result.
 - Currently shows Deco first when present, then other diagnostic rows.
 - Currently does not require sign-in because the app has no sign-in flow.
 

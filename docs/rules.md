@@ -88,6 +88,7 @@ This file is the single source of truth for all project-wide decisions. Update i
 - CSP and security headers should be configured immediately.
 - External fonts and scripts do not need to remain blocked unless explicitly approved.
 - Analytics requires a later product/security decision before implementation.
+- Supabase can return only the first 1,000 rows by default; any large-table read must use explicit pagination or an exact-count safety check before go-live.
 
 Keep entries concise. One line per decision when possible.
 

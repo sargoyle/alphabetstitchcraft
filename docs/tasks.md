@@ -2244,6 +2244,9 @@ Acceptance checks:
 - [x] Normalise valid older-height saved character rows to the current font-level height during hydration.
 - [x] Preserve deterministic merge rules: blank starters are fallback only, filled saved rows win, newest filled duplicate wins.
 - [x] Fix the Supabase 1,000-row character loading cap by paging through all `custom_font_characters` rows.
+- [x] Add a go-live safety check that compares loaded `custom_font_characters` rows with Supabase exact count.
+- [x] Show a diagnostic warning and development console error if a partial character-row load is detected.
+- [x] Audit remaining unpaged Supabase `select("*")` calls.
 - [x] Add regression tests for saved-row hydration, stale blank duplicates, numbers/symbols and older-height rows.
 - [x] Update function documentation, test documentation and changelog.
 - [ ] Hard-refresh the production UI and verify multiple affected fonts render their saved characters.
@@ -2254,6 +2257,7 @@ Acceptance checks:
 - [x] Live read-only diagnostic reports no missing/blank/not-created mismatches for Classic Serif, Sara1 and Deco.
 - [x] Compiled app loader confirms Deco `G` hydrates from the configured Supabase project after paginated character loading.
 - [x] Diagnostic reports no duplicate custom character rows, empty character keys or malformed grid shapes in the configured Supabase project.
+- [x] Regression test covers collecting more than 1,000 rows through the shared pagination helper.
 - [x] App TypeScript compile passes.
 - [x] Utility/source tests pass.
 - [x] ESLint passes.

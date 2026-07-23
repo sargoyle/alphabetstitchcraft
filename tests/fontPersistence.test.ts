@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createBlankFont } from "../src/lib/fontFactory";
 import {
+  collectPaginatedRows,
   getFontIdKind,
   getRemoteFontDeleteTarget,
   getRemoteFontSaveTarget,
@@ -11,6 +12,7 @@ import {
 import type { StitchFont } from "../src/lib/fontTypes";
 
 const fontPersistenceSource = readFileSync("src/lib/fontPersistence.ts", "utf8");
+const fontHydrationDiagnosticPageSource = readFileSync("src/app/diagnostics/font-hydration/page.tsx", "utf8");
 
 const defaultFont: StitchFont = {
   id: "block-needle-5x7",
@@ -187,12 +189,37 @@ assert.ok(
 
 assert.ok(
   fontPersistenceSource.includes("async function loadRemoteCustomFontCharacterRows") &&
+    fontPersistenceSource.includes('select("id", { count: "exact", head: true })') &&
     fontPersistenceSource.includes("const pageSize = 1000") &&
-    fontPersistenceSource.includes(".range(from, from + pageSize - 1)") &&
-    fontPersistenceSource.includes("if (pageRows.length < pageSize) break") &&
+    fontPersistenceSource.includes("loadPage(from, from + pageSize - 1)") &&
+    fontPersistenceSource.includes(".range(from, to)") &&
+    fontPersistenceSource.includes("partialLoad: typeof count === \"number\" && rows.length < count") &&
+    fontPersistenceSource.includes("Partial custom_font_characters load detected") &&
     !fontPersistenceSource.includes('.select("id, font_id, character_key, width, height, grid, created_at, updated_at")\n    .in("font_id", ids);'),
-  "FONT-PERSISTENCE-010B: Remote custom font loading and diagnostics should page through all custom_font_characters rows instead of stopping at Supabase's first 1,000 rows."
+  "FONT-PERSISTENCE-010B: Remote custom font loading and diagnostics should page through all custom_font_characters rows, count exact rows, and warn if a partial load is detected."
 );
+
+assert.ok(
+  fontHydrationDiagnosticPageSource.includes("report.customCharacterRowLoad?.partialLoad") &&
+    fontHydrationDiagnosticPageSource.includes("Custom character rows loaded") &&
+    fontHydrationDiagnosticPageSource.includes("Saved") &&
+    fontHydrationDiagnosticPageSource.includes("characters may be hidden"),
+  "FONT-PERSISTENCE-010D: Font hydration diagnostics should visibly warn if loaded custom_font_characters rows are fewer than the database count."
+);
+
+const oversizedRows = Array.from({ length: 1001 }, (_, index) => `row-${index}`);
+
+collectPaginatedRows(async (from, to) => oversizedRows.slice(from, to + 1), 1000)
+  .then((paginatedRows) => {
+    assert.equal(
+      paginatedRows.length,
+      1001,
+      "FONT-PERSISTENCE-010C: Pagination helper should collect more than Supabase's first 1,000 rows."
+    );
+  })
+  .catch((error) => {
+    throw error;
+  });
 
 assert.ok(
   fontPersistenceSource.includes('export async function saveRemoteCustomFontCharacter') &&

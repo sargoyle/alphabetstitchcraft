@@ -56,9 +56,28 @@ export default function FontHydrationDiagnosticsPage() {
             <h2>Environment</h2>
             <p>Generated: {report.generatedAt}</p>
             <p>Supabase host: {report.supabaseHost ?? "(not configured)"}</p>
+            {report.customCharacterRowLoad ? (
+              <>
+                <p>
+                  Custom character rows loaded: {report.customCharacterRowLoad.loadedRowCount}
+                  {typeof report.customCharacterRowLoad.databaseRowCount === "number"
+                    ? ` of ${report.customCharacterRowLoad.databaseRowCount}`
+                    : ""}
+                </p>
+                <p>Character row page size: {report.customCharacterRowLoad.pageSize}</p>
+              </>
+            ) : null}
             <p>Duplicate font records: {report.duplicateFontRecords.length}</p>
             <p>Invalid fonts: {report.invalidFonts.length}</p>
           </div>
+
+          {report.customCharacterRowLoad?.partialLoad ? (
+            <p className="warning" role="alert">
+              Warning: only {report.customCharacterRowLoad.loadedRowCount} of{" "}
+              {report.customCharacterRowLoad.databaseRowCount ?? "unknown"} custom character rows loaded. Saved
+              characters may be hidden until the loader pagination issue is fixed.
+            </p>
+          ) : null}
 
           {report.duplicateFontRecords.length ? (
             <div className="tool-card">
