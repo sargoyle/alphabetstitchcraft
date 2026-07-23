@@ -155,8 +155,11 @@ assert.ok(
   useFontsSource.includes("async function saveEditableFontCharacter") &&
     useFontsSource.includes("saveRemoteCustomFontMetadata(nextFont)") &&
     useFontsSource.includes("saveRemoteCustomFontCharacter(nextFont.id, characterKey, nextFont.characters[characterKey], {") &&
+    useFontsSource.includes("function mergeSavedFontSnapshot") &&
+    useFontsSource.includes("key === changedCharacterKey") &&
+    useFontsSource.includes("hasFilledStitches(character) && !hasFilledStitches(mergedCharacters[key])") &&
     useFontsSource.includes("saveFontCharacter: saveEditableFontCharacter"),
-  "FONT-PERSISTENCE-007: UUID custom font character saves should save font metadata first, then write only the active character row."
+  "FONT-PERSISTENCE-007: UUID custom font character saves should save metadata first, write only the active character row, and preserve other filled character rows in app state."
 );
 
 assert.ok(

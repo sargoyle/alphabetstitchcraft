@@ -56,6 +56,8 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Duplicate-source modal for copying an existing character or blank grid into the selected character.
 - Stable duplicate draft state that remains attached to the destination character during save and font refresh.
 - Protection against stale font refreshes overwriting newly saved character work with older or less-complete font data.
+- Protection against stale blank starter grids masking filled character rows loaded from Supabase.
+- Merged active font snapshot so filled characters from the database and latest local editor state remain visible together.
 - Duplicate source picker ordered the same as the main character picker and limited to characters with filled stitch designs.
 - Compact dimension controls below the editable grid.
 - Editable font name and font-level height controls in the editor sidebar.
@@ -125,7 +127,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 | Duplicate-created characters must not flash back to the source character during save. | Confirmed | Implemented | The duplicate source is copied into a stable destination draft and the editor key is based on the destination, not the source. |
 | Successful duplicate-created character saves must not briefly show a false character already exists warning. | Confirmed | Implemented | Save-in-progress state suppresses duplicate warnings that can appear when refreshed font data already includes the destination. |
 | Character saves must not use stale selected-font data when a newer local font version exists. | Confirmed | Implemented | `saveCharacter()` uses `latestFontRef` for the same font ID so newly created characters are not dropped by subsequent saves. |
-| Remote refreshes must not downgrade the active editor font to a version with fewer or older created characters. | Confirmed | Implemented | The editor compares filled-character counts and update timestamps, then keeps the newest more complete local working copy for the active font while Supabase state catches up. |
+| Remote refreshes or local snapshots must not hide filled database characters behind blank starter grids. | Confirmed | Implemented | The editor merges filled characters from the latest local editor snapshot and the latest loaded database snapshot, so a stale blank `G` cannot mask a saved filled `G`. |
 | Duplicated and hand-drawn custom character designs must persist after browser refresh. | Confirmed | Implemented | Remote custom font saves persist only filled character rows. UUID custom-font character saves bypass the broad whole-font save path. `useFonts().saveFontCharacter()` first saves lightweight font metadata so the parent row exists, then writes and verifies the active custom character row through `saveRemoteCustomFontCharacter()` before reporting success. Same-character refreshes must not clear success or failure messages. |
 
 ## Negative Rules
@@ -150,6 +152,7 @@ Allow users to edit an individual character grid, resize it, clear it, reset it,
 - Must not flash to the first available font while a routed or selected font is still loading.
 - Must not flash from a duplicate-created destination back to the duplicated source character while saving.
 - Must not overwrite newly saved character designs with an older selected-font snapshot during refresh.
+- Must not let a stale blank starter character hide a filled character row loaded from Supabase.
 - Must not persist blank starter-grid characters as if they were created character designs.
 - Must not show a transient `character already exists` warning during a successful duplicate-created character save.
 - Must not leave Save Character visually unchanged while a save is in progress.

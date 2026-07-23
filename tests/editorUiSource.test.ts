@@ -167,7 +167,7 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes("const newCharacter = useMemo") &&
+  editorClientSource.includes("const newCharacter = sourceCharacter") &&
     editorClientSource.includes("selectedFont?.defaultHeight") &&
     editorClientSource.includes("sourceCharacter"),
   "EDITOR-UI-022: Blank punctuation and other not-created character drafts should remain stable while cells are edited."
@@ -200,12 +200,13 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes("function shouldUseLatestFontSnapshot") &&
-    editorClientSource.includes("filledCharacterCount(latestFont) > filledCharacterCount(loadedFont)") &&
+  editorClientSource.includes("function mergeActiveFontSnapshot") &&
+    editorClientSource.includes("const mergedCharacters = { ...baseFont.characters };") &&
+    editorClientSource.includes("hasFilledStitches(character) && !hasFilledStitches(mergedCharacters[key])") &&
     editorClientSource.includes("const loadedSelectedFont = fonts.find") &&
     editorClientSource.includes("const baseFont = latestFontRef.current?.id === selectedFont.id ? latestFontRef.current : selectedFont;") &&
     editorClientSource.includes("const targetFont = cloneFont(baseFont);"),
-  "EDITOR-UI-028: Character saves should use the latest local font state and ignore stale refresh data with fewer or older created characters."
+  "EDITOR-UI-028: Character saves should merge created characters from the latest local and loaded font snapshots so stale blanks cannot hide saved database rows."
 );
 
 assert.ok(
@@ -234,8 +235,8 @@ assert.ok(
 );
 
 assert.ok(
-  editorClientSource.includes('const fontWidth = Math.max(1, Math.min(60, selectedFont?.defaultWidth ?? fontHeight));') &&
-    editorClientSource.includes('return blankCharacter(fontWidth, fontHeight);') &&
+  editorClientSource.includes('Math.max(1, Math.min(60, selectedFont?.defaultWidth ?? selectedFont?.defaultHeight ?? 10))') &&
+    editorClientSource.includes('Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10))') &&
     editorClientSource.includes('selectedCharacter && hasFilledStitches(selectedCharacter)') &&
     editorClientSource.includes(': newCharacter;'),
   "EDITOR-UI-031: Uncreated character drafts should use font default width and ignore old blank placeholder widths."

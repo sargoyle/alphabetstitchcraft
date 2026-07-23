@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Changed
+- 2026-07-23 - Re-investigated Deco `G` through the database and app load path, then changed Font Editor and `useFonts()` state updates to merge filled characters from loaded database snapshots and latest local snapshots so stale blank starter grids cannot hide saved custom character rows. Files affected: `src/app/editor/EditorClient.tsx`, `src/lib/useFonts.ts`, `tests/editorUiSource.test.ts`, `tests/fontPersistence.test.ts`, `docs/functions/character-editor.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`, `docs/tests/test-run-results.md`.
 - 2026-07-23 - Repaired custom character save stability by aligning grid resizing with the 1-60 editor/database range, keeping the latest saved editor font snapshot active while Supabase state catches up, and adding gated font-save diagnostics plus save-error logging. Files affected: `src/lib/gridUtils.ts`, `src/app/editor/EditorClient.tsx`, `src/lib/fontPersistence.ts`, `src/lib/useFonts.ts`, `tests/gridUtils.test.ts`, `tests/fontPersistence.test.ts`, `tests/editorUiSource.test.ts`, `docs/functions/character-editor.md`, `docs/functions/font-data-model.md`, `docs/tasks.md`, `docs/tests/test-run-results.md`.
 
 ### Fixed

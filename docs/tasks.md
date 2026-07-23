@@ -2185,6 +2185,28 @@ Acceptance checks:
 - [x] Utility/source tests pass.
 - [x] ESLint passes.
 
+### 56.3 Trace Deco G Through Full App Load And Display Path
+
+- [x] Confirm the real Deco font source and ID in Supabase.
+- [x] Confirm Deco is a UUID custom font stored in `custom_fonts`.
+- [x] Confirm Deco `G` is stored in `custom_font_characters`, not `default_fonts.characters`.
+- [x] Confirm Deco `G` has exact character key `G`, a valid filled grid, width 14 and height 20.
+- [x] Fix stale whole-font snapshot merging so a blank starter `G` cannot hide a filled database `G`.
+- [x] Preserve filled characters from both the loaded database snapshot and the latest local editor snapshot.
+- [x] Preserve other filled characters in `useFonts()` when the saved active-character font snapshot is merged back into state.
+- [x] Update regression source tests for merged character snapshots.
+- [x] Update function documentation, changelog and test run notes.
+
+Acceptance checks:
+
+- [x] Database row exists for Deco `G`.
+- [x] Deco `G` can survive the app's loaded-font merge path instead of being masked by stale blank state.
+- [x] Saving one character cannot replace the visible font object with a stale version missing other filled characters.
+- [x] App TypeScript compile passes.
+- [x] Utility/source tests pass.
+- [x] ESLint passes.
+- [x] Production build passes.
+
 
 
 

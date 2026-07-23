@@ -72,6 +72,31 @@ export function useFonts() {
     };
   }
 
+  function hasFilledStitches(character: StitchFont["characters"][string] | undefined) {
+    return Boolean(character?.grid.some((row) => row.includes("1")));
+  }
+
+  function mergeSavedFontSnapshot(
+    currentFont: StitchFont | undefined,
+    nextFont: StitchFont,
+    changedCharacterKey?: string
+  ): StitchFont {
+    if (!currentFont || currentFont.id !== nextFont.id) return nextFont;
+
+    const mergedCharacters = { ...nextFont.characters };
+    for (const [key, character] of Object.entries(currentFont.characters)) {
+      if (key === changedCharacterKey) continue;
+      if (hasFilledStitches(character) && !hasFilledStitches(mergedCharacters[key])) {
+        mergedCharacters[key] = character;
+      }
+    }
+
+    return {
+      ...nextFont,
+      characters: mergedCharacters
+    };
+  }
+
   const refreshBackups = useCallback(async (fontsToLoad: StitchFont[]) => {
     const remoteFonts = fontsToLoad.filter((font) => isUuid(font.id));
     const entries = await Promise.all(
@@ -189,8 +214,10 @@ export function useFonts() {
 
     lastSaveErrorRef.current = null;
     const keepSavedFontCurrent = (current: StitchFont[]) => {
+      const existingFont = current.find((savedFont) => savedFont.id === nextFont.id);
+      const mergedFont = mergeSavedFontSnapshot(existingFont, nextFont, characterKey);
       const nextFonts = current.filter((savedFont) => savedFont.id !== nextFont.id);
-      return [...nextFonts, nextFont];
+      return [...nextFonts, mergedFont];
     };
     setSavedFonts(keepSavedFontCurrent);
     setPersistence((current) => ({

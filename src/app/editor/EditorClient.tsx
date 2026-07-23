@@ -41,18 +41,27 @@ function parseFontDimension(value: string, label: string) {
   return { value: numeric, error: null };
 }
 
-function filledCharacterCount(font: StitchFont | undefined) {
-  return Object.values(font?.characters ?? {}).filter(hasFilledStitches).length;
-}
-
-function shouldUseLatestFontSnapshot(latestFont: StitchFont | undefined, loadedFont: StitchFont | undefined) {
-  if (!latestFont || !loadedFont || latestFont.id !== loadedFont.id) return false;
-
-  if (filledCharacterCount(latestFont) > filledCharacterCount(loadedFont)) return true;
+function mergeActiveFontSnapshot(latestFont: StitchFont | undefined, loadedFont: StitchFont | undefined) {
+  if (!latestFont || !loadedFont || latestFont.id !== loadedFont.id) return loadedFont ?? latestFont;
 
   const latestUpdatedAt = Date.parse(latestFont.updatedAt ?? "");
   const loadedUpdatedAt = Date.parse(loadedFont.updatedAt ?? "");
-  return Number.isFinite(latestUpdatedAt) && Number.isFinite(loadedUpdatedAt) && latestUpdatedAt >= loadedUpdatedAt;
+  const useLatestMetadata =
+    Number.isFinite(latestUpdatedAt) && Number.isFinite(loadedUpdatedAt) && latestUpdatedAt >= loadedUpdatedAt;
+  const baseFont = useLatestMetadata ? latestFont : loadedFont;
+  const secondaryFont = useLatestMetadata ? loadedFont : latestFont;
+  const mergedCharacters = { ...baseFont.characters };
+
+  for (const [key, character] of Object.entries(secondaryFont.characters)) {
+    if (hasFilledStitches(character) && !hasFilledStitches(mergedCharacters[key])) {
+      mergedCharacters[key] = character;
+    }
+  }
+
+  return {
+    ...baseFont,
+    characters: mergedCharacters
+  };
 }
 
 const orderedBaseCharacters = new Set(defaultEditableCharacterKeys);
@@ -68,9 +77,7 @@ export function EditorClient() {
   const [fontId, setFontId] = useState(params.get("font") ?? "");
   const loadedSelectedFont = fonts.find((font) => font.id === fontId) ?? (fontId ? undefined : fonts[0]);
   const latestFontRef = useRef<StitchFont | undefined>(loadedSelectedFont);
-  const selectedFont = shouldUseLatestFontSnapshot(latestFontRef.current, loadedSelectedFont)
-    ? latestFontRef.current
-    : loadedSelectedFont;
+  const selectedFont = mergeActiveFontSnapshot(latestFontRef.current, loadedSelectedFont);
   const characterKeys = Object.keys(selectedFont?.characters ?? {}).sort();
   const otherCharacters = characterKeys.filter((key) => !orderedBaseCharacters.has(key)).sort();
   const displayedCharacterKeys = [...uppercaseCharacters, ...lowercaseCharacters, ...numberCharacters, ...punctuationCharacters, ...otherCharacters];
@@ -104,12 +111,12 @@ export function EditorClient() {
   const resolvedFontCategory = fontCategoryDraft === CUSTOM_CATEGORY_VALUE
     ? normaliseFontCategory(customFontCategoryDraft)
     : normaliseFontCategory(fontCategoryDraft);
-  const newCharacter = useMemo(() => {
-    if (sourceCharacter) return JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter;
-    const fontHeight = Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10));
-    const fontWidth = Math.max(1, Math.min(60, selectedFont?.defaultWidth ?? fontHeight));
-    return blankCharacter(fontWidth, fontHeight);
-  }, [selectedFont?.defaultHeight, selectedFont?.defaultWidth, sourceCharacter]);
+  const newCharacter = sourceCharacter
+    ? JSON.parse(JSON.stringify(sourceCharacter)) as StitchCharacter
+    : blankCharacter(
+        Math.max(1, Math.min(60, selectedFont?.defaultWidth ?? selectedFont?.defaultHeight ?? 10)),
+        Math.max(1, Math.min(60, selectedFont?.defaultHeight ?? 10))
+      );
   const activeEditorKey = destinationKey || activeKey || "New unmapped character";
   const character = creatingCharacter
     ? newCharacterDraft ?? newCharacter
@@ -137,10 +144,7 @@ export function EditorClient() {
 
   useEffect(() => {
     const currentFont = latestFontRef.current;
-    if (shouldUseLatestFontSnapshot(currentFont, loadedSelectedFont)) {
-      return;
-    }
-    latestFontRef.current = loadedSelectedFont;
+    latestFontRef.current = mergeActiveFontSnapshot(currentFont, loadedSelectedFont);
   }, [loadedSelectedFont]);
 
   useEffect(() => {

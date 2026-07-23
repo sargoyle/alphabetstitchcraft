@@ -1930,6 +1930,41 @@ Validation:
 
 ## 2026-07-19 - Duplicated Character Reload Persistence
 
+## 2026-07-23 - Deco G full app-path re-investigation
+
+Validation complete after re-investigation and state-merge fix.
+
+**Commands run:**
+
+- Live Supabase read diagnostic for all records matching `%Deco%`.
+- `npm run typecheck`
+- `npm run test:renderer`
+- `npm run lint`
+- `npm run build`
+
+**Result:** Pass.
+
+**Trace findings:**
+
+- Deco is a UUID custom font in `custom_fonts`.
+- Deco font id: `e6c0d5ff-368b-41df-9471-beb8b15c84af`.
+- Deco `G` is stored in `custom_font_characters`, not `default_fonts.characters`.
+- Deco `G` uses exact character key `G`.
+- Deco `G` diagnostic values: width `14`, height `20`, 20 grid rows, one column width value of `14`, filled grid.
+- The UI determines whether `G` is created by checking `hasFilledStitches(font.characters["G"])`.
+
+**Fix made:**
+
+- `EditorClient` now merges filled characters from the loaded database snapshot and latest local editor snapshot instead of choosing one whole-font object.
+- `useFonts().saveFontCharacter()` now merges other filled characters from the current app state when replacing the just-saved font in state, while still allowing the active changed character to be saved or cleared.
+
+**Tests added/updated:**
+
+- `EDITOR-UI-028`: editor snapshot merge keeps filled characters from both loaded and local snapshots.
+- `FONT-PERSISTENCE-007`: custom character save path preserves other filled rows in app state.
+
+**Manual follow-up:** Open the live browser UI, hard-refresh the Font Editor, select Deco, and confirm `G` appears as created. Then open Deco alphabet detail and confirm `G` appears in Uppercase.
+
 ## 2026-07-23 - Custom character save stability repair
 
 Validation complete after targeted save-flow fix.
