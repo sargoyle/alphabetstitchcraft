@@ -2232,3 +2232,27 @@ Acceptance checks:
 - [x] Alphabet card previews no longer insert an extra gap between C and D.
 - [x] TypeScript, utility/source tests and lint pass.
 
+## Phase 58: Font Hydration Regression Diagnostics
+
+### 58.1 Restore Saved Character Visibility After Font Height Changes
+
+- [x] Add a temporary font hydration diagnostic route.
+- [x] Compare Supabase custom font character rows with hydrated app font models.
+- [x] Confirm Deco source table and font id.
+- [x] Confirm whether Deco `G` exists in the current Supabase data.
+- [x] Identify root cause for previously saved characters disappearing after font-height changes.
+- [x] Normalise valid older-height saved character rows to the current font-level height during hydration.
+- [x] Preserve deterministic merge rules: blank starters are fallback only, filled saved rows win, newest filled duplicate wins.
+- [x] Add regression tests for saved-row hydration, stale blank duplicates, numbers/symbols and older-height rows.
+- [x] Update function documentation, test documentation and changelog.
+- [ ] Hard-refresh the production UI and verify multiple affected fonts render their saved characters.
+- [ ] Re-save Deco `G` in the browser, refresh, and confirm it persists and displays.
+
+Acceptance checks:
+
+- [x] Live read-only diagnostic reports no missing/blank/not-created mismatches for Classic Serif, Sara1 and Deco.
+- [x] Diagnostic reports no duplicate custom character rows, empty character keys or malformed grid shapes in the configured Supabase project.
+- [x] App TypeScript compile passes.
+- [x] Utility/source tests pass.
+- [ ] Production browser UI shows restored characters after hard refresh.
+

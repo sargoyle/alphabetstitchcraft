@@ -1,3 +1,44 @@
+## 2026-07-23 - Font Hydration Regression Diagnostics
+
+### Scope
+
+- Added `/diagnostics/font-hydration` for temporary database-to-app font model comparison.
+- Fixed canonical custom/default font hydration so saved character rows from older font heights are normalised to the current font-level height instead of making the whole font invalid.
+- Added regression coverage for filled saved rows overriding blank starter rows, stale blank duplicates, deterministic duplicate-row selection, number/symbol key preservation and older-height row normalisation.
+
+### Commands
+
+```powershell
+npm run typecheck
+npm run test:renderer
+npm run lint
+npm run build
+```
+
+### Result
+
+- Status: passed.
+- App TypeScript compile: passed.
+- Test TypeScript compile: passed.
+- Automated utility/source tests: passed.
+- ESLint: passed.
+- Production build: passed.
+
+### Live Read-Only Supabase Diagnostic
+
+- Supabase host checked: `moujukacndlmcoplrutr.supabase.co`.
+- Before the hydration fix, `Classic Serif` and `Sara1` were reported invalid because saved character rows no longer matched the current font height.
+- After the hydration fix, invalid font count was `0`.
+- `Classic Serif`: 15 filled Supabase keys, 15 filled UI-model keys, no missing/blank/not-created mismatches.
+- `Sara1`: 10 filled Supabase keys, 10 filled UI-model keys, no missing/blank/not-created mismatches.
+- `Deco`: 35 filled Supabase keys, 35 filled UI-model keys, no missing/blank/not-created mismatches.
+- `Deco` currently has no saved `G` row in Supabase, so `G` cannot appear until that character is saved again.
+- Custom character row sweep found no duplicate rows, no empty character keys and no malformed grid shapes.
+
+### Remaining Verification
+
+- Browser hard-refresh verification is still required before this is declared fixed in production UI.
+
 ## 2026-07-14 - Character Save Data-Loss Protection
 
 Updates:

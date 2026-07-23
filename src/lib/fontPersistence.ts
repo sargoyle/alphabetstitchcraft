@@ -2,7 +2,7 @@
 
 import { defaultEditableCharacterKeys } from "./characterSets";
 import type { StitchCharacter, StitchFont } from "./fontTypes";
-import { validateFont } from "./gridUtils";
+import { resizeCharacter, validateFont } from "./gridUtils";
 import { getSupabaseClient, isSupabaseConfigured } from "./supabaseClient";
 
 export type InvalidRemoteFont = {
@@ -56,11 +56,38 @@ type RemoteDefaultFontRow = {
 };
 
 type RemoteCharacterRow = {
+  id?: string;
   font_id: string;
   character_key: string;
   width: number;
   height: number;
   grid: unknown;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type FontHydrationDiagnostic = {
+  fontName: string;
+  fontId: string;
+  sourceTable: "custom_fonts" | "default_fonts";
+  supabaseCharacterRowCount: number;
+  supabaseCharacterKeys: string[];
+  loadedCharacterKeyCount: number;
+  loadedCharacterKeys: string[];
+  missingFromUiModel: string[];
+  blankInUiModel: string[];
+  markedNotCreatedDespiteFilledSupabase: string[];
+  duplicateCharacterRows: Array<{ characterKey: string; count: number; rowIds: string[] }>;
+  invalidGridRows: Array<{ characterKey: string; rowId?: string; errors: string[] }>;
+  dimensionMismatchRows: Array<{ characterKey: string; rowId?: string; width: number; height: number; gridRows: number | null; gridColumnCounts: number[] }>;
+};
+
+export type FontHydrationDiagnosticResult = {
+  generatedAt: string;
+  supabaseHost: string | null;
+  duplicateFontRecords: Array<{ name: string; count: number; records: Array<{ id: string; sourceTable: "custom_fonts" | "default_fonts" }> }>;
+  diagnostics: FontHydrationDiagnostic[];
+  invalidFonts: InvalidRemoteFont[];
 };
 
 type RemoteFontBackupRow = {
@@ -84,8 +111,60 @@ function createBlankCharacter(width: number, height: number): StitchCharacter {
   };
 }
 
-function hasFilledStitches(character: StitchCharacter) {
-  return character.grid.some((row) => row.includes("1"));
+function hasFilledStitches(character: StitchCharacter | undefined) {
+  return Boolean(character?.grid.some((row) => row.includes("1")));
+}
+
+function isFilledRemoteCharacterRow(row: RemoteCharacterRow) {
+  return isStringGrid(row.grid) && row.grid.some((line) => line.includes("1"));
+}
+
+function getRemoteRowTime(row: RemoteCharacterRow) {
+  const updated = Date.parse(row.updated_at ?? "");
+  if (Number.isFinite(updated)) return updated;
+  const created = Date.parse(row.created_at ?? "");
+  return Number.isFinite(created) ? created : 0;
+}
+
+function validateRemoteCharacterRow(row: RemoteCharacterRow) {
+  const errors: string[] = [];
+  const gridRows = isStringGrid(row.grid) ? row.grid : null;
+
+  if (!row.character_key || !row.character_key.trim()) errors.push("Character key is empty.");
+  if (!Number.isInteger(row.width) || row.width <= 0) errors.push("Width must be a positive integer.");
+  if (!Number.isInteger(row.height) || row.height <= 0) errors.push("Height must be a positive integer.");
+  if (!gridRows) {
+    errors.push("Grid must be an array of strings.");
+    return errors;
+  }
+  if (gridRows.length !== row.height) errors.push("Grid row count must equal height.");
+  gridRows.forEach((line, index) => {
+    if (line.length !== row.width) errors.push(`Grid row ${index + 1} width must equal width.`);
+    if (!/^[01]+$/.test(line)) errors.push(`Grid row ${index + 1} must only contain 0 or 1.`);
+  });
+
+  return errors;
+}
+
+function getDimensionMismatch(row: RemoteCharacterRow) {
+  if (!isStringGrid(row.grid)) return null;
+  const gridColumnCounts = [...new Set(row.grid.map((line) => line.length))];
+  const mismatched = row.grid.length !== row.height || gridColumnCounts.some((count) => count !== row.width);
+  return mismatched
+    ? {
+        characterKey: row.character_key,
+        rowId: row.id,
+        width: row.width,
+        height: row.height,
+        gridRows: row.grid.length,
+        gridColumnCounts
+      }
+    : null;
+}
+
+function normaliseCharacterToFontHeight(character: StitchCharacter, fontHeight: number) {
+  if (character.height === fontHeight && character.grid.length === fontHeight) return character;
+  return resizeCharacter(character, character.width, fontHeight);
 }
 
 function isFontSaveDebugEnabled() {
@@ -204,6 +283,16 @@ function validateSharedFont(font: StitchFont) {
 }
 
 function toDefaultStitchFont(font: RemoteDefaultFontRow): { font: StitchFont | null; errors: string[] } {
+  const sourceCharacters = font.characters && typeof font.characters === "object"
+    ? font.characters as Record<string, StitchCharacter>
+    : {};
+  const characters = Object.fromEntries(
+    Object.entries(sourceCharacters).map(([key, character]) => [
+      key,
+      normaliseCharacterToFontHeight(character, font.default_height)
+    ])
+  ) as StitchFont["characters"];
+
   const stitchFont: StitchFont = {
     id: font.id,
     name: font.name,
@@ -216,42 +305,112 @@ function toDefaultStitchFont(font: RemoteDefaultFontRow): { font: StitchFont | n
     canEdit: true,
     createdAt: font.created_at,
     updatedAt: font.updated_at,
-    characters: font.characters as StitchFont["characters"]
+    characters
   };
 
   const validation = validateSharedFont(stitchFont);
   return validation.valid ? { font: stitchFont, errors: [] } : { font: null, errors: validation.errors };
 }
 
-function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { font: StitchFont | null; errors: string[] } {
+function getDefaultFontDiagnostic(font: RemoteDefaultFontRow, stitchFont: StitchFont | null): FontHydrationDiagnostic {
+  const sourceCharacters = font.characters && typeof font.characters === "object"
+    ? font.characters as Record<string, StitchCharacter>
+    : {};
+  const supabaseCharacterKeys = Object.keys(sourceCharacters).filter((key) => hasFilledStitches(sourceCharacters[key])).sort();
+  const loadedCharacters = stitchFont?.characters ?? {};
+  const loadedCharacterKeys = Object.keys(loadedCharacters).sort();
+  const loadedFilledKeys = loadedCharacterKeys.filter((key) => hasFilledStitches(loadedCharacters[key]));
+  const invalidGridRows = Object.entries(sourceCharacters)
+    .map(([key, character]) => {
+      const errors = validateRemoteCharacterRow({
+        font_id: font.id,
+        character_key: key,
+        width: character.width,
+        height: character.height,
+        grid: character.grid
+      });
+      return errors.length ? { characterKey: key, errors } : null;
+    })
+    .filter((item): item is { characterKey: string; errors: string[] } => Boolean(item));
+  const dimensionMismatchRows = Object.entries(sourceCharacters)
+    .map(([key, character]) => getDimensionMismatch({
+      font_id: font.id,
+      character_key: key,
+      width: character.width,
+      height: character.height,
+      grid: character.grid
+    }))
+    .filter((item): item is NonNullable<ReturnType<typeof getDimensionMismatch>> => Boolean(item));
+
+  return {
+    fontName: font.name,
+    fontId: font.id,
+    sourceTable: "default_fonts",
+    supabaseCharacterRowCount: Object.keys(sourceCharacters).length,
+    supabaseCharacterKeys,
+    loadedCharacterKeyCount: loadedCharacterKeys.length,
+    loadedCharacterKeys: loadedFilledKeys,
+    missingFromUiModel: supabaseCharacterKeys.filter((key) => !loadedCharacterKeys.includes(key)),
+    blankInUiModel: supabaseCharacterKeys.filter((key) => !hasFilledStitches(loadedCharacters[key])),
+    markedNotCreatedDespiteFilledSupabase: supabaseCharacterKeys.filter((key) => !hasFilledStitches(loadedCharacters[key])),
+    duplicateCharacterRows: [],
+    invalidGridRows,
+    dimensionMismatchRows
+  };
+}
+
+export function hydrateRemoteCustomFont(
+  font: RemoteFontRow,
+  characters: RemoteCharacterRow[]
+): { font: StitchFont | null; errors: string[]; diagnostic: FontHydrationDiagnostic } {
   const defaultHeight = font.default_height;
   const defaultWidth = font.default_width ?? font.default_height;
   const starterCharacters = Object.fromEntries(
     defaultEditableCharacterKeys.map((key) => [key, createBlankCharacter(defaultWidth, defaultHeight)])
   ) as Record<string, StitchCharacter>;
-  const mappedCharacters = characters.reduce<Record<string, StitchCharacter>>((acc, character) => {
-    if (!isStringGrid(character.grid)) {
-      acc[character.character_key] = {
-        width: character.width,
-        height: character.height,
-        grid: []
-      };
-      return acc;
+  const rowsByKey = new Map<string, RemoteCharacterRow[]>();
+  const duplicateCharacterRows: FontHydrationDiagnostic["duplicateCharacterRows"] = [];
+  const invalidGridRows: FontHydrationDiagnostic["invalidGridRows"] = [];
+  const dimensionMismatchRows: FontHydrationDiagnostic["dimensionMismatchRows"] = [];
+
+  for (const row of characters) {
+    const errors = validateRemoteCharacterRow(row);
+    if (errors.length) {
+      invalidGridRows.push({ characterKey: row.character_key, rowId: row.id, errors });
     }
 
-    const loadedCharacter = {
-      width: character.width,
-      height: character.height,
-      grid: character.grid
-    };
+    const mismatch = getDimensionMismatch(row);
+    if (mismatch) dimensionMismatchRows.push(mismatch);
 
-    if (!hasFilledStitches(loadedCharacter)) {
-      return acc;
+    const characterKey = row.character_key ?? "";
+    const rows = rowsByKey.get(characterKey) ?? [];
+    rows.push(row);
+    rowsByKey.set(characterKey, rows);
+  }
+
+  const mappedCharacters = { ...starterCharacters };
+
+  for (const [characterKey, rows] of rowsByKey.entries()) {
+    if (rows.length > 1) {
+      duplicateCharacterRows.push({
+        characterKey,
+        count: rows.length,
+        rowIds: rows.map((row) => row.id ?? "(no id)")
+      });
     }
 
-    acc[character.character_key] = loadedCharacter;
-    return acc;
-  }, starterCharacters);
+    const validRows = rows.filter((row) => validateRemoteCharacterRow(row).length === 0);
+    const filledRows = validRows.filter(isFilledRemoteCharacterRow);
+    const candidates = filledRows.length ? filledRows : validRows;
+    const chosenRow = [...candidates].sort((first, second) => getRemoteRowTime(second) - getRemoteRowTime(first))[0];
+    if (!chosenRow || !isStringGrid(chosenRow.grid) || !isFilledRemoteCharacterRow(chosenRow)) continue;
+
+    mappedCharacters[characterKey] = normaliseCharacterToFontHeight({
+      width: chosenRow.width,
+      height: chosenRow.height,
+      grid: chosenRow.grid
+    }, defaultHeight);
+  }
 
   const stitchFont: StitchFont = {
     id: font.id,
@@ -272,7 +431,31 @@ function toStitchFont(font: RemoteFontRow, characters: RemoteCharacterRow[]): { 
   };
 
   const validation = validateSharedFont(stitchFont);
-  return validation.valid ? { font: stitchFont, errors: [] } : { font: null, errors: validation.errors };
+  const filledSupabaseKeys = [...rowsByKey.entries()]
+    .filter(([, rows]) => rows.some(isFilledRemoteCharacterRow))
+    .map(([key]) => key)
+    .sort();
+  const loadedCharacterKeys = Object.keys(stitchFont.characters).sort();
+  const loadedFilledKeys = loadedCharacterKeys.filter((key) => hasFilledStitches(stitchFont.characters[key]));
+  const diagnostic: FontHydrationDiagnostic = {
+    fontName: font.name,
+    fontId: font.id,
+    sourceTable: "custom_fonts",
+    supabaseCharacterRowCount: characters.length,
+    supabaseCharacterKeys: filledSupabaseKeys,
+    loadedCharacterKeyCount: loadedCharacterKeys.length,
+    loadedCharacterKeys: loadedFilledKeys,
+    missingFromUiModel: filledSupabaseKeys.filter((key) => !loadedCharacterKeys.includes(key)),
+    blankInUiModel: filledSupabaseKeys.filter((key) => !hasFilledStitches(stitchFont.characters[key])),
+    markedNotCreatedDespiteFilledSupabase: filledSupabaseKeys.filter((key) => !hasFilledStitches(stitchFont.characters[key])),
+    duplicateCharacterRows,
+    invalidGridRows,
+    dimensionMismatchRows
+  };
+
+  return validation.valid
+    ? { font: stitchFont, errors: [], diagnostic }
+    : { font: null, errors: validation.errors, diagnostic };
 }
 
 async function loadRemoteFontSnapshot(fontId: string): Promise<StitchFont | null> {
@@ -290,12 +473,12 @@ async function loadRemoteFontSnapshot(fontId: string): Promise<StitchFont | null
 
   const { data: characterRows, error: characterError } = await supabase
     .from("custom_font_characters")
-    .select("font_id, character_key, width, height, grid")
+    .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
     .eq("font_id", fontId);
 
   if (characterError) throw characterError;
 
-  const result = toStitchFont(fontRow as unknown as RemoteFontRow, (characterRows ?? []) as RemoteCharacterRow[]);
+  const result = hydrateRemoteCustomFont(fontRow as unknown as RemoteFontRow, (characterRows ?? []) as RemoteCharacterRow[]);
   if (result.errors.length) {
     throw new Error(`Cannot back up invalid font "${(fontRow as RemoteFontRow).name}": ${result.errors.join(" ")}`);
   }
@@ -452,14 +635,14 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
   const ids = remoteFontRows.map((font) => font.id);
   const { data: characterRows, error: characterError } = await supabase
     .from("custom_font_characters")
-    .select("font_id, character_key, width, height, grid")
+    .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
     .in("font_id", ids);
 
   if (characterError) throw characterError;
 
   const fonts = remoteFontRows
     .map((font) => {
-      const result = toStitchFont(
+      const result = hydrateRemoteCustomFont(
         font,
         ((characterRows ?? []) as RemoteCharacterRow[]).filter((character) => character.font_id === font.id)
       );
@@ -482,6 +665,94 @@ export async function loadRemoteFontResult(): Promise<RemoteFontLoadResult | nul
 export async function loadRemoteFonts(): Promise<StitchFont[] | null> {
   const result = await loadRemoteFontResult();
   return result?.fonts ?? null;
+}
+
+export async function loadFontHydrationDiagnostics(fontNames: string[] = []): Promise<FontHydrationDiagnosticResult> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return {
+      generatedAt: new Date().toISOString(),
+      supabaseHost: null,
+      duplicateFontRecords: [],
+      diagnostics: [],
+      invalidFonts: [{ id: "supabase", name: "Supabase", errors: ["Supabase is not configured."] }]
+    };
+  }
+
+  const selectedNames = new Set(fontNames.map((name) => name.trim().toLowerCase()).filter(Boolean));
+  const includeFontName = (name: string) => selectedNames.size === 0 || selectedNames.has(name.trim().toLowerCase());
+  const invalidFonts: InvalidRemoteFont[] = [];
+
+  const { data: defaultFontRows, error: defaultFontError } = await supabase
+    .from("default_fonts")
+    .select("*")
+    .eq("is_public", true)
+    .order("name", { ascending: true });
+
+  if (defaultFontError) throw defaultFontError;
+
+  const defaultRows = ((defaultFontRows ?? []) as unknown as RemoteDefaultFontRow[]).filter((font) => includeFontName(font.name));
+  const defaultDiagnostics = defaultRows.map((font) => {
+    const mapped = toDefaultStitchFont(font);
+    if (mapped.errors.length) invalidFonts.push({ id: font.id, name: font.name, errors: mapped.errors });
+    return getDefaultFontDiagnostic(font, mapped.font);
+  });
+
+  const { data: customFontRows, error: customFontError } = await supabase
+    .from("custom_fonts")
+    .select("*")
+    .order("name", { ascending: true });
+
+  if (customFontError) throw normaliseRemoteFontSaveError(customFontError);
+
+  const customRows = ((customFontRows ?? []) as unknown as RemoteFontRow[]).filter((font) => includeFontName(font.name));
+  const customIds = customRows.map((font) => font.id);
+  const { data: characterRows, error: characterError } = customIds.length
+    ? await supabase
+        .from("custom_font_characters")
+        .select("id, font_id, character_key, width, height, grid, created_at, updated_at")
+        .in("font_id", customIds)
+    : { data: [], error: null };
+
+  if (characterError) throw characterError;
+
+  const allCharacterRows = (characterRows ?? []) as unknown as RemoteCharacterRow[];
+  const customDiagnostics = customRows.map((font) => {
+    const result = hydrateRemoteCustomFont(
+      font,
+      allCharacterRows.filter((character) => character.font_id === font.id)
+    );
+    if (result.errors.length) invalidFonts.push({ id: font.id, name: font.name, errors: result.errors });
+    return result.diagnostic;
+  });
+
+  const fontRecords = [
+    ...((defaultFontRows ?? []) as unknown as RemoteDefaultFontRow[]).map((font) => ({
+      id: font.id,
+      name: font.name,
+      sourceTable: "default_fonts" as const
+    })),
+    ...((customFontRows ?? []) as unknown as RemoteFontRow[]).map((font) => ({
+      id: font.id,
+      name: font.name,
+      sourceTable: "custom_fonts" as const
+    }))
+  ];
+  const recordsByName = new Map<string, typeof fontRecords>();
+  for (const record of fontRecords) {
+    const key = record.name.trim().toLowerCase();
+    recordsByName.set(key, [...(recordsByName.get(key) ?? []), record]);
+  }
+
+  return {
+    generatedAt: new Date().toISOString(),
+    supabaseHost: process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null,
+    duplicateFontRecords: [...recordsByName.entries()]
+      .filter(([, records]) => records.length > 1)
+      .map(([name, records]) => ({ name, count: records.length, records })),
+    diagnostics: [...defaultDiagnostics, ...customDiagnostics],
+    invalidFonts
+  };
 }
 
 export async function loadRemoteFontBackups(fontId: string): Promise<RemoteFontBackup[]> {

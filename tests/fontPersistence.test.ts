@@ -5,7 +5,8 @@ import {
   getFontIdKind,
   getRemoteFontDeleteTarget,
   getRemoteFontSaveTarget,
-  hasSharedFontNameConflict
+  hasSharedFontNameConflict,
+  hydrateRemoteCustomFont
 } from "../src/lib/fontPersistence";
 import type { StitchFont } from "../src/lib/fontTypes";
 
@@ -178,7 +179,9 @@ assert.ok(
 );
 
 assert.ok(
-  fontPersistenceSource.includes('if (!hasFilledStitches(loadedCharacter)) {\n      return acc;\n    }'),
+  fontPersistenceSource.includes("const filledRows = validRows.filter(isFilledRemoteCharacterRow)") &&
+    fontPersistenceSource.includes("const candidates = filledRows.length ? filledRows : validRows") &&
+    fontPersistenceSource.includes("if (!chosenRow || !isStringGrid(chosenRow.grid) || !isFilledRemoteCharacterRow(chosenRow)) continue;"),
   "FONT-PERSISTENCE-010: Remote custom font loading should ignore stale blank character rows and rebuild uncreated characters from font defaults."
 );
 
@@ -199,4 +202,138 @@ assert.ok(
     fontPersistenceSource.includes('Timed out verifying cleared character') &&
     fontPersistenceSource.includes('Character "${characterKey}" was not cleared in the database.'),
   "FONT-PERSISTENCE-012: Custom character saves and clears should verify database read-back before reporting success."
+);
+
+const decoRemoteFont = {
+  id: "e6c0d5ff-368b-41df-9471-beb8b15c84af",
+  owner_id: null,
+  base_default_font_id: null,
+  base_custom_font_id: null,
+  name: "Deco",
+  description: "Regression test Deco font",
+  category: "Decorative",
+  default_height: 20,
+  default_width: 14,
+  recommended_use: "Testing",
+  licence: "Original",
+  created_at: "2026-07-20T00:00:00.000Z",
+  updated_at: "2026-07-23T03:16:23.108Z"
+};
+
+function rowFor(characterKey: string, grid: string[], updatedAt: string, id = `${characterKey}-row`) {
+  return {
+    id,
+    font_id: decoRemoteFont.id,
+    character_key: characterKey,
+    width: grid[0]?.length ?? 1,
+    height: grid.length,
+    grid,
+    created_at: "2026-07-20T00:00:00.000Z",
+    updated_at: updatedAt
+  };
+}
+
+function blankGrid(width: number, height: number) {
+  return Array.from({ length: height }, () => "0".repeat(width));
+}
+
+function filledGrid(width: number, height: number) {
+  const rows = blankGrid(width, height);
+  rows[0] = "1".repeat(width);
+  return rows;
+}
+
+const decoG = rowFor("G", filledGrid(14, 20), "2026-07-23T03:16:23.108Z", "deco-g-filled");
+const hydratedDeco = hydrateRemoteCustomFont(decoRemoteFont, [decoG]);
+
+assert.equal(hydratedDeco.errors.length, 0, "HYDRATION-001: Deco fixture should hydrate without validation errors.");
+assert.equal(
+  hydratedDeco.font?.characters.G.grid[0],
+  "11111111111111",
+  "HYDRATION-002: Saved filled Deco G from custom_font_characters should appear in the hydrated app font model."
+);
+assert.equal(
+  hydratedDeco.diagnostic.markedNotCreatedDespiteFilledSupabase.length,
+  0,
+  "HYDRATION-003: A filled Supabase character row must not be reported as Not Created after hydration."
+);
+
+const blankNewerG = rowFor("G", blankGrid(14, 20), "2026-07-24T00:00:00.000Z", "deco-g-blank-newer");
+const filledOlderG = rowFor("G", filledGrid(14, 20), "2026-07-23T00:00:00.000Z", "deco-g-filled-older");
+const duplicateDeco = hydrateRemoteCustomFont(decoRemoteFont, [blankNewerG, filledOlderG]);
+
+assert.equal(
+  duplicateDeco.font?.characters.G.grid[0],
+  "11111111111111",
+  "HYDRATION-004: A stale blank duplicate row must not hide a filled saved character row for the same key."
+);
+assert.deepEqual(
+  duplicateDeco.diagnostic.duplicateCharacterRows.map((item) => [item.characterKey, item.count]),
+  [["G", 2]],
+  "HYDRATION-005: Duplicate character rows should be reported by character key."
+);
+
+const oldHeightSavedG = {
+  ...rowFor("G", filledGrid(14, 7), "2026-07-23T00:00:00.000Z", "deco-g-old-height"),
+  height: 7
+};
+const heightNormalisedDeco = hydrateRemoteCustomFont(decoRemoteFont, [oldHeightSavedG]);
+
+assert.equal(
+  heightNormalisedDeco.font?.characters.G.height,
+  20,
+  "HYDRATION-006: Saved character rows from an older font height should load at the current font-level height."
+);
+assert.equal(
+  heightNormalisedDeco.font?.characters.G.grid[0],
+  "11111111111111",
+  "HYDRATION-007: Resizing old-height saved rows must preserve existing stitches."
+);
+
+const newestFilledGrid = filledGrid(14, 20);
+newestFilledGrid[1] = "00000000000001";
+const newestFilledG = rowFor("G", newestFilledGrid, "2026-07-25T00:00:00.000Z", "deco-g-newest-filled");
+const deterministicDeco = hydrateRemoteCustomFont(decoRemoteFont, [filledOlderG, newestFilledG]);
+
+assert.equal(
+  deterministicDeco.font?.characters.G.grid[1],
+  "00000000000001",
+  "HYDRATION-008: When multiple filled rows exist, hydration should choose the most recently updated row."
+);
+
+const symbolsDeco = hydrateRemoteCustomFont(decoRemoteFont, [
+  rowFor("7", filledGrid(14, 20), "2026-07-23T00:00:00.000Z", "deco-7"),
+  rowFor("@", filledGrid(14, 20), "2026-07-23T00:00:00.000Z", "deco-at")
+]);
+
+assert.equal(symbolsDeco.font?.characters["7"].grid[0], "11111111111111", "HYDRATION-009: Number character keys must be preserved.");
+assert.equal(symbolsDeco.font?.characters["@"].grid[0], "11111111111111", "HYDRATION-010: Symbol character keys must be preserved.");
+
+const secondFont = {
+  ...decoRemoteFont,
+  id: "c4c1b5e6-0a23-4c27-98d5-a2bfcb971111",
+  name: "Second Font"
+};
+const hydratedSecond = hydrateRemoteCustomFont(secondFont, [rowFor("A", filledGrid(14, 20), "2026-07-23T00:00:00.000Z", "second-a")]);
+
+assert.equal(hydratedDeco.font?.characters.A.grid[0], "00000000000000", "HYDRATION-011: Hydrating another font must not mutate Deco starter characters.");
+assert.equal(hydratedSecond.font?.characters.A.grid[0], "11111111111111", "HYDRATION-012: Multiple custom fonts should hydrate independently.");
+
+const invalidShape = hydrateRemoteCustomFont(decoRemoteFont, [
+  {
+    ...rowFor("Z", ["10", "1"], "2026-07-23T00:00:00.000Z", "bad-z"),
+    width: 2,
+    height: 2
+  }
+]);
+
+assert.equal(
+  invalidShape.font?.characters.Z.grid[0],
+  "00000000000000",
+  "HYDRATION-013: Invalid saved rows must not overwrite the starter grid."
+);
+assert.equal(
+  invalidShape.diagnostic.invalidGridRows.length,
+  1,
+  "HYDRATION-014: Invalid grid rows should be visible in the hydration diagnostic."
 );

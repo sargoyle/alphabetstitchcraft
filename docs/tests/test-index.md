@@ -14,6 +14,7 @@ This index maps confirmed functional requirements to current automated tests, pe
 | Character/grid utilities | `/docs/functions/character-grid.md`, `/docs/functions/font-data-model.md` | `tests/gridUtils.test.ts` | Partial | Covers validation, clear, resize, set and toggle helpers. UI keyboard navigation and read-only non-button cells have source-level coverage; browser/component interaction coverage is still recommended. |
 | Character editor UI | `/docs/functions/character-editor.md` | `tests/editorUiSource.test.ts` | Partial | Source-level guard covers the editor sidebar tiles, new-character dialog, danger zone, dimension panel and footer action row. Visual/browser interaction still needs manual or browser coverage. |
 | Font refresh stability | `/docs/functions/font-data-model.md`, `/docs/functions/character-editor.md` | `tests/fontRefreshSource.test.ts`, `tests/editorUiSource.test.ts`, `tests/fontPersistence.test.ts` | Partial | Source-level guard covers avoiding saved-font clearing during refresh, keeping the just-saved font in state, non-destructive custom character upserts, and editor protection against stale refreshes with fewer created characters. Browser timing still needs manual verification. |
+| Font hydration diagnostics | `/docs/functions/font-data-model.md`, `/docs/functions/font-hydration-diagnostics.md` | `tests/fontPersistence.test.ts` | Partial | Covers saved filled rows overriding blank starters, stale blank duplicates not hiding filled rows, older-height rows normalising to current font height, deterministic duplicate-row selection, independent custom font hydration and number/symbol key preservation. Live browser verification remains required before declaring production fixed. |
 | Local storage | `/docs/functions/local-storage.md` | `tests/localStorageUtils.test.ts` | Partial | Covers missing/corrupt storage fallback, custom fonts, deleted IDs and generator settings. Database persistence is out of this utility test scope. |
 | Export | `/docs/functions/export-png.md`, `/docs/functions/export-pdf.md`, `/docs/functions/export-json.md` | `tests/exportUtils.test.ts` | Partial | Covers canvas sizing, grid drawing on/off, filled drawing on/off, PNG trigger, PDF planning/download payload, JSON utility payload parity, safe empty export utilities, source coverage that Create Pattern no longer shows Export JSON or Copy size. Full visual browser parity remains manual. |
 
@@ -111,6 +112,10 @@ Related plan: `docs/tests/editor-ui.test-plan.md`.
 - EDITOR-UI-034: Same-character parent refreshes do not clear save success or failure status messages.
 - FONT-PERSISTENCE-008: Character save persistence ensures metadata exists and timeouts stalled Supabase writes.
 
+## 2026-07-23 Font Hydration Regression Coverage
+
+- HYDRATION-001 through HYDRATION-014: Saved filled custom character rows override blank generated starter grids, stale blank duplicate rows cannot hide filled rows, saved rows from older font heights hydrate at the current font-level height, newest filled duplicate rows win deterministically, multiple custom fonts hydrate independently, and number/symbol character keys are preserved.
+- Diagnostic function coverage source: `/docs/functions/font-hydration-diagnostics.md`.
 
 
 
